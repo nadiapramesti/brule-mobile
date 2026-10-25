@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../brand_logo.dart';
+import '../notice_bell.dart';
+import '../notices.dart';
 import '../screens/account_tab.dart';
 import '../theme.dart';
 import '../widgets.dart';
@@ -20,6 +22,27 @@ class StaffShell extends StatefulWidget {
 
 class _StaffShellState extends State<StaffShell> {
   int _i = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    Notices.goto.addListener(_onGoto);
+  }
+
+  @override
+  void dispose() {
+    Notices.goto.removeListener(_onGoto);
+    super.dispose();
+  }
+
+  /// Dari layar notifikasi: lompat ke tab antrian atau stok.
+  void _onGoto() {
+    final t = Notices.goto.value;
+    if (t == null) return;
+    Notices.goto.value = null;
+    final admin = widget.admin;
+    setState(() => _i = t == 'stock' ? (admin ? 3 : 1) : (admin ? 2 : 0));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +75,8 @@ class _StaffShellState extends State<StaffShell> {
         child: Column(
           children: [
             Container(
-              height: 46,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+              height: 54,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
               decoration: BoxDecoration(
                 border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
               ),
@@ -62,6 +85,8 @@ class _StaffShellState extends State<StaffShell> {
                   const BrandLogo(height: 28),
                   const Spacer(),
                   Tag(admin ? 'ADMIN' : 'ROASTER', color: admin ? Brule.amber : Brule.blueText),
+                  const SizedBox(width: 8),
+                  const NoticeBell(),
                 ],
               ),
             ),

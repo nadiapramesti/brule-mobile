@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../api.dart';
+import '../models.dart';
+import '../order_timeline.dart';
 import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
+import 'download.dart';
 import 'order_row.dart';
 
 /// Detail pesanan untuk roaster dan admin, dengan aksi sesuai peran dan tahap.
@@ -147,21 +150,20 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                             color: o['is_paid'] == true ? Brule.blueText : Brule.amber),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: asInt(o['progress']) / 100,
-                        minHeight: 6,
-                        color: Brule.blue,
-                        backgroundColor: Colors.white.withValues(alpha: 0.08),
+                    const SizedBox(height: 14),
+                    if (o['status'] == 'cancelled')
+                      const ErrorBox('Pesanan ini dibatalkan.')
+                    else
+                      OrderTimeline(
+                        keys: [for (final e in (o['steps'] as List)) '${(e as Map)['key']}'],
+                        labels: [
+                          for (final e in (o['steps'] as List))
+                            statusLabelId('${(e as Map)['key']}', '${e['label']}')
+                        ],
+                        times: [for (final e in (o['steps'] as List)) (e as Map)['at'] as String?],
+                        step: o['step'] == null ? null : asInt(o['step']),
+                        tracking: o['tracking_number'] as String?,
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      ((o['steps'] ?? []) as List).map((e) => '${(e as Map)['label']}').join('  ›  '),
-                      style: Brule.mono(9),
-                    ),
                     const Label('PELANGGAN'),
                     _box([
                       _row('NAMA', '${(o['customer_info'] ?? {})['name'] ?? '-'}'),
@@ -309,6 +311,14 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
           onPressed: _busy ? null : _cancel,
           icon: const Icon(Icons.cancel_outlined, size: 18),
           label: const Text('BATALKAN PESANAN'),
+        ),
+      if (o['status'] != 'cancelled' && (o['is_paid'] == true || o['payment_method'] == 'cod'))
+        OutlinedButton.icon(
+          onPressed: _busy
+              ? null
+              : () => downloadAndShare(context, '/staff/labels', {'codes': widget.code}),
+          icon: const Icon(Icons.print_outlined, size: 18),
+          label: const Text('UNDUH LABEL PAKET'),
         ),
     ];
     if (buttons.isEmpty) return null;

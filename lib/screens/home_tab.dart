@@ -8,6 +8,7 @@ import '../cart.dart';
 import '../coffee_bag.dart';
 import '../models.dart';
 import '../brand_logo.dart';
+import '../notice_bell.dart';
 import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
@@ -83,7 +84,10 @@ class _HomeTabState extends State<HomeTab> {
                         ValueListenableBuilder<int>(
                           valueListenable: Api.session,
                           builder: (context, _, _) => Api.loggedIn
-                              ? const SizedBox.shrink()
+                              ? const Padding(
+                                  padding: EdgeInsets.only(right: 8),
+                                  child: NoticeBell(),
+                                )
                               : Padding(
                                   padding: const EdgeInsets.only(right: 8),
                                   child: FilledButton(

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../api.dart';
 import '../brand_logo.dart';
 import '../theme.dart';
@@ -20,7 +23,67 @@ class _LoginScreenState extends State<LoginScreen> {
   final _pass = TextEditingController();
   bool _busy = false;
   bool _hide = true;
+  bool _remember = true;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSaved();
+  }
+
+  Future<void> _loadSaved() async {
+    final p = await SharedPreferences.getInstance();
+    final saved = p.getString('remember_email');
+    if (!mounted) return;
+    setState(() {
+      _remember = p.getBool('remember_on') ?? true;
+      if (saved != null) _email.text = saved;
+    });
+  }
+
+  void _done() {
+    if (!mounted) return;
+    if (widget.popOnSuccess) {
+      Navigator.of(context).pop(true);
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    }
+  }
+
+  /// Login Google/Facebook lewat Chrome Custom Tab (Google melarang WebView), lalu tukar kode.
+  Future<void> _social(String provider) async {
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final base = Api.base.replaceFirst('127.0.0.1', 'localhost');
+      final result = await FlutterWebAuth2.authenticate(
+        url: '$base/auth/$provider/mobile',
+        callbackUrlScheme: 'brule',
+      );
+      final q = Uri.parse(result).queryParameters;
+      if (q['error'] != null) {
+        if (mounted) setState(() => _error = q['error']);
+      } else if (q['code'] != null) {
+        await Api.exchange(q['code']!);
+        _done();
+      } else if (mounted) {
+        setState(() => _error = 'Login $provider gagal. Coba lagi.');
+      }
+    } on PlatformException catch (e) {
+      if (e.code != 'CANCELED' && mounted) {
+        setState(() => _error = 'Login $provider dibatalkan atau gagal dibuka.');
+      }
+    } on ApiException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -54,15 +117,15 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      await Api.login(email, pass);
-      if (!mounted) return;
-      if (widget.popOnSuccess) {
-        Navigator.of(context).pop(true);
+      await Api.login(email, pass, remember: _remember);
+      final p = await SharedPreferences.getInstance();
+      await p.setBool('remember_on', _remember);
+      if (_remember) {
+        await p.setString('remember_email', email);
       } else {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
+        await p.remove('remember_email');
       }
+      _done();
     } on ApiException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } finally {
@@ -144,8 +207,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 6),
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    dense: true,
+                    value: _remember,
+                    onChanged: _busy ? null : (v) => setState(() => _remember = v ?? true),
+                    title: Text('Ingat saya', style: Brule.mono(12, color: Brule.cream)),
+                  ),
                   if (_error != null) ...[
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10),
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -170,7 +242,30 @@ class _LoginScreenState extends State<LoginScreen> {
                           )
                         : const Text('MASUK'),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 18),
+                  Row(
+                    children: [
+                      const Expanded(child: Divider()),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text('ATAU', style: Brule.mono(10)),
+                      ),
+                      const Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  OutlinedButton.icon(
+                    onPressed: _busy ? null : () => _social('google'),
+                    icon: const Icon(Icons.g_mobiledata, size: 28),
+                    label: const Text('LANJUT DENGAN GOOGLE'),
+                  ),
+                  const SizedBox(height: 10),
+                  OutlinedButton.icon(
+                    onPressed: _busy ? null : () => _social('facebook'),
+                    icon: const Icon(Icons.facebook, size: 20),
+                    label: const Text('LANJUT DENGAN FACEBOOK'),
+                  ),
+                  const SizedBox(height: 14),
                   OutlinedButton(
                     onPressed: _busy ? null : _register,
                     child: const Text('BELUM PUNYA AKUN? DAFTAR'),
@@ -184,7 +279,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                   const SizedBox(height: 20),
                   Text(
-                    'Aplikasi ini khusus pelanggan. Staf masuk lewat web.',
+                    'Staf (admin/roaster) masuk dengan email & password.\nGoogle/Facebook khusus akun pelanggan.',
                     textAlign: TextAlign.center,
                     style: Brule.mono(11),
                   ),

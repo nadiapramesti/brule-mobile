@@ -121,11 +121,21 @@ class Api {
         ));
   }
 
-  static Future<void> login(String email, String password) async {
+  static Future<void> login(String email, String password, {bool remember = true}) async {
     final body = await _send(() => http.post(
           Uri.parse('$base/api/login'),
           headers: _headers,
           body: jsonEncode({'email': email, 'password': password}),
+        ));
+    await _startSession(body, remember: remember);
+  }
+
+  /// Tukar kode sekali pakai dari login Google/Facebook (lewat browser) jadi sesi aplikasi.
+  static Future<void> exchange(String code) async {
+    final body = await _send(() => http.post(
+          Uri.parse('$base/api/auth/exchange'),
+          headers: _headers,
+          body: jsonEncode({'code': code}),
         ));
     await _startSession(body);
   }
@@ -152,11 +162,15 @@ class Api {
     await _startSession(body);
   }
 
-  static Future<void> _startSession(Map<String, dynamic> body) async {
+  static Future<void> _startSession(Map<String, dynamic> body, {bool remember = true}) async {
     _token = body['token'] as String;
     user = Map<String, dynamic>.from(body['user'] as Map);
     final p = await SharedPreferences.getInstance();
-    await p.setString('token', _token!);
+    if (remember) {
+      await p.setString('token', _token!);
+    } else {
+      await p.remove('token'); // sesi hanya hidup selama app terbuka
+    }
     session.value++;
   }
 

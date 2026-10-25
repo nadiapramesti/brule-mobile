@@ -127,6 +127,8 @@ class Order {
   final int progress;
   final int? step;
   final List<String> steps;
+  final List<String> stepKeys;
+  final List<String?> stepTimes;
   final bool isPaid;
   final bool canPay;
   final bool canCancel;
@@ -153,6 +155,8 @@ class Order {
         steps = ((j['steps'] ?? []) as List)
             .map((e) => e is Map ? statusLabelId('${e['key']}', '${e['label']}') : statusLabelId('$e', '$e'))
             .toList(),
+        stepKeys = ((j['steps'] ?? []) as List).map((e) => e is Map ? '${e['key']}' : '$e').toList(),
+        stepTimes = ((j['steps'] ?? []) as List).map((e) => e is Map ? e['at'] as String? : null).toList(),
         isPaid = j['is_paid'] == true,
         canPay = j['can_pay'] == true,
         canCancel = j['can_cancel'] == true,

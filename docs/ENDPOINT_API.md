@@ -131,6 +131,19 @@ Pelanggan yang memanggil endpoint staff menerima `403`.
 | POST | `/admin/stock/coffees/{id}` | Stok biji: `mode` restock (masuk), waste (keluar), count (koreksi hitung), `amount` gram, `reason` |
 | POST | `/admin/stock/products/{id}` | Tambah stok perlengkapan, `amount` unit |
 
-## 8. Ringkasan
+## 8. Notifikasi, dokumen, dan login sosial
 
-Total 58 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran, 2 ulasan, 11 roaster dan admin inti, 24 menu admin lainnya. Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).
+| Method | Path | Fungsi |
+|---|---|---|
+| GET | `/notices` | Daftar notifikasi pengguna (pesanan baru, pesanan >24 jam, stok menipis, ulasan, status) |
+| GET | `/notices/unread` | Jumlah belum dibaca + notifikasi terbaru (dipolling tiap 45 detik) |
+| POST | `/notices/{id}/read` | Tandai satu notifikasi dibaca |
+| POST | `/notices/read-all` | Tandai semua dibaca |
+| GET | `/orders/{code}/receipt` | Unduh struk PDF (pesanan lunas atau COD) |
+| GET | `/staff/labels?codes=A,B` | Unduh label paket PDF untuk satu atau banyak pesanan |
+| POST | `/auth/exchange` | Tukar kode sekali pakai hasil login Google/Facebook jadi token |
+| GET | `/auth/{google\|facebook}/mobile` (web) | Awal alur OAuth di Chrome Custom Tab, kembali ke `brule://oauth?code=` |
+
+## 9. Ringkasan
+
+Total 66 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran, 2 ulasan, 11 roaster dan admin inti, 24 menu admin lainnya. Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).

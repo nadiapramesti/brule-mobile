@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import '../api.dart';
 import '../cart.dart';
 import '../models.dart';
+import '../order_timeline.dart';
 import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
+import '../staff/download.dart';
 import 'payment_screen.dart';
 
 class OrderDetailScreen extends StatelessWidget {
@@ -24,19 +26,32 @@ class OrderDetailScreen extends StatelessWidget {
       await Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => PaymentScreen(url: '${r['redirect_url']}')),
       );
-      await Api.post('/orders/$code/sync');
+      final o = await Api.post('/orders/$code/sync');
       AppEvents.ordersChanged.value++;
       await reload();
+      if (context.mounted && o['is_paid'] == true) _offerReceipt(context);
     } on ApiException catch (e) {
       if (context.mounted) _toast(context, e.message);
     }
   }
 
+  void _offerReceipt(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      duration: const Duration(seconds: 8),
+      content: const Text('Pembayaran berhasil. Struk siap diunduh.'),
+      action: SnackBarAction(
+        label: 'UNDUH STRUK',
+        onPressed: () => downloadAndShare(context, '/orders/$code/receipt', {}),
+      ),
+    ));
+  }
+
   Future<void> _sync(BuildContext context, Future<void> Function() reload) async {
     try {
-      await Api.post('/orders/$code/sync');
+      final o = await Api.post('/orders/$code/sync');
       AppEvents.ordersChanged.value++;
       await reload();
+      if (context.mounted && o['is_paid'] == true) _offerReceipt(context);
     } on ApiException catch (e) {
       if (context.mounted) _toast(context, e.message);
     }
@@ -89,7 +104,8 @@ class OrderDetailScreen extends StatelessWidget {
       body: Loader<Order>(
         load: _load,
         builder: (context, o, reload) {
-          return RefreshIndicator(
+          final canReceipt = o.status != 'cancelled' && (o.isPaid || o.paymentMethod == 'cod');
+          final list = RefreshIndicator(
             color: Brule.amber,
             onRefresh: reload,
             child: Narrow(
@@ -123,19 +139,13 @@ class OrderDetailScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                   ] else ...[
                     const Label('TAHAP PESANAN'),
-                    for (var i = 0; i < o.steps.length; i++)
-                      _Step(
-                        label: o.steps[i],
-                        done: o.step != null && i < o.step!,
-                        current: o.step == i,
-                      ),
-                    if (o.trackingNumber != null && o.trackingNumber!.isNotEmpty) ...[
-                      const SizedBox(height: 10),
-                      Text('NO. RESI', style: Brule.mono(11)),
-                      const SizedBox(height: 4),
-                      SelectableText(o.trackingNumber!,
-                          style: Brule.mono(14, color: Brule.amber)),
-                    ],
+                    OrderTimeline(
+                      keys: o.stepKeys,
+                      labels: o.steps,
+                      times: o.stepTimes,
+                      step: o.step,
+                      tracking: o.trackingNumber,
+                    ),
                   ],
                   const Label('ITEM'),
                   for (final it in o.items)
@@ -197,42 +207,30 @@ class OrderDetailScreen extends StatelessWidget {
               ),
             ),
           );
+          if (!canReceipt) return list;
+          return Column(
+            children: [
+              Expanded(child: list),
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF161616),
+                  border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+                ),
+                child: SafeArea(
+                  top: false,
+                  child: Narrow(
+                    child: OutlinedButton.icon(
+                      onPressed: () => downloadAndShare(context, '/orders/$code/receipt', {}),
+                      icon: const Icon(Icons.receipt_long_outlined, size: 18),
+                      label: const Text('UNDUH STRUK (PDF)'),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
         },
-      ),
-    );
-  }
-}
-
-class _Step extends StatelessWidget {
-  final String label;
-  final bool done;
-  final bool current;
-  const _Step({required this.label, required this.done, required this.current});
-
-  @override
-  Widget build(BuildContext context) {
-    final icon = done
-        ? Icons.check_circle
-        : current
-            ? Icons.radio_button_checked
-            : Icons.radio_button_unchecked;
-    final color = done
-        ? Brule.amber
-        : current
-            ? Brule.cream
-            : Brule.kraft.withValues(alpha: 0.4);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 22),
-          const SizedBox(width: 12),
-          Text(label,
-              style: TextStyle(
-                color: current || done ? Brule.cream : Brule.kraft.withValues(alpha: 0.6),
-                fontWeight: current ? FontWeight.w500 : FontWeight.w400,
-              )),
-        ],
       ),
     );
   }

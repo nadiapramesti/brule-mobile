@@ -63,6 +63,13 @@ Urutan alur disarankan:
 
 Tips: aktifkan mode jam tetap/baterai penuh sebelum screenshot, dan pakai data uji yang rapi (nama dan alamat yang wajar).
 
+## Tambahan terbaru
+
+- **Notifikasi**: ikon lonceng di header (pelanggan dan staf), halaman daftar notifikasi, banner saat ada yang baru
+- **Linimasa pesanan**: tahap vertikal bertanda waktu, sama seperti di web (pelanggan dan staf)
+- **Login**: kotak "Ingat saya", tombol Google dan Facebook
+- **Struk dan label**: tombol Unduh Struk (pelanggan, bawah layar), Unduh Label Paket (staf, detail dan antrian)
+
 ## Bahan lain di folder ini
 
 - `ENDPOINT_API.md`: daftar endpoint, body, dan alur pembayaran
