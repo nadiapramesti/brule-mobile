@@ -4,7 +4,10 @@ import '../theme.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  /// true: dibuka dari dalam app (mis. saat mau belanja), tutup dan kembali setelah masuk.
+  final bool popOnSuccess;
+  final String? reason;
+  const LoginScreen({super.key, this.popOnSuccess = false, this.reason});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -38,9 +41,13 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await Api.login(email, pass);
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
+      if (widget.popOnSuccess) {
+        Navigator.of(context).pop(true);
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
     } on ApiException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } finally {
@@ -77,6 +84,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 32),
                   Text('Masuk', style: Brule.condensed(30)),
                   const SizedBox(height: 6),
+                  if (widget.reason != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Brule.amber.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: Brule.amber.withValues(alpha: 0.4)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.info_outline, size: 18, color: Brule.amber),
+                          const SizedBox(width: 10),
+                          Expanded(child: Text(widget.reason!)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                   Text(
                     'Pantau pesanan dan belanja kopi sangrai segar.',
                     style:
@@ -138,6 +163,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           )
                         : const Text('MASUK'),
                   ),
+                  if (widget.popOnSuccess) ...[
+                    const SizedBox(height: 12),
+                    OutlinedButton(
+                      onPressed: _busy ? null : () => Navigator.of(context).pop(false),
+                      child: const Text('KEMBALI KE KATALOG'),
+                    ),
+                  ],
                   const SizedBox(height: 20),
                   Text(
                     'Aplikasi ini khusus pelanggan. Staf masuk lewat web.',

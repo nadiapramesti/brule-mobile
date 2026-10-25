@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +18,9 @@ class Api {
       String.fromEnvironment('API_BASE', defaultValue: 'http://127.0.0.1:8001');
 
   static String? _token;
+
+  /// Naik tiap kali login/logout, supaya layar yang bergantung pada sesi bisa menyegarkan diri.
+  static final session = ValueNotifier<int>(0);
   static Map<String, dynamic>? user;
 
   static bool get loggedIn => _token != null;
@@ -103,6 +107,7 @@ class Api {
     user = Map<String, dynamic>.from(body['user'] as Map);
     final p = await SharedPreferences.getInstance();
     await p.setString('token', _token!);
+    session.value++;
   }
 
   /// Dipakai saat aplikasi dibuka: token lama masih sah atau sudah mati?
@@ -131,5 +136,6 @@ class Api {
     user = null;
     final p = await SharedPreferences.getInstance();
     await p.remove('token');
+    session.value++;
   }
 }

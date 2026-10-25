@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'auth_gate.dart';
 import 'cart.dart';
 import 'models.dart';
 import 'theme.dart';
@@ -8,6 +9,8 @@ import 'widgets.dart';
 /// Perlengkapan tanpa pilihan: langsung masuk keranjang. Kalau ada pilihan (warna, ukuran),
 /// buka menu pilihan dulu.
 Future<void> addGearQuick(BuildContext context, Gear g) async {
+  if (!await requireLogin(context)) return;
+  if (!context.mounted) return;
   if (g.options.isEmpty) {
     Cart.I.add(CartLine(
       kind: 'gear',
@@ -25,8 +28,11 @@ Future<void> addGearQuick(BuildContext context, Gear g) async {
 }
 
 /// Kopi selalu punya pilihan (sangrai, berat, gilingan), jadi selalu lewat menu pilihan.
-Future<void> addCoffeeSheet(BuildContext context, Coffee c) =>
-    _open(context, _CoffeeSheet(coffee: c));
+Future<void> addCoffeeSheet(BuildContext context, Coffee c) async {
+  if (!await requireLogin(context)) return;
+  if (!context.mounted) return;
+  await _open(context, _CoffeeSheet(coffee: c));
+}
 
 Future<void> _open(BuildContext context, Widget child) {
   return showModalBottomSheet<void>(

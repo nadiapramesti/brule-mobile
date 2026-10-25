@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../auth_gate.dart';
 import '../cart.dart';
 import '../coffee_bag.dart';
 import '../models.dart';
@@ -27,7 +28,9 @@ class _CoffeeDetailScreenState extends State<CoffeeDetailScreen> {
     _profile = ps.firstWhere((p) => p.level == 'medium', orElse: () => ps.first);
   }
 
-  void _add() {
+  Future<void> _add() async {
+    if (!await requireLogin(context)) return;
+    if (!mounted) return;
     final c = widget.coffee;
     Cart.I.add(CartLine(
       kind: 'coffee',

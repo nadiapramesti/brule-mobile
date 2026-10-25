@@ -2,20 +2,18 @@ import 'package:flutter/material.dart';
 import 'api.dart';
 import 'cart.dart';
 import 'screens/home_screen.dart';
-import 'screens/login_screen.dart';
 import 'theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Api.loadToken();
   await Cart.I.load();
-  final ok = await Api.restore();
-  runApp(BruleApp(loggedIn: ok));
+  await Api.restore();
+  runApp(const BruleApp());
 }
 
 class BruleApp extends StatelessWidget {
-  final bool loggedIn;
-  const BruleApp({super.key, required this.loggedIn});
+  const BruleApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +21,7 @@ class BruleApp extends StatelessWidget {
       title: 'BRÛLÉ',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(),
-      home: loggedIn ? const HomeScreen() : const LoginScreen(),
+      home: const HomeScreen(),
     );
   }
 }

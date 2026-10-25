@@ -5,7 +5,7 @@ import '../theme.dart';
 import '../widgets.dart';
 import 'addresses_screen.dart';
 import 'edit_profile_screen.dart';
-import 'login_screen.dart';
+import '../auth_gate.dart';
 import 'password_screen.dart';
 
 class AccountTab extends StatefulWidget {
@@ -49,15 +49,61 @@ class _AccountTabState extends State<AccountTab> {
       ),
     );
     if (yes != true || !mounted) return;
-    final nav = Navigator.of(context);
     await Api.logout();
     Cart.I.clear();
     AppEvents.ordersChanged.value++;
-    nav.pushReplacement(MaterialPageRoute(builder: (_) => const LoginScreen()));
+  }
+
+  Widget _guest() {
+    return SafeArea(
+      bottom: false,
+      child: Narrow(
+        maxWidth: 560,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          children: [
+            Row(
+              children: [
+                Container(width: 18, height: 3, color: Brule.amber),
+                const SizedBox(width: 10),
+                Text('AKUN', style: Brule.condensed(22, spacing: 2)),
+              ],
+            ),
+            const SizedBox(height: 32),
+            Icon(Icons.account_circle_outlined,
+                size: 64, color: Brule.kraft.withValues(alpha: 0.45)),
+            const SizedBox(height: 14),
+            Center(child: Text('Belum masuk', style: Brule.condensed(24))),
+            const SizedBox(height: 6),
+            Center(
+              child: Text(
+                'Masuk untuk belanja, memantau pesanan,\ndan menyimpan alamat pengiriman.',
+                textAlign: TextAlign.center,
+                style: Brule.mono(11),
+              ),
+            ),
+            const SizedBox(height: 24),
+            FilledButton(
+              onPressed: () => requireLogin(context, reason: 'Masuk ke akun BRÛLÉ kamu.'),
+              child: const Text('MASUK'),
+            ),
+            const SizedBox(height: 28),
+            Center(child: Text('BRÛLÉ · SPECIALTY COFFEE LAB', style: Brule.mono(10))),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    return ValueListenableBuilder<int>(
+      valueListenable: Api.session,
+      builder: (context, _, _) => Api.loggedIn ? _profile() : _guest(),
+    );
+  }
+
+  Widget _profile() {
     final u = Api.user ?? {};
     final name = '${u['name'] ?? ''}';
     final phone = u['phone'];

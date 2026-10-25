@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../add_sheet.dart';
 import '../api.dart';
+import '../auth_gate.dart';
 import '../cart.dart';
 import '../coffee_bag.dart';
 import '../models.dart';
@@ -57,8 +58,6 @@ class _HomeTabState extends State<HomeTab> {
 
   @override
   Widget build(BuildContext context) {
-    final name = '${Api.user?['name'] ?? ''}'.split(' ').first;
-
     return RefreshIndicator(
       color: Brule.amber,
       onRefresh: _refresh,
@@ -81,6 +80,23 @@ class _HomeTabState extends State<HomeTab> {
                         const SizedBox(width: 10),
                         Text('BRÛLÉ', style: Brule.condensed(22, spacing: 3)),
                         const Spacer(),
+                        ValueListenableBuilder<int>(
+                          valueListenable: Api.session,
+                          builder: (context, _, _) => Api.loggedIn
+                              ? const SizedBox.shrink()
+                              : Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: FilledButton(
+                                    style: FilledButton.styleFrom(
+                                      minimumSize: const Size(0, 38),
+                                      padding: const EdgeInsets.symmetric(horizontal: 18),
+                                    ),
+                                    onPressed: () => requireLogin(context,
+                                        reason: 'Masuk ke akun BRÛLÉ kamu.'),
+                                    child: const Text('MASUK'),
+                                  ),
+                                ),
+                        ),
                         ListenableBuilder(
                           listenable: Cart.I,
                           builder: (context, _) => IconButton.filledTonal(
@@ -96,8 +112,14 @@ class _HomeTabState extends State<HomeTab> {
                       ],
                     ),
                     const SizedBox(height: 18),
-                    Text(name.isEmpty ? 'HALO' : 'HALO, ${name.toUpperCase()}',
-                        style: Brule.mono(11, color: Brule.amber)),
+                    ValueListenableBuilder<int>(
+                      valueListenable: Api.session,
+                      builder: (context, _, _) {
+                        final n = '${Api.user?['name'] ?? ''}'.split(' ').first;
+                        return Text(n.isEmpty ? 'HALO' : 'HALO, ${n.toUpperCase()}',
+                            style: Brule.mono(11, color: Brule.amber));
+                      },
+                    ),
                     const SizedBox(height: 4),
                     Text('Mau seduh apa hari ini?', style: Brule.condensed(28)),
                     const SizedBox(height: 14),

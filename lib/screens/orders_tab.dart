@@ -5,6 +5,7 @@ import '../models.dart';
 import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
+import '../auth_gate.dart';
 import 'order_detail_screen.dart';
 
 class OrdersTab extends StatelessWidget {
@@ -34,6 +35,42 @@ class OrdersTab extends StatelessWidget {
           ),
           Expanded(
             child: ValueListenableBuilder<int>(
+              valueListenable: Api.session,
+              builder: (context, _, _) => !Api.loggedIn
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.receipt_long_outlined,
+                                size: 56, color: Brule.kraft.withValues(alpha: 0.4)),
+                            const SizedBox(height: 12),
+                            const Text('Masuk untuk melihat pesananmu.'),
+                            const SizedBox(height: 4),
+                            Text('Status sangrai sampai kirim bisa dipantau di sini.',
+                                textAlign: TextAlign.center, style: Brule.mono(11)),
+                            const SizedBox(height: 20),
+                            FilledButton(
+                              style: FilledButton.styleFrom(
+                                  minimumSize: const Size(180, 48)),
+                              onPressed: () => requireLogin(context,
+                                  reason: 'Masuk untuk melihat pesananmu.'),
+                              child: const Text('MASUK'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : _list(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _list() => ValueListenableBuilder<int>(
               valueListenable: AppEvents.ordersChanged,
               builder: (context, version, _) {
                 return Loader<List<Order>>(
@@ -65,12 +102,7 @@ class OrdersTab extends StatelessWidget {
                   },
                 );
               },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+            );
 }
 
 class _OrderCard extends StatelessWidget {

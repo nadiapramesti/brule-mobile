@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../auth_gate.dart';
 import '../cart.dart';
 import '../theme.dart';
 import '../util.dart';
@@ -82,9 +83,13 @@ class _Summary extends StatelessWidget {
             ),
           ),
           FilledButton.icon(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const CheckoutScreen()),
-            ),
+            onPressed: () async {
+              if (!await requireLogin(context, reason: 'Masuk dulu untuk checkout.')) return;
+              if (!context.mounted) return;
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const CheckoutScreen()),
+              );
+            },
             icon: const Icon(Icons.arrow_forward, size: 18),
             iconAlignment: IconAlignment.end,
             label: const Text('CHECKOUT'),

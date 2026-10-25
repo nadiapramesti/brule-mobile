@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../auth_gate.dart';
 import '../cart.dart';
 import '../models.dart';
 import '../theme.dart';
@@ -24,7 +25,9 @@ class _GearDetailScreenState extends State<GearDetailScreen> {
     if (o.isNotEmpty) _option = o.first;
   }
 
-  void _add() {
+  Future<void> _add() async {
+    if (!await requireLogin(context)) return;
+    if (!mounted) return;
     final g = widget.gear;
     Cart.I.add(CartLine(
       kind: 'gear',
