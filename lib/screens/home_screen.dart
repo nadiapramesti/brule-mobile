@@ -23,7 +23,10 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: _index,
         children: [
-          HomeTab(onShop: () => setState(() => _index = 1)),
+          HomeTab(onGo: (tab, {int seg = 0}) {
+            if (tab == 1) ShopTab.segment.value = seg;
+            setState(() => _index = tab);
+          }),
           const ShopTab(),
           const CartTab(),
           const OrdersTab(),

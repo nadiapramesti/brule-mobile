@@ -55,62 +55,37 @@ class CartTab extends StatelessWidget {
 class _Summary extends StatelessWidget {
   const _Summary();
 
-  Widget _row(String k, Widget v) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: Row(
-          children: [
-            Text(k, style: Brule.mono(11)),
-            const Spacer(),
-            v,
-          ],
-        ),
-      );
-
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
       decoration: BoxDecoration(
         color: Brule.field,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Row(
         children: [
-          Container(height: 3, color: Brule.amber),
-          Padding(
-            padding: const EdgeInsets.all(16),
+          Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('RINGKASAN BELANJA', style: Brule.mono(11, color: Brule.amber)),
-                const SizedBox(height: 8),
-                _row('SUBTOTAL · ${Cart.I.count} ITEM',
-                    Text(rupiah(Cart.I.subtotal), style: const TextStyle(fontSize: 14))),
-                _row('ONGKIR', Text('dihitung di checkout', style: Brule.mono(10))),
-                _row('DISKON', Text('dihitung di checkout', style: Brule.mono(10))),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Divider(height: 1, color: Color(0x1FFFFFFF)),
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text('TOTAL SEMENTARA', style: Brule.mono(11)),
-                    const Spacer(),
-                    Text(rupiah(Cart.I.subtotal), style: Brule.condensed(30)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const CheckoutScreen()),
-                  ),
-                  icon: const Icon(Icons.lock_outline, size: 18),
-                  label: const Text('LANJUT KE CHECKOUT'),
-                ),
+                Text('TOTAL · ${Cart.I.count} ITEM', style: Brule.mono(10)),
+                const SizedBox(height: 2),
+                Text(rupiah(Cart.I.subtotal), style: Brule.condensed(22)),
               ],
+            ),
+          ),
+          FilledButton.icon(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const CheckoutScreen()),
+            ),
+            icon: const Icon(Icons.arrow_forward, size: 18),
+            iconAlignment: IconAlignment.end,
+            label: const Text('CHECKOUT'),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(0, 44),
+              padding: const EdgeInsets.symmetric(horizontal: 18),
             ),
           ),
         ],

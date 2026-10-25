@@ -6,12 +6,30 @@ import 'gear_tab.dart';
 class ShopTab extends StatefulWidget {
   const ShopTab({super.key});
 
+  /// Segmen aktif (0 kopi, 1 perlengkapan); diubah dari beranda lewat pintasan.
+  static final segment = ValueNotifier<int>(0);
+
   @override
   State<ShopTab> createState() => _ShopTabState();
 }
 
 class _ShopTabState extends State<ShopTab> {
   int _seg = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _seg = ShopTab.segment.value;
+    ShopTab.segment.addListener(_sync);
+  }
+
+  void _sync() => setState(() => _seg = ShopTab.segment.value);
+
+  @override
+  void dispose() {
+    ShopTab.segment.removeListener(_sync);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +51,7 @@ class _ShopTabState extends State<ShopTab> {
                       icon: Icon(Icons.coffee_maker_outlined)),
                 ],
                 selected: {_seg},
-                onSelectionChanged: (s) => setState(() => _seg = s.first),
+                onSelectionChanged: (s) => ShopTab.segment.value = s.first,
               ),
             ),
           ),
