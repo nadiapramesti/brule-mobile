@@ -1,0 +1,184 @@
+erDiagram
+    users ||--o{ orders : "membuat"
+    users ||--o{ addresses : "menyimpan"
+    users ||--o{ cart_lines : "punya"
+    users ||--o{ reviews : "menulis"
+    users ||--o{ notices : "menerima"
+    users ||--o{ roast_journals : "mencatat"
+    users ||--o{ personal_access_tokens : "token API"
+    coffees ||--|| traceabilities : "asal biji"
+    coffees ||--o{ roast_profiles : "level sangrai"
+    coffees ||--o{ reviews : "diulas"
+    coffees ||--o{ stock_movements : "mutasi stok"
+    orders ||--o{ order_items : "berisi"
+    orders }o--o| vouchers : "memakai"
+    roast_profiles ||--o{ order_items : "dipesan"
+    roast_profiles ||--o{ cart_lines : "dikeranjang"
+    products ||--o{ order_items : "dipesan"
+    products ||--o{ cart_lines : "dikeranjang"
+
+    users {
+        bigint id PK
+        string name
+        string email UK
+        string password
+        enum role "customer, roaster, admin"
+        string phone
+        string provider
+        string provider_id
+        timestamp blocked_at
+        timestamp deleted_at
+    }
+    addresses {
+        bigint id PK
+        bigint user_id FK
+        string label
+        string recipient
+        string phone
+        text address
+        boolean is_default
+    }
+    coffees {
+        bigint id PK
+        string slug UK
+        string name
+        text story
+        string image
+        int stock_green_bean_gram
+        decimal cupping_score
+        boolean is_active
+    }
+    traceabilities {
+        bigint id PK
+        bigint coffee_id FK
+        string farmer
+        string region
+        smallint altitude
+        string varietal
+        string process
+        date harvest_date
+        string q_grader
+    }
+    roast_profiles {
+        bigint id PK
+        bigint coffee_id FK
+        enum level "light sampai dark"
+        smallint agtron
+        json flavor_values
+        json tasting_notes
+        json roast_curve
+        int price_per_100g
+    }
+    products {
+        bigint id PK
+        string slug UK
+        string name
+        string category
+        text description
+        int price
+        int stock
+        string option_label
+        json options
+        json option_images
+        string image
+        boolean is_active
+    }
+    orders {
+        bigint id PK
+        string order_code UK
+        bigint user_id FK
+        enum status "pending_payment sampai completed"
+        string payment_method "online atau cod"
+        int subtotal
+        int shipping_cost
+        int addon_cost
+        int discount
+        int total
+        string voucher_code
+        bigint voucher_id FK
+        string recipient_name
+        string recipient_phone
+        text shipping_address
+        string tracking_number
+        string snap_token
+        string midtrans_order_id UK
+        boolean gift_wrap
+        string card_message
+        timestamp paid_at
+    }
+    order_items {
+        bigint id PK
+        bigint order_id FK
+        bigint roast_profile_id FK
+        bigint product_id FK
+        smallint grams
+        string grind
+        string coffee_name_snapshot
+        string roast_level_snapshot
+        int price_per_100g_snapshot
+        int line_total
+    }
+    cart_lines {
+        bigint id PK
+        bigint user_id FK
+        string line_id
+        string kind "coffee atau gear"
+        bigint roast_profile_id FK
+        bigint product_id FK
+        int grams
+        string grind
+        string option
+        tinyint qty
+    }
+    vouchers {
+        bigint id PK
+        string code UK
+        string type "percent atau fixed"
+        int value
+        int min_subtotal
+        int quota
+        int used_count
+        timestamp expires_at
+        boolean is_active
+    }
+    reviews {
+        bigint id PK
+        bigint user_id FK
+        bigint coffee_id FK
+        bigint order_id FK
+        tinyint rating
+        string body
+        boolean is_hidden
+    }
+    stock_movements {
+        bigint id PK
+        bigint coffee_id FK
+        bigint user_id FK
+        bigint order_id FK
+        string type
+        int grams
+        int balance_after
+    }
+    notices {
+        bigint id PK
+        bigint user_id FK
+        string type
+        string title
+        timestamp read_at
+    }
+    roast_journals {
+        bigint id PK
+        bigint user_id FK
+        bigint coffee_id FK
+        string brew_method
+        tinyint rating
+        text notes
+    }
+    personal_access_tokens {
+        bigint id PK
+        string tokenable_type
+        bigint tokenable_id
+        text name
+        string token UK
+        timestamp last_used_at
+    }
