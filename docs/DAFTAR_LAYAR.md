@@ -22,6 +22,13 @@ Aplikasi Android (Flutter). Katalog bisa dijelajahi tanpa login; belanja dan che
 | 16 | Form Alamat | `addresses_screen.dart` | Tambah atau ubah alamat | Ya |
 | 17 | Masuk | `login_screen.dart` | Form login dan tautan daftar | Tidak |
 | 18 | Daftar Akun | `register_screen.dart` | Form pendaftaran pelanggan baru | Tidak |
+| 19 | Racik Blend | `blend_screen.dart` | Pilih dua kopi, tingkat sangrai, porsi 70/60/50, pratinjau rasa dan harga, tambah ke keranjang | Tambah ke keranjang |
+| 20 | Ulasan Pembeli | `reviews_section.dart` | Rata-rata bintang, daftar ulasan, sheet tulis atau ubah ulasan (di Detail Kopi) | Menulis ulasan |
+| 21 | Antrian Roaster | `staff/queue_tab.dart` | Antrian produksi, kartu pesanan, tombol tahap berikutnya | Ya (roaster/admin) |
+| 22 | Detail Pesanan Staf | `staff/staff_order_screen.dart` | Item, alamat, aksi maju tahap, kirim dengan resi, selesai, batalkan | Ya (roaster/admin) |
+| 23 | Dashboard Admin | `staff/admin_dashboard_tab.dart` | KPI, grafik pendapatan harian, status, kopi terlaris, stok menipis | Ya (admin) |
+| 24 | Pesanan Admin | `staff/admin_orders_tab.dart` | Semua pesanan, filter tab, pencarian, paginasi | Ya (admin) |
+| 25 | Stok Admin | `staff/admin_stock_tab.dart` | Stok kopi dan perlengkapan, penanda stok menipis | Ya (admin) |
 
 ## Checklist screenshot untuk laporan
 
@@ -39,6 +46,9 @@ Urutan alur disarankan:
 10. Detail Pesanan sesudah bayar (stepper Antrian sampai Kirim, status Indonesia)
 11. Daftar Pesanan
 12. Akun, Edit Profil, Ubah Password
+13. Racik Blend (pilih dua kopi, pratinjau rasa) dan Detail Kopi bagian ulasan
+14. Akun **roaster** (`roaster@brule.test`): Antrian, Detail Pesanan Staf (satu kali sebelum dan sesudah ubah status)
+15. Akun **admin** (`admin@brule.test`): Dashboard, Pesanan, Antrian, Stok
 
 Tips: aktifkan mode jam tetap/baterai penuh sebelum screenshot, dan pakai data uji yang rapi (nama dan alamat yang wajar).
 

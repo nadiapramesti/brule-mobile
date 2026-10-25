@@ -9,7 +9,7 @@ Pesan error validasi memakai status `422` dengan bentuk `{ "message": "...", "er
 | Method | Endpoint | Auth | Fungsi |
 |---|---|---|---|
 | POST | `/register` | - | Daftar pelanggan baru, langsung mengembalikan token |
-| POST | `/login` | - | Masuk (hanya role customer), mengembalikan token |
+| POST | `/login` | - | Masuk (customer, roaster, admin), mengembalikan token dan data `user.role` |
 | GET | `/me` | Bearer | Data akun yang sedang masuk |
 | PUT | `/me` | Bearer | Ubah nama, email, nomor WhatsApp |
 | PUT | `/me/password` | Bearer | Ubah password (token perangkat lain dicabut) |
@@ -63,11 +63,12 @@ Body tambah/ubah: `label`, `recipient`, `phone` (format `08xx`/`+62`), `address`
   "voucher": "HEMAT10", "gift_wrap": true, "card_message": "Selamat ulang tahun!",
   "items": [
     { "type": "coffee", "profile_id": 3, "grams": 250, "grind": "v60", "qty": 1 },
+    { "type": "coffee", "profile_id": 3, "blend_profile_id": 9, "ratio": 70, "grams": 500, "grind": "whole_bean", "qty": 1 },
     { "type": "gear", "product_id": 7, "option": "Hitam", "qty": 2 }
   ]
 }
 ```
-`payment`: `online` atau `cod`. `grams`: 100, 200, 250, 500, 1000. `grind`: `whole_bean`, `v60`, `espresso`, `french_press`, `tubruk`, `aeropress`. Respons `201`: objek pesanan.
+`payment`: `online` atau `cod`. `grams`: 100, 200, 250, 500, 1000. `grind`: `whole_bean`, `v60`, `espresso`, `french_press`, `tubruk`, `aeropress`. Item blend memakai `blend_profile_id` (profil sangrai biji kedua) dan `ratio` (porsi biji pertama: 70, 60, atau 50). Syarat: dua kopi berbeda, aktif, dan tingkat sangrai sama. Gram dibagi `round(grams x ratio / 100)`, harga = harga biji pertama untuk porsinya + harga biji kedua untuk sisanya. Respons `201`: objek pesanan.
 
 **Objek pesanan**: `code`, `status`, `status_label`, `progress`, `step`, `steps[]` (`key`, `label`), `payment_method`, `is_paid`, `can_pay`, `can_cancel`, `tracking_number`, `subtotal`, `shipping_cost`, `addon_cost`, `discount`, `voucher_code`, `total`, `gift_wrap`, `card_message`, `recipient{name, phone, address}`, `created_at`, `items[]`.
 
@@ -81,6 +82,31 @@ Body tambah/ubah: `label`, `recipient`, `phone` (format `08xx`/`+62`), `address`
 4. Setelah WebView ditutup, app memanggil `POST /orders/{code}/sync`; status berubah menjadi `queued` dan `is_paid = true`.
 5. Pada server publik, notifikasi Midtrans masuk lewat webhook web yang sudah ada; `sync` tetap dipakai sebagai cadangan.
 
-## 6. Ringkasan
+## 6. Ulasan Produk
 
-Total 21 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran. Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).
+| Method | Endpoint | Auth | Fungsi |
+|---|---|---|---|
+| GET | `/coffees/{slug}/reviews` | Opsional | `average`, `count`, `can_review`, `mine`, dan `data[]` ulasan |
+| POST | `/coffees/{slug}/reviews` | Bearer | Tulis atau ubah ulasan sendiri: `rating` 1-5, `body` maksimal 600 karakter |
+
+Ulasan hanya boleh ditulis pelanggan yang punya pesanan **selesai** berisi kopi tersebut (termasuk sebagai biji kedua blend).
+
+## 7. Roaster dan Admin (Bearer, sesuai role)
+
+| Method | Endpoint | Role | Fungsi |
+|---|---|---|---|
+| GET | `/staff/queue` | roaster, admin | Antrian produksi (queued sampai packing) |
+| GET | `/staff/orders/{code}` | roaster, admin | Detail pesanan untuk produksi |
+| POST | `/staff/orders/{code}/advance` | roaster, admin | Maju ke tahap berikutnya (queued, roasting, grinding, packing) |
+| POST | `/staff/orders/{code}/ship` | roaster, admin | Tandai dikirim, body `tracking_number` (resi) |
+| GET | `/admin/dashboard?days=7` | admin | Pendapatan, jumlah pesanan, perlu perhatian, grafik harian, kopi terlaris, stok menipis |
+| GET | `/admin/orders?tab=&q=&page=` | admin | Semua pesanan dengan filter tab, pencarian, paginasi |
+| GET | `/admin/stock` | admin | Stok kopi (gram) dan perlengkapan (unit) |
+| POST | `/admin/orders/{code}/complete` | admin | Tandai pesanan selesai |
+| POST | `/admin/orders/{code}/cancel` | admin | Batalkan pesanan dan kembalikan stok, body `reason` |
+
+Pelanggan yang memanggil endpoint staff menerima `403`.
+
+## 8. Ringkasan
+
+Total 38 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran, 2 ulasan, 9 roaster dan admin (ditambah 6 endpoint pendukung akun yang sudah terhitung di bagian 1). Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).
