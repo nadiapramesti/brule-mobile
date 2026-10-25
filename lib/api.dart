@@ -103,6 +103,32 @@ class Api {
           headers: _headers,
           body: jsonEncode({'email': email, 'password': password}),
         ));
+    await _startSession(body);
+  }
+
+  /// Daftar akun pelanggan baru; langsung masuk kalau berhasil.
+  static Future<void> register({
+    required String name,
+    required String email,
+    String? phone,
+    required String password,
+    required String confirmation,
+  }) async {
+    final body = await _send(() => http.post(
+          Uri.parse('$base/api/register'),
+          headers: _headers,
+          body: jsonEncode({
+            'name': name,
+            'email': email,
+            if (phone != null && phone.isNotEmpty) 'phone': phone,
+            'password': password,
+            'password_confirmation': confirmation,
+          }),
+        ));
+    await _startSession(body);
+  }
+
+  static Future<void> _startSession(Map<String, dynamic> body) async {
     _token = body['token'] as String;
     user = Map<String, dynamic>.from(body['user'] as Map);
     final p = await SharedPreferences.getInstance();

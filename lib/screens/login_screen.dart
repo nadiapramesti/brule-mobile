@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../api.dart';
 import '../theme.dart';
 import 'home_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   /// true: dibuka dari dalam app (mis. saat mau belanja), tutup dan kembali setelah masuk.
@@ -25,6 +26,19 @@ class _LoginScreenState extends State<LoginScreen> {
     _email.dispose();
     _pass.dispose();
     super.dispose();
+  }
+
+  Future<void> _register() async {
+    final ok = await Navigator.of(context)
+        .push<bool>(MaterialPageRoute(builder: (_) => const RegisterScreen()));
+    if (ok != true || !mounted) return;
+    if (widget.popOnSuccess) {
+      Navigator.of(context).pop(true);
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    }
   }
 
   Future<void> _submit() async {
@@ -162,6 +176,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 strokeWidth: 2.4, color: Brule.cream),
                           )
                         : const Text('MASUK'),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton(
+                    onPressed: _busy ? null : _register,
+                    child: const Text('BELUM PUNYA AKUN? DAFTAR'),
                   ),
                   if (widget.popOnSuccess) ...[
                     const SizedBox(height: 12),
