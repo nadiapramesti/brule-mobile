@@ -269,7 +269,12 @@ class _BagPainter extends CustomPainter {
       '${(process ?? '').toUpperCase()}$alt',
       100,
       193,
-      TextStyle(fontFamily: 'IBMPlexMono', fontSize: 6.2, letterSpacing: 0.6, color: brown),
+      TextStyle(
+        fontFamily: 'IBMPlexMono',
+        fontSize: '${process ?? ''}$alt'.length > 24 ? 4.9 : 6.2,
+        letterSpacing: 0.6,
+        color: brown,
+      ),
     );
 
     // titik tingkat sangrai

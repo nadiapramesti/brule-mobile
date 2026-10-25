@@ -15,11 +15,11 @@ class _ShopTabState extends State<ShopTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SafeArea(
-          bottom: false,
-          child: Padding(
+    return SafeArea(
+      bottom: false,
+      child: Column(
+        children: [
+          Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             child: SizedBox(
               width: double.infinity,
@@ -37,14 +37,14 @@ class _ShopTabState extends State<ShopTab> {
               ),
             ),
           ),
-        ),
-        Expanded(
-          child: IndexedStack(
-            index: _seg,
-            children: const [CatalogTab(), GearTab()],
+          Expanded(
+            child: IndexedStack(
+              index: _seg,
+              children: const [CatalogTab(), GearTab()],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

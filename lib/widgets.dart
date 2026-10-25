@@ -51,13 +51,15 @@ class ErrorBox extends StatelessWidget {
 class Tag extends StatelessWidget {
   final String text;
   final Color color;
-  const Tag(this.text, {super.key, this.color = Brule.kraft});
+  final bool filled;
+  const Tag(this.text, {super.key, this.color = Brule.kraft, this.filled = false});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
+        color: filled ? const Color(0xFF121212).withValues(alpha: 0.88) : null,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: color.withValues(alpha: 0.6)),
       ),
@@ -151,9 +153,11 @@ class ProductCard extends StatelessWidget {
   final bool soldOut;
   final VoidCallback onTap;
   final Widget? art;
+  final VoidCallback? onAdd;
   const ProductCard({
     super.key,
     this.art,
+    this.onAdd,
     required this.image,
     required this.title,
     required this.meta,
@@ -185,30 +189,46 @@ class ProductCard extends StatelessWidget {
                       ? art!
                       : NetImage(url: image),
                   if (soldOut)
-                    const Positioned(top: 8, left: 8, child: Tag('HABIS', color: Brule.red)),
+                    const Positioned(top: 8, left: 8, child: Tag('HABIS', color: Brule.red, filled: true)),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Brule.condensed(17)),
-                  const SizedBox(height: 6),
-                  Text(meta,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Brule.mono(10, color: Brule.amber)),
-                  const SizedBox(height: 4),
-                  Text(price,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Brule.kraft.withValues(alpha: 0.9), fontSize: 13)),
-                ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Brule.condensed(17)),
+                    const SizedBox(height: 6),
+                    Text(meta,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Brule.mono(10, color: Brule.amber)),
+                    const SizedBox(height: 4),
+                    Text(price,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Brule.kraft.withValues(alpha: 0.9), fontSize: 13)),
+                    const Spacer(),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: soldOut ? null : onAdd,
+                        icon: const Icon(Icons.add_shopping_cart, size: 18),
+                        label: Text(soldOut ? 'HABIS' : 'TAMBAH'),
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size.fromHeight(40),
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          textStyle: Brule.condensed(14, spacing: 1.2),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

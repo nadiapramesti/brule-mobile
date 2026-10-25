@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../api.dart';
+import '../add_sheet.dart';
 import '../coffee_bag.dart';
 import '../models.dart';
 import '../theme.dart';
@@ -103,7 +104,7 @@ class _CatalogTabState extends State<CatalogTab> {
                                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                                   maxCrossAxisExtent: 240,
-                                  mainAxisExtent: 292,
+                                  mainAxisExtent: 322,
                                   crossAxisSpacing: 12,
                                   mainAxisSpacing: 12,
                                 ),
@@ -113,6 +114,7 @@ class _CatalogTabState extends State<CatalogTab> {
                                   return ProductCard(
                                     image: c.image,
                                     art: CoffeeBagArt(coffee: c),
+                                    onAdd: () => addCoffeeSheet(context, c),
                                     title: c.name,
                                     meta: c.cupping == null
                                         ? 'SPECIALTY'

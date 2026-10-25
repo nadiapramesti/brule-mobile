@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../add_sheet.dart';
 import '../api.dart';
 import '../chromatogram.dart';
 import '../coffee_bag.dart';
@@ -83,7 +84,7 @@ class _HomeTabState extends State<HomeTab> {
                           physics: const NeverScrollableScrollPhysics(),
                           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                             maxCrossAxisExtent: 240,
-                            mainAxisExtent: 292,
+                            mainAxisExtent: 322,
                             crossAxisSpacing: 12,
                             mainAxisSpacing: 12,
                           ),
@@ -93,6 +94,7 @@ class _HomeTabState extends State<HomeTab> {
                             return ProductCard(
                               image: c.image,
                               art: CoffeeBagArt(coffee: c),
+                              onAdd: () => addCoffeeSheet(context, c),
                               title: c.name,
                               meta: c.cupping == null
                                   ? 'SPECIALTY'

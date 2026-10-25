@@ -144,7 +144,9 @@ class Order {
         paymentMethod = '${j['payment_method']}',
         progress = _int(j['progress']),
         step = j['step'] == null ? null : _int(j['step']),
-        steps = ((j['steps'] ?? []) as List).map((e) => '$e').toList(),
+        steps = ((j['steps'] ?? []) as List)
+            .map((e) => e is Map ? '${e['label']}' : '$e')
+            .toList(),
         isPaid = j['is_paid'] == true,
         canPay = j['can_pay'] == true,
         canCancel = j['can_cancel'] == true,

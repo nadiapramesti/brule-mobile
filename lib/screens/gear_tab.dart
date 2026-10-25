@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../add_sheet.dart';
 import '../api.dart';
 import '../models.dart';
 import '../theme.dart';
@@ -71,7 +72,7 @@ class _GearTabState extends State<GearTab> {
                           padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                             maxCrossAxisExtent: 240,
-                            mainAxisExtent: 292,
+                            mainAxisExtent: 300,
                             crossAxisSpacing: 12,
                             mainAxisSpacing: 12,
                           ),
@@ -80,6 +81,7 @@ class _GearTabState extends State<GearTab> {
                             final g = list[i];
                             return ProductCard(
                               image: g.image,
+                              onAdd: () => addGearQuick(context, g),
                               title: g.name,
                               meta: g.category.toUpperCase(),
                               price: rupiah(g.price),
