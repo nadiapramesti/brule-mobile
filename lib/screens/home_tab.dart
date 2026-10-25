@@ -11,6 +11,7 @@ import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
 import 'coffee_detail_screen.dart';
+import 'blend_screen.dart';
 import 'gear_detail_screen.dart';
 
 const _ember = Color(0xFFE8782A);
@@ -389,7 +390,12 @@ class _Shortcuts extends StatelessWidget {
       (Icons.coffee_outlined, 'KOPI', () => onGo(1, seg: 0)),
       (Icons.coffee_maker_outlined, 'ALAT SEDUH', () => onGo(1, seg: 1)),
       (Icons.receipt_long_outlined, 'PESANAN', () => onGo(3)),
-      (Icons.shopping_basket_outlined, 'KERANJANG', () => onGo(2)),
+      (
+        Icons.tune,
+        'RACIK BLEND',
+        () => Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => const BlendScreen())),
+      ),
     ];
     return Row(
       children: [

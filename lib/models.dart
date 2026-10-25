@@ -13,6 +13,7 @@ class RoastProfile {
   final int? agtron;
   final List<String> notes;
   final int pricePer100g;
+  final Map<String, int> flavor;
 
   RoastProfile.fromJson(Map<String, dynamic> j)
       : id = _int(j['id']),
@@ -20,7 +21,12 @@ class RoastProfile {
         levelLabel = '${j['level_label'] ?? j['level']}',
         agtron = j['agtron'] == null ? null : _int(j['agtron']),
         notes = _strings(j['tasting_notes']),
-        pricePer100g = _int(j['price_per_100g']);
+        pricePer100g = _int(j['price_per_100g']),
+        flavor = j['flavor_values'] is Map
+            ? {
+                for (final e in (j['flavor_values'] as Map).entries) '${e.key}': _int(e.value)
+              }
+            : <String, int>{};
 
   int priceFor(int grams) => (pricePer100g * grams / 100).round();
 }

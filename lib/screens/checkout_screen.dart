@@ -94,6 +94,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   'grams': l.grams,
                   'grind': l.grind,
                   'qty': l.qty,
+                  if (l.blendId != null) 'blend_profile_id': l.blendId,
+                  if (l.blendId != null) 'ratio': l.ratio,
                 }
               : {
                   'type': 'gear',

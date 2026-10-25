@@ -17,6 +17,8 @@ class CartLine {
   final int? grams;
   final String? grind;
   final String? option;
+  final int? blendId; // profil sangrai biji kedua (blend)
+  final int? ratio; // porsi biji pertama, %
   int qty;
 
   CartLine({
@@ -29,10 +31,13 @@ class CartLine {
     this.grams,
     this.grind,
     this.option,
+    this.blendId,
+    this.ratio,
     this.qty = 1,
   });
 
-  String get key => '$kind|$refId|${grams ?? ''}|${grind ?? ''}|${option ?? ''}';
+  String get key =>
+      '$kind|$refId|${grams ?? ''}|${grind ?? ''}|${option ?? ''}|${blendId ?? ''}|${ratio ?? ''}';
   int get total => unit * qty;
 
   Map<String, dynamic> toJson() => {
@@ -45,6 +50,8 @@ class CartLine {
         'grams': grams,
         'grind': grind,
         'option': option,
+        'blendId': blendId,
+        'ratio': ratio,
         'qty': qty,
       };
 
@@ -58,6 +65,8 @@ class CartLine {
         grams: j['grams'] as int?,
         grind: j['grind'] as String?,
         option: j['option'] as String?,
+        blendId: j['blendId'] as int?,
+        ratio: j['ratio'] as int?,
         qty: j['qty'] as int,
       );
 }

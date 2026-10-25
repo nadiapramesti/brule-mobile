@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../auth_gate.dart';
 import '../cart.dart';
+import '../reviews_section.dart';
 import '../coffee_bag.dart';
 import '../models.dart';
 import '../theme.dart';
@@ -151,6 +152,7 @@ class _CoffeeDetailScreenState extends State<CoffeeDetailScreen> {
               Text(c.story!,
                   style: TextStyle(color: Brule.kraft.withValues(alpha: 0.95), height: 1.5)),
             ],
+            ReviewsSection(slug: c.slug),
           ],
         ),
       ),
