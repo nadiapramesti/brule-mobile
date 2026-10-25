@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../motion.dart';
 import '../api.dart';
 import '../cart.dart';
 import '../models.dart';
@@ -95,7 +96,7 @@ class OrdersTab extends StatelessWidget {
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                                 itemCount: list.length,
-                                itemBuilder: (context, i) => _OrderCard(order: list[i]),
+                                itemBuilder: (context, i) => Reveal(index: i, child: _OrderCard(order: list[i])),
                               ),
                             ),
                     );

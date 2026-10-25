@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../motion.dart';
 import '../api.dart';
 import '../brand_logo.dart';
 import '../screens/edit_profile_screen.dart';
@@ -51,8 +52,8 @@ class AdminMenuTab extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 14),
-            for (final it in items)
-              Panel(
+            for (final (i, it) in items.indexed)
+              Reveal(index: i, child: Panel(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 onTap: () => _open(context, it.$4),
                 child: Row(
@@ -72,7 +73,7 @@ class AdminMenuTab extends StatelessWidget {
                     const Icon(Icons.chevron_right, color: Brule.kraft),
                   ],
                 ),
-              ),
+              )),
             const Label('AKUN SAYA'),
             Panel(
               child: Column(

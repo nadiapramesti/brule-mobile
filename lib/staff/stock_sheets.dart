@@ -122,8 +122,7 @@ class _CoffeeStockState extends State<_CoffeeStock> {
                   ),
                   if (_mode == 'restock') ...[
                     const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
+                    ChipRow(
                       children: [
                         for (final v in const [1000, 5000, 10000, 25000])
                           ActionChip(
@@ -249,8 +248,7 @@ class _ProductStockState extends State<_ProductStock> {
             decoration: const InputDecoration(hintText: 'contoh: 12', counterText: ''),
           ),
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
+          ChipRow(
             children: [
               for (final v in const [5, 10, 25, 50])
                 ActionChip(

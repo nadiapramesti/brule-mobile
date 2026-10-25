@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../api.dart';
+import '../motion.dart';
 import '../theme.dart';
 import '../util.dart';
 import 'admin_kit.dart';
@@ -74,6 +75,10 @@ class _AdminStockTabState extends State<AdminStockTab> {
                       const Spacer(),
                       if (widget.manage)
                         OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(0, 40),
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                          ),
                           onPressed: () => Navigator.of(context)
                               .push(MaterialPageRoute(builder: (_) => const StockHistoryScreen())),
                           icon: const Icon(Icons.history, size: 18),
@@ -106,8 +111,10 @@ class _AdminStockTabState extends State<AdminStockTab> {
                   ),
                   const Label('BIJI MENTAH (STOK TERENDAH DI ATAS)'),
                   if (coffees.isEmpty) Text('Tidak ada biji yang cocok.', style: Brule.mono(10)),
-                  for (final c in coffees)
-                    Container(
+                  for (final (i, c) in coffees.indexed)
+                    Reveal(
+                      index: i,
+                      child: Container(
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -135,11 +142,16 @@ class _AdminStockTabState extends State<AdminStockTab> {
                           const SizedBox(height: 10),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(3),
-                            child: LinearProgressIndicator(
-                              value: (asInt(c['grams']) / max).clamp(0.0, 1.0).toDouble(),
-                              minHeight: 6,
-                              color: _state('${c['state']}'),
-                              backgroundColor: Colors.white.withValues(alpha: 0.08),
+                            child: TweenAnimationBuilder<double>(
+                              tween: Tween(begin: 0, end: (asInt(c['grams']) / max).clamp(0.0, 1.0).toDouble()),
+                              duration: const Duration(milliseconds: 700),
+                              curve: Curves.easeOutCubic,
+                              builder: (context, v, _) => LinearProgressIndicator(
+                                value: v,
+                                minHeight: 6,
+                                color: _state('${c['state']}'),
+                                backgroundColor: Colors.white.withValues(alpha: 0.08),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -184,6 +196,7 @@ class _AdminStockTabState extends State<AdminStockTab> {
                           ],
                         ],
                       ),
+                    ),
                     ),
                   if (widget.products && products.isNotEmpty) ...[
                     const Label('PERLENGKAPAN'),

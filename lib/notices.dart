@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'api.dart';
 import 'screens/notifications_screen.dart';
+import 'theme.dart';
 import 'util.dart';
 
 /// Notifikasi dalam aplikasi: menghitung yang belum dibaca (polling saat app terbuka)
@@ -68,7 +69,13 @@ class Notices {
       ?..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text(text, maxLines: 2, overflow: TextOverflow.ellipsis),
+          content: Row(
+            children: [
+              const Icon(Icons.notifications_active_outlined, size: 20, color: Brule.amber),
+              const SizedBox(width: 12),
+              Expanded(child: Text(text, maxLines: 3, overflow: TextOverflow.ellipsis)),
+            ],
+          ),
           duration: const Duration(seconds: 6),
           action: SnackBarAction(label: 'LIHAT', onPressed: open),
         ),

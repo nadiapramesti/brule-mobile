@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../api.dart';
+import '../motion.dart';
 import '../theme.dart';
 import '../widgets.dart';
 
@@ -92,10 +93,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
           children: [
-            Text('Buat akun BRÛLÉ', style: Brule.condensed(28)),
-            const SizedBox(height: 6),
-            Text('Sekali daftar, langsung bisa belanja dan memantau pesanan.',
-                style: TextStyle(color: Brule.kraft.withValues(alpha: 0.85))),
+            Reveal(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Buat akun BRÛLÉ', style: Brule.condensed(28)),
+                  const SizedBox(height: 6),
+                  Text('Sekali daftar, langsung bisa belanja dan memantau pesanan.',
+                      style: TextStyle(color: Brule.kraft.withValues(alpha: 0.85))),
+                ],
+              ),
+            ),
+            Reveal(
+              index: 1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
             const Label('NAMA LENGKAP'),
             TextField(
               controller: _name,
@@ -104,6 +117,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               autofillHints: const [AutofillHints.name],
               decoration: _dec('contoh: Nadia Pramesti'),
             ),
+                ],
+              ),
+            ),
+            Reveal(
+              index: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
             const Label('EMAIL'),
             TextField(
               controller: _email,
@@ -112,6 +133,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               autofillHints: const [AutofillHints.email],
               decoration: _dec('contoh: nadia@email.com'),
             ),
+                ],
+              ),
+            ),
+            Reveal(
+              index: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
             const Label('NOMOR WHATSAPP (OPSIONAL)'),
             TextField(
               controller: _phone,
@@ -119,6 +148,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               textInputAction: TextInputAction.next,
               decoration: _dec('contoh: 081234567890'),
             ),
+                ],
+              ),
+            ),
+            Reveal(
+              index: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
             const Label('PASSWORD'),
             TextField(
               controller: _pass,
@@ -126,6 +163,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               textInputAction: TextInputAction.next,
               decoration: _dec('minimal 8 karakter', eye: true),
             ),
+                ],
+              ),
+            ),
+            Reveal(
+              index: 5,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
             const Label('ULANGI PASSWORD'),
             TextField(
               controller: _confirm,
@@ -134,20 +179,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
               onSubmitted: (_) => _busy ? null : _submit(),
               decoration: _dec('ketik ulang password'),
             ),
-            if (_error != null) ...[
-              const SizedBox(height: 16),
-              ErrorBox(_error!),
-            ],
+                ],
+              ),
+            ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutCubic,
+              alignment: Alignment.topCenter,
+              child: _error == null
+                  ? const SizedBox(width: double.infinity)
+                  : Padding(padding: const EdgeInsets.only(top: 16), child: ErrorBox(_error!)),
+            ),
             const SizedBox(height: 20),
             FilledButton(
               onPressed: _busy ? null : _submit,
-              child: _busy
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2.4, color: Brule.cream),
-                    )
-                  : const Text('DAFTAR SEKARANG'),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                child: _busy
+                    ? const SizedBox(
+                        key: ValueKey('spin'),
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(strokeWidth: 2.4, color: Brule.cream),
+                      )
+                    : const Text('DAFTAR SEKARANG', key: ValueKey('txt')),
+              ),
             ),
           ],
         ),

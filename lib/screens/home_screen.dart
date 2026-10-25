@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../cart.dart';
+import '../motion.dart';
 import 'account_tab.dart';
 import 'cart_tab.dart';
 import 'home_tab.dart';
@@ -20,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
+      body: FadeIndexed(
         index: _index,
         children: [
           HomeTab(onGo: (tab, {int seg = 0}) {

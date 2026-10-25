@@ -323,6 +323,7 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
     ];
     if (buttons.isEmpty) return null;
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (var i = 0; i < buttons.length; i++) ...[

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../brand_logo.dart';
 import '../notice_bell.dart';
+import '../motion.dart';
 import '../notices.dart';
 import '../screens/account_tab.dart';
 import '../theme.dart';
@@ -90,7 +91,7 @@ class _StaffShellState extends State<StaffShell> {
                 ],
               ),
             ),
-            Expanded(child: IndexedStack(index: _i, children: pages)),
+            Expanded(child: FadeIndexed(index: _i, children: pages)),
           ],
         ),
       ),

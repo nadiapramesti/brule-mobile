@@ -94,9 +94,7 @@ class ChipPicker<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+    return ChipRow(
       children: [
         for (final i in items)
           ChoiceChip(
@@ -104,6 +102,161 @@ class ChipPicker<T> extends StatelessWidget {
             selected: i == value,
             onSelected: (_) => onChanged(i),
           ),
+      ],
+    );
+  }
+}
+
+/// Deretan pilihan SATU BARIS yang tidak pernah melebihi layar. Kalau isinya lebih panjang
+/// dari layar, bisa digeser dan muncul tombol panah (>) di tepi untuk menunjukkan masih ada lanjutannya.
+class ChipRow extends StatefulWidget {
+  final List<Widget> children;
+  final double gap;
+  final EdgeInsets padding;
+  final Color? fade;
+  const ChipRow({
+    super.key,
+    required this.children,
+    this.gap = 8,
+    this.padding = EdgeInsets.zero,
+    this.fade,
+  });
+
+  @override
+  State<ChipRow> createState() => _ChipRowState();
+}
+
+class _ChipRowState extends State<ChipRow> {
+  final _c = ScrollController();
+  bool _left = false;
+  bool _right = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _c.addListener(_measure);
+    _later();
+  }
+
+  @override
+  void didUpdateWidget(covariant ChipRow old) {
+    super.didUpdateWidget(old);
+    _later();
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  void _later() => WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
+
+  void _measure() {
+    if (!mounted || !_c.hasClients) return;
+    final p = _c.position;
+    final l = p.pixels > 4;
+    final r = p.pixels < p.maxScrollExtent - 4;
+    if (l != _left || r != _right) setState(() {
+      _left = l;
+      _right = r;
+    });
+  }
+
+  void _nudge(double dir) {
+    final p = _c.position;
+    final to = (p.pixels + dir * p.viewportDimension * 0.6).clamp(0.0, p.maxScrollExtent);
+    _c.animateTo(to, duration: const Duration(milliseconds: 280), curve: Curves.easeOutCubic);
+  }
+
+  Widget _edge(bool left, bool show, Color fade) {
+    return Positioned(
+      top: 0,
+      bottom: 0,
+      left: left ? 0 : null,
+      right: left ? null : 0,
+      child: IgnorePointer(
+        ignoring: !show,
+        child: AnimatedOpacity(
+          opacity: show ? 1 : 0,
+          duration: const Duration(milliseconds: 200),
+          child: Container(
+            width: 52,
+            alignment: left ? Alignment.centerLeft : Alignment.centerRight,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: left ? Alignment.centerLeft : Alignment.centerRight,
+                end: left ? Alignment.centerRight : Alignment.centerLeft,
+                colors: [fade, fade.withValues(alpha: 0)],
+              ),
+            ),
+            child: Material(
+              color: Brule.blue,
+              shape: const CircleBorder(),
+              elevation: 2,
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: () => _nudge(left ? -1 : 1),
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: Icon(left ? Icons.chevron_left : Icons.chevron_right, size: 22, color: Brule.cream),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final kids = widget.children;
+    final fade = widget.fade ??
+        (context.findAncestorWidgetOfExactType<BottomSheet>() != null ? const Color(0xFF161616) : Brule.bg);
+    return NotificationListener<ScrollMetricsNotification>(
+      onNotification: (_) {
+        _later();
+        return false;
+      },
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            controller: _c,
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: widget.padding,
+            child: Row(
+              children: [
+                for (var i = 0; i < kids.length; i++) ...[
+                  if (i > 0) SizedBox(width: widget.gap),
+                  kids[i],
+                ],
+              ],
+            ),
+          ),
+          _edge(true, _left, fade),
+          _edge(false, _right, fade),
+        ],
+      ),
+    );
+  }
+}
+
+/// Beberapa tombol sejajar satu baris dengan lebar sama (aman dipakai walau tema tombol penuh lebar).
+class ButtonRow extends StatelessWidget {
+  final List<Widget> children;
+  const ButtonRow({super.key, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        for (var i = 0; i < children.length; i++) ...[
+          if (i > 0) const SizedBox(width: 8),
+          Expanded(child: children[i]),
+        ],
       ],
     );
   }
@@ -323,31 +476,45 @@ class _LoaderState<T> extends State<Loader<T>> {
   Widget build(BuildContext context) {
     return FutureBuilder<T>(
       future: _f,
-      builder: (context, snap) {
-        if (snap.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator(color: Brule.amber));
-        }
-        if (snap.hasError) {
-          return Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ErrorBox('${snap.error}'),
-                    const SizedBox(height: 16),
-                    OutlinedButton(onPressed: _reload, child: const Text('COBA LAGI')),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }
-        return widget.builder(context, snap.data as T, _reload);
-      },
+      builder: (context, snap) => AnimatedSwitcher(
+        duration: const Duration(milliseconds: 280),
+        switchInCurve: Curves.easeOut,
+        layoutBuilder: (current, previous) => Stack(
+          fit: StackFit.loose,
+          alignment: Alignment.topCenter,
+          children: [...previous, if (current != null) current],
+        ),
+        child: KeyedSubtree(
+          key: ValueKey(snap.connectionState != ConnectionState.done ? 'load' : (snap.hasError ? 'err' : 'ok')),
+          child: _body(context, snap),
+        ),
+      ),
     );
+  }
+
+  Widget _body(BuildContext context, AsyncSnapshot<T> snap) {
+    if (snap.connectionState != ConnectionState.done) {
+      return const Center(child: CircularProgressIndicator(color: Brule.amber));
+    }
+    if (snap.hasError) {
+      return Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ErrorBox('${snap.error}'),
+                const SizedBox(height: 16),
+                OutlinedButton(onPressed: _reload, child: const Text('COBA LAGI')),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    return widget.builder(context, snap.data as T, _reload);
   }
 }
 
@@ -358,8 +525,11 @@ class Narrow extends StatelessWidget {
   const Narrow({super.key, required this.child, this.maxWidth = 720});
 
   @override
-  Widget build(BuildContext context) =>
-      Center(child: ConstrainedBox(constraints: BoxConstraints(maxWidth: maxWidth), child: child));
+  Widget build(BuildContext context) => Align(
+        alignment: Alignment.topCenter,
+        heightFactor: 1,
+        child: ConstrainedBox(constraints: BoxConstraints(maxWidth: maxWidth), child: child),
+      );
 }
 
 Color statusColor(String status) {

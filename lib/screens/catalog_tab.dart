@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../motion.dart';
 import '../api.dart';
 import '../add_sheet.dart';
 import '../coffee_bag.dart';
@@ -67,20 +68,15 @@ class _CatalogTabState extends State<CatalogTab> {
                 return Column(
                   children: [
                     if (processes.isNotEmpty)
-                      SizedBox(
-                        height: 46,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: ChipRow(
                           children: [
                             for (final p in <String?>[null, ...processes])
-                              Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: ChoiceChip(
-                                  label: Text(p ?? 'Semua'),
-                                  selected: _process == p,
-                                  onSelected: (_) => setState(() => _process = p),
-                                ),
+                              ChoiceChip(
+                                label: Text(p ?? 'Semua'),
+                                selected: _process == p,
+                                onSelected: (_) => setState(() => _process = p),
                               ),
                           ],
                         ),
@@ -111,7 +107,7 @@ class _CatalogTabState extends State<CatalogTab> {
                                 itemCount: shown.length,
                                 itemBuilder: (context, i) {
                                   final c = shown[i];
-                                  return ProductCard(
+                                  return Reveal(index: i, child: ProductCard(
                                     image: c.image,
                                     art: CoffeeBagArt(coffee: c),
                                     onAdd: () => addCoffeeSheet(context, c),
@@ -125,7 +121,7 @@ class _CatalogTabState extends State<CatalogTab> {
                                       MaterialPageRoute(
                                           builder: (_) => CoffeeDetailScreen(coffee: c)),
                                     ),
-                                  );
+                                  ));
                                 },
                               ),
                       ),

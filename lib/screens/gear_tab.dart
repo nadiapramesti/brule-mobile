@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../motion.dart';
 import '../add_sheet.dart';
 import '../api.dart';
 import '../models.dart';
@@ -79,7 +80,7 @@ class _GearTabState extends State<GearTab> {
                           itemCount: list.length,
                           itemBuilder: (context, i) {
                             final g = list[i];
-                            return ProductCard(
+                            return Reveal(index: i, child: ProductCard(
                               image: g.image,
                               onAdd: () => addGearQuick(context, g),
                               title: g.name,
@@ -90,7 +91,7 @@ class _GearTabState extends State<GearTab> {
                                 MaterialPageRoute(
                                     builder: (_) => GearDetailScreen(gear: g)),
                               ),
-                            );
+                            ));
                           },
                         ),
                 );

@@ -80,9 +80,7 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
                         const SizedBox(height: 4),
                         Text(dateTime('${r['created_at']}'), style: Brule.mono(9)),
                         const SizedBox(height: 10),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
+                        ButtonRow(
                           children: [
                             OutlinedButton(
                               onPressed: () => _act(() => Api.post('/admin/reviews/${r['id']}/toggle'),

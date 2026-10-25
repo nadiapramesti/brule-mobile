@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../motion.dart';
 import '../api.dart';
 import '../theme.dart';
 import '../util.dart';
@@ -185,9 +186,7 @@ class _QueueTabState extends State<QueueTab> {
                     },
                   ),
                   const SizedBox(height: 10),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
+                  ChipRow(
                       children: [
                         FilterChip(
                           label: const Text('TERLAMBAT > 24 JAM'),
@@ -197,7 +196,6 @@ class _QueueTabState extends State<QueueTab> {
                             _reset();
                           },
                         ),
-                        const SizedBox(width: 8),
                         ChoiceChip(
                           label: Text(_newest ? 'TERBARU DULU' : 'TERLAMA DULU'),
                           selected: true,
@@ -206,8 +204,7 @@ class _QueueTabState extends State<QueueTab> {
                             _reset();
                           },
                         ),
-                        if (adv.isNotEmpty) ...[
-                          const SizedBox(width: 8),
+                        if (adv.isNotEmpty)
                           ActionChip(
                             avatar: Icon(allSelected ? Icons.deselect : Icons.select_all, size: 16),
                             label: Text(allSelected ? 'LEPAS SEMUA' : 'PILIH SEMUA (${adv.length})'),
@@ -220,10 +217,8 @@ class _QueueTabState extends State<QueueTab> {
                               }
                             }),
                           ),
-                        ],
                       ],
                     ),
-                  ),
                   if (_stage == 'queued' && batches.isNotEmpty) ...[
                     const SizedBox(height: 12),
                     Container(
@@ -268,8 +263,8 @@ class _QueueTabState extends State<QueueTab> {
                       padding: const EdgeInsets.symmetric(vertical: 36),
                       child: Center(child: Text('Tidak ada pesanan di tahap ini.', style: Brule.mono(11))),
                     ),
-                  for (final o in _items)
-                    OrderRow(
+                  for (final (i, o) in _items.indexed)
+                    Reveal(index: i, child: OrderRow(
                       o: o,
                       selectable: true,
                       selected: _sel.contains('${o['code']}'),
@@ -280,7 +275,7 @@ class _QueueTabState extends State<QueueTab> {
                           : _open('${o['code']}'),
                       onAdvance: () => _advance(o),
                       onShip: () => _ship(o),
-                    ),
+                    )),
                   if (_loading)
                     const Padding(
                       padding: EdgeInsets.all(20),
@@ -314,6 +309,10 @@ class _QueueTabState extends State<QueueTab> {
                 ),
                 const SizedBox(width: 4),
                 FilledButton(
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(0, 46),
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                  ),
                   onPressed: _busy ? null : _advanceSelected,
                   child: Text(_busy ? 'MEMPROSES...' : 'LANJUTKAN SEMUA'),
                 ),

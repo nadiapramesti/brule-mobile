@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../motion.dart';
 import '../api.dart';
 import '../theme.dart';
 import '../widgets.dart';
@@ -95,23 +96,18 @@ class _AdminOrdersTabState extends State<AdminOrdersTab> {
               ],
             ),
           ),
-          SizedBox(
-            height: 44,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ChipRow(
               children: [
                 for (final t in _tabs)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text('${t['label']} · ${t['count']}'),
-                      selected: _tab == '${t['key']}',
-                      onSelected: (_) {
-                        _tab = '${t['key']}';
-                        _fetch(reset: true);
-                      },
-                    ),
+                  ChoiceChip(
+                    label: Text('${t['label']} · ${t['count']}'),
+                    selected: _tab == '${t['key']}',
+                    onSelected: (_) {
+                      _tab = '${t['key']}';
+                      _fetch(reset: true);
+                    },
                   ),
               ],
             ),
@@ -130,8 +126,8 @@ class _AdminOrdersTabState extends State<AdminOrdersTab> {
                       padding: EdgeInsets.all(32),
                       child: Center(child: Text('Tidak ada pesanan.')),
                     ),
-                  for (final o in _items)
-                    OrderRow(o: o, showTotal: true, onTap: () => _open('${o['code']}')),
+                  for (final (i, o) in _items.indexed)
+                    Reveal(index: i, child: OrderRow(o: o, showTotal: true, onTap: () => _open('${o['code']}'))),
                   if (_loading)
                     const Padding(
                       padding: EdgeInsets.all(20),

@@ -70,6 +70,9 @@ Tips: aktifkan mode jam tetap/baterai penuh sebelum screenshot, dan pakai data u
 - **Login**: kotak "Ingat saya", tombol Google dan Facebook
 - **Struk dan label**: tombol Unduh Struk (pelanggan, bawah layar), Unduh Label Paket (staf, detail dan antrian)
 
+- **Motion**: transisi halaman (fade + geser), daftar muncul bertahap, perpindahan tab memudar, bel bergoyang saat ada notifikasi baru, grafik dan bar stok tumbuh saat dibuka
+- **Pilihan (chip)**: selalu satu baris; bila melebihi layar bisa digeser dan muncul tombol panah > di tepi
+
 ## Bahan lain di folder ini
 
 - `ENDPOINT_API.md`: daftar endpoint, body, dan alur pembayaran

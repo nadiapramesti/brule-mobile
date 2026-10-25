@@ -128,9 +128,7 @@ class _AdminVouchersScreenState extends State<AdminVouchersScreen> {
             Text('${v['note']}', style: Brule.mono(9.5)),
           ],
           const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          ButtonRow(
             children: [
               OutlinedButton(onPressed: () => _form(v), child: const Text('UBAH')),
               OutlinedButton(

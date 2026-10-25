@@ -176,9 +176,7 @@ class _BlendScreenState extends State<BlendScreen> {
                         if (partners.isEmpty)
                           Text('Tidak ada kopi lain dengan sangrai ini.', style: Brule.mono(10))
                         else
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
+                          ChipRow(
                             children: [
                               ChoiceChip(
                                 label: const Text('TANPA BLEND'),

@@ -30,7 +30,6 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1C1C1C),
         title: Text('Blokir ${u['name']}?', style: Brule.condensed(20)),
         content: TextField(
           controller: c,
@@ -41,7 +40,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('BATAL')),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Brule.red),
+            style: FilledButton.styleFrom(minimumSize: const Size(96, 44), backgroundColor: Brule.red),
             onPressed: () => Navigator.of(ctx).pop(true),
             child: const Text('BLOKIR'),
           ),

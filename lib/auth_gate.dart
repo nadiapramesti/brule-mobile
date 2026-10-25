@@ -11,7 +11,7 @@ Future<bool> requireLogin(BuildContext context, {String? reason}) async {
     MaterialPageRoute(
       builder: (_) => LoginScreen(
         popOnSuccess: true,
-        reason: reason ?? 'Masuk dulu untuk mulai belanja.',
+        reason: reason,
       ),
     ),
   );

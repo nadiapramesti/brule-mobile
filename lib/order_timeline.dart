@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'motion.dart';
 import 'theme.dart';
 import 'util.dart';
 
@@ -33,7 +34,10 @@ class OrderTimeline extends StatelessWidget {
       child: Column(
         children: [
           for (var i = 0; i < labels.length; i++)
-            _Row(
+            Reveal(
+              index: i,
+              dy: 8,
+              child: _Row(
               label: labels[i],
               time: i < times.length ? times[i] : null,
               resi: keys.length > i && keys[i] == 'shipped' && step != null && i <= step! ? tracking : null,
@@ -42,6 +46,7 @@ class OrderTimeline extends StatelessWidget {
               lineDone: step != null && i < step!,
               last: i == labels.length - 1,
               finished: i == labels.length - 1,
+            ),
             ),
         ],
       ),

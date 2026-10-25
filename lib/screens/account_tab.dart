@@ -84,7 +84,7 @@ class _AccountTabState extends State<AccountTab> {
             ),
             const SizedBox(height: 24),
             FilledButton(
-              onPressed: () => requireLogin(context, reason: 'Masuk ke akun BRÛLÉ kamu.'),
+              onPressed: () => requireLogin(context),
               child: const Text('MASUK'),
             ),
             const SizedBox(height: 28),

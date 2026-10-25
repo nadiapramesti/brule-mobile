@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'motion.dart';
 
 class Brule {
   static const bg = Color(0xFF121212);
@@ -44,7 +45,51 @@ ThemeData buildTheme() {
       surface: Brule.bg,
       onSurface: Brule.cream,
       error: Brule.red,
+      secondaryContainer: Color(0xFF262626),
+      onSecondaryContainer: Brule.cream,
     ),
+    pageTransitionsTheme: const PageTransitionsTheme(builders: {
+      TargetPlatform.android: BrulePageTransitions(),
+      TargetPlatform.iOS: BrulePageTransitions(),
+      TargetPlatform.windows: BrulePageTransitions(),
+      TargetPlatform.linux: BrulePageTransitions(),
+      TargetPlatform.macOS: BrulePageTransitions(),
+    }),
+    dividerTheme: DividerThemeData(color: Colors.white.withValues(alpha: 0.1), thickness: 1, space: 1),
+    progressIndicatorTheme: const ProgressIndicatorThemeData(color: Brule.amber),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: const Color(0xFF262626),
+      contentTextStyle: const TextStyle(color: Brule.cream, fontSize: 14, height: 1.35),
+      actionTextColor: Brule.amber,
+      insetPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      elevation: 6,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.14)),
+      ),
+    ),
+    checkboxTheme: CheckboxThemeData(
+      fillColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected) ? Brule.blue : Colors.transparent),
+      checkColor: const WidgetStatePropertyAll(Brule.cream),
+      side: BorderSide(color: Brule.kraft.withValues(alpha: 0.6), width: 1.5),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: const Color(0xFF1C1C1C),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: Brule.kraft,
+        textStyle: Brule.condensed(15, spacing: 1.2),
+      ),
+    ),
+    splashFactory: InkSparkle.splashFactory,
     textTheme: base.textTheme.apply(
       fontFamily: 'IBMPlexSans',
       bodyColor: Brule.cream,

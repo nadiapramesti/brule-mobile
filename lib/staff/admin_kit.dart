@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../api.dart';
 import '../theme.dart';
+import '../motion.dart';
 import '../widgets.dart';
 
 /// Kerangka layar admin (AppBar + isi sempit di tablet).
@@ -91,13 +92,15 @@ Future<bool> confirmDialog(BuildContext context, String title, String text,
   final r = await showDialog<bool>(
     context: context,
     builder: (_) => AlertDialog(
-      backgroundColor: const Color(0xFF1C1C1C),
       title: Text(title, style: Brule.condensed(20)),
       content: Text(text),
       actions: [
         TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('BATAL')),
         FilledButton(
-          style: danger ? FilledButton.styleFrom(backgroundColor: Brule.red) : null,
+          style: FilledButton.styleFrom(
+            minimumSize: const Size(96, 44),
+            backgroundColor: danger ? Brule.red : null,
+          ),
           onPressed: () => Navigator.of(context).pop(true),
           child: Text(ok),
         ),
@@ -203,7 +206,7 @@ class _PagedListState extends State<PagedList> {
               padding: const EdgeInsets.symmetric(vertical: 40),
               child: Center(child: Text(widget.empty, style: Brule.mono(11))),
             ),
-          for (final it in _items) widget.item(context, it, _refresh),
+          for (final (i, it) in _items.indexed) Reveal(index: i, child: widget.item(context, it, _refresh)),
           if (_loading)
             const Padding(
               padding: EdgeInsets.all(20),
