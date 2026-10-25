@@ -81,5 +81,33 @@ ThemeData buildTheme() {
         textStyle: Brule.condensed(15, spacing: 1.2),
       ),
     ),
+    appBarTheme: AppBarTheme(
+      backgroundColor: Brule.bg,
+      foregroundColor: Brule.cream,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      titleTextStyle: Brule.mono(12),
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: const Color(0xFF161616),
+      indicatorColor: Brule.blue,
+      surfaceTintColor: Colors.transparent,
+      labelTextStyle: WidgetStateProperty.resolveWith((states) => Brule.mono(
+            10,
+            color: states.contains(WidgetState.selected) ? Brule.cream : Brule.kraft,
+          )),
+      iconTheme: WidgetStateProperty.resolveWith((states) => IconThemeData(
+            color: states.contains(WidgetState.selected) ? Brule.cream : Brule.kraft,
+          )),
+    ),
+    chipTheme: ChipThemeData(
+      backgroundColor: Brule.field,
+      selectedColor: Brule.blue,
+      checkmarkColor: Brule.cream,
+      labelStyle: const TextStyle(color: Brule.cream),
+      side: BorderSide(color: Colors.white.withValues(alpha: 0.16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+    ),
   );
 }

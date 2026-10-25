@@ -60,6 +60,23 @@ class Api {
     throw ApiException(msg, res.statusCode);
   }
 
+  static Future<Map<String, dynamic>> get(String path,
+      [Map<String, String>? query]) {
+    return _send(() => http.get(
+          Uri.parse('$base/api$path').replace(queryParameters: query),
+          headers: _headers,
+        ));
+  }
+
+  static Future<Map<String, dynamic>> post(String path,
+      [Map<String, dynamic>? body]) {
+    return _send(() => http.post(
+          Uri.parse('$base/api$path'),
+          headers: _headers,
+          body: jsonEncode(body ?? {}),
+        ));
+  }
+
   static Future<void> login(String email, String password) async {
     final body = await _send(() => http.post(
           Uri.parse('$base/api/login'),

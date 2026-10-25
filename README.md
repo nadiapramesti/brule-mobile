@@ -3,6 +3,14 @@
 Aplikasi Flutter (Android) untuk pelanggan BRÛLÉ Specialty Coffee Lab.
 Backend: Laravel Sanctum API (repo `brule-coffee-lab`, branch `feature/mobile-api`).
 
+## Fitur
+
+- Login pelanggan (token Sanctum, tersimpan di perangkat)
+- Katalog kopi sangrai dan perlengkapan, pencarian, detail (tingkat sangrai, berat, gilingan)
+- Keranjang (disimpan di perangkat) dan checkout (COD atau bayar online, voucher, bungkus kado)
+- Daftar pesanan, tahap pesanan, batalkan pesanan
+- Pembayaran Midtrans Snap lewat WebView, lalu cek status ke server
+
 ## Menjalankan
 
 ```
