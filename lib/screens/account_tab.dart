@@ -154,6 +154,10 @@ class _AccountTabState extends State<AccountTab> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: Brule.mono(11)),
+                        if (u['role'] == 'admin' || u['role'] == 'roaster') ...[
+                          const SizedBox(height: 6),
+                          Tag('${u['role']}'.toUpperCase(), color: Brule.amber),
+                        ],
                         if (phone != null) ...[
                           const SizedBox(height: 2),
                           Text('$phone', style: Brule.mono(11, color: Brule.amber)),
@@ -171,12 +175,13 @@ class _AccountTabState extends State<AccountTab> {
               subtitle: 'Nama, email, nomor WhatsApp',
               onTap: () => _open(const EditProfileScreen(), 'Profil diperbarui'),
             ),
-            _Tile(
-              icon: Icons.location_on_outlined,
-              title: 'Buku alamat',
-              subtitle: 'Simpan hingga $kMaxAddresses alamat pengiriman',
-              onTap: () => _open(const AddressesScreen()),
-            ),
+            if (u['role'] == null || u['role'] == 'customer')
+              _Tile(
+                icon: Icons.location_on_outlined,
+                title: 'Buku alamat',
+                subtitle: 'Simpan hingga $kMaxAddresses alamat pengiriman',
+                onTap: () => _open(const AddressesScreen()),
+              ),
             _Tile(
               icon: Icons.lock_outline,
               title: 'Ubah password',

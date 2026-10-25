@@ -26,3 +26,11 @@ const kGrinds = {
   'tubruk': 'Tubruk',
   'aeropress': 'Aeropress',
 };
+
+int asInt(dynamic v) => v is num ? v.toInt() : (int.tryParse('$v') ?? 0);
+
+String dayMonth(String? iso) {
+  final d = DateTime.tryParse(iso ?? '')?.toLocal();
+  if (d == null) return '';
+  return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}';
+}

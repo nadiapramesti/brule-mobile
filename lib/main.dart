@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'api.dart';
 import 'cart.dart';
-import 'screens/home_screen.dart';
+import 'root_gate.dart';
 import 'theme.dart';
 
 Future<void> main() async {
@@ -21,7 +21,7 @@ class BruleApp extends StatelessWidget {
       title: 'BRÛLÉ',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(),
-      home: const HomeScreen(),
+      home: const RootGate(),
     );
   }
 }
