@@ -34,6 +34,11 @@ class Coffee {
   final double? cupping;
   final bool inStock;
   final List<RoastProfile> profiles;
+  final String shortName;
+  final String? process;
+  final int? altitude;
+  final String? signatureLevel;
+  final Map<String, dynamic> trace;
 
   Coffee.fromJson(Map<String, dynamic> j)
       : id = _int(j['id']),
@@ -47,7 +52,12 @@ class Coffee {
         inStock = j['in_stock'] == true,
         profiles = ((j['profiles'] ?? []) as List)
             .map((e) => RoastProfile.fromJson(e as Map<String, dynamic>))
-            .toList();
+            .toList(),
+        shortName = '${j['short_name'] ?? j['name']}',
+        process = j['process'] as String?,
+        altitude = j['altitude'] == null ? null : _int(j['altitude']),
+        signatureLevel = j['signature_level'] as String?,
+        trace = (j['trace'] ?? <String, dynamic>{}) as Map<String, dynamic>;
 
   int get fromPrice => profiles.isEmpty
       ? 0

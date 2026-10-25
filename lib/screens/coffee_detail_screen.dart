@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../cart.dart';
+import '../coffee_bag.dart';
 import '../models.dart';
 import '../theme.dart';
 import '../util.dart';
@@ -44,6 +45,20 @@ class _CoffeeDetailScreenState extends State<CoffeeDetailScreen> {
     );
   }
 
+  Widget _lot(String label, dynamic value) {
+    if (value == null || '$value'.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(width: 112, child: Text(label.toUpperCase(), style: Brule.mono(10))),
+          Expanded(child: Text('$value')),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = widget.coffee;
@@ -57,7 +72,12 @@ class _CoffeeDetailScreenState extends State<CoffeeDetailScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: AspectRatio(aspectRatio: 16 / 9, child: NetImage(url: c.image)),
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: (c.image == null || c.image!.isEmpty)
+                    ? CoffeeBagArt(coffee: c, level: _profile.level)
+                    : NetImage(url: c.image),
+              ),
             ),
             const SizedBox(height: 16),
             Text(c.name, style: Brule.condensed(28)),
@@ -113,6 +133,16 @@ class _CoffeeDetailScreenState extends State<CoffeeDetailScreen> {
               onPressed: c.inStock ? _add : null,
               child: Text(c.inStock ? 'TAMBAH KE KERANJANG' : 'STOK HABIS'),
             ),
+            if (c.trace.isNotEmpty) ...[
+              const Label('DETAIL LOT'),
+              _lot('Varietas', c.trace['varietal']),
+              _lot('Proses', c.trace['process']),
+              _lot('Panen', c.trace['harvest']),
+              _lot('Petani', c.trace['farmer']),
+              _lot('Daerah', c.trace['region']),
+              _lot('Ketinggian', c.trace['altitude'] == null ? null : '${c.trace['altitude']} masl'),
+              _lot('Dinilai oleh', c.trace['q_grader']),
+            ],
             if (c.story != null && c.story!.isNotEmpty) ...[
               const Label('CERITA'),
               Text(c.story!,

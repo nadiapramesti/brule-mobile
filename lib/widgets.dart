@@ -150,8 +150,10 @@ class ProductCard extends StatelessWidget {
   final String price;
   final bool soldOut;
   final VoidCallback onTap;
+  final Widget? art;
   const ProductCard({
     super.key,
+    this.art,
     required this.image,
     required this.title,
     required this.meta,
@@ -179,7 +181,9 @@ class ProductCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  NetImage(url: image),
+                  (image == null || image!.isEmpty) && art != null
+                      ? art!
+                      : NetImage(url: image),
                   if (soldOut)
                     const Positioned(top: 8, left: 8, child: Tag('HABIS', color: Brule.red)),
                 ],

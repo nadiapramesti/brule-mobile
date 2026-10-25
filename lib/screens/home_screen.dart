@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import '../cart.dart';
 import 'account_tab.dart';
 import 'cart_tab.dart';
-import 'catalog_tab.dart';
-import 'gear_tab.dart';
+import 'home_tab.dart';
 import 'orders_tab.dart';
+import 'shop_tab.dart';
 
 /// Kerangka utama: navigasi bawah dengan lima tab.
 class HomeScreen extends StatefulWidget {
@@ -22,12 +22,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: IndexedStack(
         index: _index,
-        children: const [
-          CatalogTab(),
-          GearTab(),
-          CartTab(),
-          OrdersTab(),
-          AccountTab(),
+        children: [
+          HomeTab(onShop: () => setState(() => _index = 1)),
+          const ShopTab(),
+          const CartTab(),
+          const OrdersTab(),
+          const AccountTab(),
         ],
       ),
       bottomNavigationBar: ListenableBuilder(
@@ -38,9 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
             selectedIndex: _index,
             onDestinationSelected: (i) => setState(() => _index = i),
             destinations: [
-              const NavigationDestination(icon: Icon(Icons.coffee_outlined), label: 'KOPI'),
-              const NavigationDestination(
-                  icon: Icon(Icons.coffee_maker_outlined), label: 'GEAR'),
+              const NavigationDestination(icon: Icon(Icons.home_outlined), label: 'BERANDA'),
+              const NavigationDestination(icon: Icon(Icons.coffee_outlined), label: 'KATALOG'),
               NavigationDestination(
                 icon: Badge(
                   label: Text('$n'),

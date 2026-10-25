@@ -109,5 +109,18 @@ ThemeData buildTheme() {
       side: BorderSide(color: Colors.white.withValues(alpha: 0.16)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
     ),
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected) ? Brule.blue : Colors.transparent),
+        foregroundColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected) ? Brule.cream : Brule.kraft),
+        side: WidgetStatePropertyAll(
+            BorderSide(color: Colors.white.withValues(alpha: 0.2))),
+        shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
+        textStyle: WidgetStatePropertyAll(Brule.mono(11)),
+      ),
+    ),
   );
 }

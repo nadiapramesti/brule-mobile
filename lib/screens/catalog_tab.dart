@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../api.dart';
+import '../coffee_bag.dart';
 import '../models.dart';
 import '../theme.dart';
 import '../util.dart';
@@ -15,6 +16,7 @@ class CatalogTab extends StatefulWidget {
 
 class _CatalogTabState extends State<CatalogTab> {
   String _q = '';
+  String? _process;
 
   Future<List<Coffee>> _load() async {
     final res = await Api.get('/coffees', _q.isEmpty ? null : {'q': _q});
@@ -53,46 +55,80 @@ class _CatalogTabState extends State<CatalogTab> {
               key: ValueKey(_q),
               load: _load,
               builder: (context, list, reload) {
-                return RefreshIndicator(
-                  color: Brule.amber,
-                  onRefresh: reload,
-                  child: list.isEmpty
-                      ? ListView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          children: const [
-                            Padding(
-                              padding: EdgeInsets.all(32),
-                              child: Center(child: Text('Kopi tidak ditemukan.')),
-                            ),
-                          ],
-                        )
-                      : GridView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 240,
-                            mainAxisExtent: 292,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                          ),
-                          itemCount: list.length,
-                          itemBuilder: (context, i) {
-                            final c = list[i];
-                            return ProductCard(
-                              image: c.image,
-                              title: c.name,
-                              meta: c.cupping == null
-                                  ? 'SPECIALTY'
-                                  : 'CUPPING ${c.cupping!.toStringAsFixed(1)}',
-                              price: 'mulai ${rupiah(c.fromPrice)} / 100g',
-                              soldOut: !c.inStock,
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (_) => CoffeeDetailScreen(coffee: c)),
+                final processes = {
+                  ...list.map((c) => c.process).whereType<String>()
+                }.toList()
+                  ..sort();
+                final shown = _process == null
+                    ? list
+                    : list.where((c) => c.process == _process).toList();
+
+                return Column(
+                  children: [
+                    if (processes.isNotEmpty)
+                      SizedBox(
+                        height: 46,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          children: [
+                            for (final p in <String?>[null, ...processes])
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: ChoiceChip(
+                                  label: Text(p ?? 'Semua'),
+                                  selected: _process == p,
+                                  onSelected: (_) => setState(() => _process = p),
+                                ),
                               ),
-                            );
-                          },
+                          ],
                         ),
+                      ),
+                    Expanded(
+                      child: RefreshIndicator(
+                        color: Brule.amber,
+                        onRefresh: reload,
+                        child: shown.isEmpty
+                            ? ListView(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                children: const [
+                                  Padding(
+                                    padding: EdgeInsets.all(32),
+                                    child: Center(child: Text('Kopi tidak ditemukan.')),
+                                  ),
+                                ],
+                              )
+                            : GridView.builder(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+                                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 240,
+                                  mainAxisExtent: 292,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
+                                ),
+                                itemCount: shown.length,
+                                itemBuilder: (context, i) {
+                                  final c = shown[i];
+                                  return ProductCard(
+                                    image: c.image,
+                                    art: CoffeeBagArt(coffee: c),
+                                    title: c.name,
+                                    meta: c.cupping == null
+                                        ? 'SPECIALTY'
+                                        : 'CUPPING ${c.cupping!.toStringAsFixed(1)}',
+                                    price: 'mulai ${rupiah(c.fromPrice)} / 100g',
+                                    soldOut: !c.inStock,
+                                    onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (_) => CoffeeDetailScreen(coffee: c)),
+                                    ),
+                                  );
+                                },
+                              ),
+                      ),
+                    ),
+                  ],
                 );
               },
             ),
