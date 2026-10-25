@@ -17,6 +17,8 @@ class _QueueTabState extends State<QueueTab> {
   int _v = 0;
   String _q = '';
   bool _late = false;
+  final Set<String> _sel = {};
+  bool _busy = false;
 
   Future<Map<String, dynamic>> _load() => Api.get('/staff/queue', {
         if (_q.isNotEmpty) 'q': _q,
@@ -24,6 +26,29 @@ class _QueueTabState extends State<QueueTab> {
       });
 
   void _reload() => setState(() => _v++);
+
+  void _toggle(String code) => setState(() {
+        if (!_sel.remove(code)) _sel.add(code);
+      });
+
+  Future<void> _advanceSelected() async {
+    if (_sel.isEmpty || _busy) return;
+    setState(() => _busy = true);
+    try {
+      final res = await Api.post('/staff/orders/advance', {'codes': _sel.toList()});
+      final moved = asInt(res['moved']);
+      final skipped = asInt(res['skipped']);
+      _toast(moved > 0
+          ? '$moved pesanan dilanjutkan${skipped > 0 ? ', $skipped dilewati' : ''}'
+          : 'Tidak ada yang bisa dilanjutkan. Tahap Dikemas butuh nomor resi.');
+      _sel.clear();
+      _reload();
+    } on ApiException catch (e) {
+      _toast(e.message);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
 
   void _toast(String m) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
@@ -85,6 +110,8 @@ class _QueueTabState extends State<QueueTab> {
                   selected: _late,
                   onSelected: (v) => setState(() => _late = v),
                 ),
+                const SizedBox(height: 6),
+                Text('Tahan kartu untuk memilih beberapa pesanan sekaligus.', style: Brule.mono(9)),
               ],
             ),
           ),
@@ -154,6 +181,23 @@ class _QueueTabState extends State<QueueTab> {
                             Tag('${col['total']} PESANAN'),
                             const SizedBox(width: 6),
                             Tag('${col['grams']} g', color: Brule.blueText),
+                            const Spacer(),
+                            if (((col['orders'] ?? []) as List).any((e) => (e as Map)['can_advance'] == true))
+                              TextButton(
+                                onPressed: () => setState(() {
+                                  final codes = ((col['orders'] as List).cast<Map<String, dynamic>>())
+                                      .where((e) => e['can_advance'] == true)
+                                      .map((e) => '${e['code']}')
+                                      .toList();
+                                  final all = codes.every(_sel.contains);
+                                  if (all) {
+                                    _sel.removeAll(codes);
+                                  } else {
+                                    _sel.addAll(codes);
+                                  }
+                                }),
+                                child: const Text('PILIH SEMUA'),
+                              ),
                           ],
                         ),
                         const SizedBox(height: 10),
@@ -163,7 +207,11 @@ class _QueueTabState extends State<QueueTab> {
                           for (final o in ((col['orders'] as List).cast<Map<String, dynamic>>()))
                             OrderCard(
                               o: o,
-                              onTap: () => _open('${o['code']}'),
+                              selected: _sel.contains('${o['code']}'),
+                              onLongPress: o['can_advance'] == true ? () => _toggle('${o['code']}') : null,
+                              onTap: () => _sel.isNotEmpty && o['can_advance'] == true
+                                  ? _toggle('${o['code']}')
+                                  : _open('${o['code']}'),
                               onAdvance: () => _advance(o),
                               onShip: () => _ship(o),
                             ),
@@ -174,6 +222,26 @@ class _QueueTabState extends State<QueueTab> {
               },
             ),
           ),
+          if (_sel.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFF161616),
+                border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+              ),
+              child: Row(
+                children: [
+                  Text('${_sel.length} DIPILIH', style: Brule.mono(11, color: Brule.cream)),
+                  const Spacer(),
+                  TextButton(onPressed: () => setState(_sel.clear), child: const Text('BATAL')),
+                  const SizedBox(width: 6),
+                  FilledButton(
+                    onPressed: _busy ? null : _advanceSelected,
+                    child: Text(_busy ? 'MEMPROSES...' : 'LANJUTKAN SEMUA'),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -217,6 +285,8 @@ class OrderCard extends StatelessWidget {
   final VoidCallback? onAdvance;
   final VoidCallback? onShip;
   final bool showTotal;
+  final bool selected;
+  final VoidCallback? onLongPress;
   const OrderCard({
     super.key,
     required this.o,
@@ -224,6 +294,8 @@ class OrderCard extends StatelessWidget {
     this.onAdvance,
     this.onShip,
     this.showTotal = false,
+    this.selected = false,
+    this.onLongPress,
   });
 
   @override
@@ -240,12 +312,16 @@ class OrderCard extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
           side: BorderSide(
-            color: late ? Brule.amber.withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.1),
+            color: selected
+                ? Brule.amber
+                : (late ? Brule.amber.withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.1)),
+            width: selected ? 2 : 1,
           ),
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(10),
           onTap: onTap,
+          onLongPress: onLongPress,
           child: Padding(
             padding: const EdgeInsets.all(14),
             child: Column(
@@ -253,6 +329,10 @@ class OrderCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
+                    if (selected) ...[
+                      const Icon(Icons.check_circle, size: 18, color: Brule.amber),
+                      const SizedBox(width: 6),
+                    ],
                     Expanded(child: Text('${o['code']}', style: Brule.mono(12, color: Brule.cream))),
                     if (late) ...[
                       const Tag('TERLAMBAT', color: Brule.amber),

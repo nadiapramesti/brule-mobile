@@ -5,8 +5,18 @@ import '../util.dart';
 import '../widgets.dart';
 
 /// Stok biji mentah dan perlengkapan untuk admin.
-class AdminStockTab extends StatelessWidget {
-  const AdminStockTab({super.key});
+class AdminStockTab extends StatefulWidget {
+  final String path;
+  final bool products;
+  const AdminStockTab({super.key, this.path = '/admin/stock', this.products = true});
+
+  @override
+  State<AdminStockTab> createState() => _AdminStockTabState();
+}
+
+class _AdminStockTabState extends State<AdminStockTab> {
+  String _q = '';
+  bool _low = false;
 
   Color _state(String s) => s == 'soldout'
       ? Brule.red
@@ -21,11 +31,17 @@ class AdminStockTab extends StatelessWidget {
     return SafeArea(
       bottom: false,
       child: Loader<Map<String, dynamic>>(
-        load: () => Api.get('/admin/stock'),
+        load: () => Api.get(widget.path),
         builder: (context, d, reload) {
           final sum = (d['summary'] ?? {}) as Map;
           final max = asInt(sum['max']) == 0 ? 1 : asInt(sum['max']);
-          final coffees = ((d['coffees'] ?? []) as List).cast<Map<String, dynamic>>();
+          final allCoffees = ((d['coffees'] ?? []) as List).cast<Map<String, dynamic>>();
+          final q = _q.toLowerCase();
+          final coffees = allCoffees.where((c) {
+            if (_low && '${c['state']}' == 'ok') return false;
+            if (q.isEmpty) return true;
+            return '${c['name']} ${c['process'] ?? ''} ${c['region'] ?? ''}'.toLowerCase().contains(q);
+          }).toList();
           final products = ((d['products'] ?? []) as List).cast<Map<String, dynamic>>();
 
           return RefreshIndicator(
@@ -53,7 +69,22 @@ class AdminStockTab extends StatelessWidget {
                       _Sum('HABIS', '${sum['soldout'] ?? 0}', warn: asInt(sum['soldout']) > 0),
                     ],
                   ),
+                  const SizedBox(height: 12),
+                  SearchBox(
+                    hint: 'cari nama, proses, atau daerah, contoh: Natural',
+                    onChanged: (v) => setState(() => _q = v.trim()),
+                  ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: FilterChip(
+                      label: const Text('HANYA MENIPIS / HABIS'),
+                      selected: _low,
+                      onSelected: (v) => setState(() => _low = v),
+                    ),
+                  ),
                   const Label('BIJI MENTAH (STOK TERENDAH DI ATAS)'),
+                  if (coffees.isEmpty) Text('Tidak ada biji yang cocok.', style: Brule.mono(10)),
                   for (final c in coffees)
                     Container(
                       margin: const EdgeInsets.only(bottom: 8),
@@ -95,7 +126,7 @@ class AdminStockTab extends StatelessWidget {
                         ],
                       ),
                     ),
-                  if (products.isNotEmpty) ...[
+                  if (widget.products && products.isNotEmpty) ...[
                     const Label('PERLENGKAPAN'),
                     Container(
                       padding: const EdgeInsets.all(14),

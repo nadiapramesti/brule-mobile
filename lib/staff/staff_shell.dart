@@ -28,7 +28,9 @@ class _StaffShellState extends State<StaffShell> {
       if (admin) const AdminDashboardTab(),
       if (admin) const AdminOrdersTab(),
       const QueueTab(),
-      if (admin) const AdminStockTab(),
+      admin
+          ? const AdminStockTab()
+          : const AdminStockTab(path: '/staff/stock', products: false),
       admin ? const AdminMenuTab() : const AccountTab(),
     ];
     final dest = <NavigationDestination>[
@@ -37,8 +39,7 @@ class _StaffShellState extends State<StaffShell> {
       if (admin)
         const NavigationDestination(icon: Icon(Icons.receipt_long_outlined), label: 'PESANAN'),
       const NavigationDestination(icon: Icon(Icons.local_fire_department_outlined), label: 'ANTRIAN'),
-      if (admin)
-        const NavigationDestination(icon: Icon(Icons.inventory_2_outlined), label: 'STOK'),
+      const NavigationDestination(icon: Icon(Icons.inventory_2_outlined), label: 'STOK'),
       admin
           ? const NavigationDestination(icon: Icon(Icons.grid_view_outlined), label: 'MENU')
           : const NavigationDestination(icon: Icon(Icons.person_outline), label: 'AKUN'),

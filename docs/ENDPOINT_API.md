@@ -99,6 +99,8 @@ Ulasan hanya boleh ditulis pelanggan yang punya pesanan **selesai** berisi kopi 
 | GET | `/staff/orders/{code}` | roaster, admin | Detail pesanan untuk produksi |
 | POST | `/staff/orders/{code}/advance` | roaster, admin | Maju ke tahap berikutnya (queued, roasting, grinding, packing) |
 | POST | `/staff/orders/{code}/ship` | roaster, admin | Tandai dikirim, body `tracking_number` (resi) |
+| POST | `/staff/orders/advance` | roaster, admin | Majukan banyak pesanan sekaligus, body `codes[]` (tahap Dikemas dilewati karena butuh resi) |
+| GET | `/staff/stock` | roaster, admin | Stok biji mentah (sama dengan `/admin/stock`) |
 | GET | `/admin/dashboard?days=7` | admin | Pendapatan, jumlah pesanan, perlu perhatian, grafik harian, kopi terlaris, stok menipis |
 | GET | `/admin/orders?tab=&q=&page=` | admin | Semua pesanan dengan filter tab, pencarian, paginasi |
 | GET | `/admin/stock` | admin | Stok kopi (gram) dan perlengkapan (unit) |
@@ -127,4 +129,4 @@ Pelanggan yang memanggil endpoint staff menerima `403`.
 
 ## 8. Ringkasan
 
-Total 52 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran, 2 ulasan, 9 roaster dan admin inti, 20 menu admin lainnya. Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).
+Total 54 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran, 2 ulasan, 11 roaster dan admin inti, 20 menu admin lainnya. Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).
