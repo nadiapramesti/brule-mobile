@@ -11,40 +11,45 @@ class CartTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      bottom: false,
       child: ListenableBuilder(
         listenable: Cart.I,
         builder: (context, _) {
           final lines = Cart.I.lines;
-          return Narrow(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-              children: [
-                Row(
-                  children: [
-                    Container(width: 18, height: 3, color: Brule.amber),
-                    const SizedBox(width: 10),
-                    Text('KERANJANG', style: Brule.condensed(22, spacing: 2)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                if (lines.isEmpty) ...[
-                  const SizedBox(height: 48),
-                  Icon(Icons.shopping_basket_outlined,
-                      size: 56, color: Brule.kraft.withValues(alpha: 0.4)),
-                  const SizedBox(height: 12),
-                  const Center(child: Text('Keranjang masih kosong.')),
-                  const SizedBox(height: 4),
-                  Center(
-                    child: Text('Pilih kopi di tab KOPI dulu.',
-                        style: Brule.mono(11)),
+          return Column(
+            children: [
+              Expanded(
+                child: Narrow(
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                    children: [
+                      Row(
+                        children: [
+                          Container(width: 18, height: 3, color: Brule.amber),
+                          const SizedBox(width: 10),
+                          Text('KERANJANG', style: Brule.condensed(22, spacing: 2)),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      if (lines.isEmpty) ...[
+                        const SizedBox(height: 48),
+                        Icon(Icons.shopping_basket_outlined,
+                            size: 56, color: Brule.kraft.withValues(alpha: 0.4)),
+                        const SizedBox(height: 12),
+                        const Center(child: Text('Keranjang masih kosong.')),
+                        const SizedBox(height: 4),
+                        Center(
+                          child: Text('Pilih kopi di tab KATALOG dulu.',
+                              style: Brule.mono(11)),
+                        ),
+                      ] else
+                        for (final l in List.of(lines)) _Line(line: l),
+                    ],
                   ),
-                ] else ...[
-                  const _Summary(),
-                  const SizedBox(height: 16),
-                  for (final l in List.of(lines)) _Line(line: l),
-                ],
-              ],
-            ),
+                ),
+              ),
+              if (lines.isNotEmpty) const _Summary(),
+            ],
           );
         },
       ),
@@ -58,13 +63,13 @@ class _Summary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       decoration: BoxDecoration(
         color: Brule.field,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.12))),
       ),
-      child: Row(
+      child: Narrow(
+        child: Row(
         children: [
           Expanded(
             child: Column(
@@ -89,6 +94,7 @@ class _Summary extends StatelessWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }
