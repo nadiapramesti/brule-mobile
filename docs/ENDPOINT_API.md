@@ -107,6 +107,24 @@ Ulasan hanya boleh ditulis pelanggan yang punya pesanan **selesai** berisi kopi 
 
 Pelanggan yang memanggil endpoint staff menerima `403`.
 
+### Menu admin lainnya (role admin)
+
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| GET | `/admin/reports?preset=` | Laporan penjualan: ringkasan, selisih periode lalu, seri harian, per kopi/level/produk/voucher |
+| GET | `/admin/customers?tab=&sort=&q=&page=` | Pelanggan beserta statistik, total belanja, terakhir pesan |
+| GET | `/admin/users?role=&q=&page=` | Semua pengguna dan jumlah per peran |
+| POST | `/admin/users/{id}/block` / `unblock` | Blokir atau buka blokir akun pembeli |
+| GET, POST | `/admin/vouchers` | Daftar dan buat voucher |
+| PUT, DELETE | `/admin/vouchers/{id}` | Ubah, hapus (hanya yang belum dipakai) |
+| POST | `/admin/vouchers/{id}/toggle` | Aktif atau nonaktif |
+| GET | `/admin/reviews?tampil=` | Moderasi ulasan |
+| POST, DELETE | `/admin/reviews/{id}/toggle`, `/admin/reviews/{id}` | Sembunyikan atau hapus ulasan |
+| GET | `/admin/coffees`, `/admin/products` | Daftar kopi dan produk |
+| POST | `/admin/coffees/{id}/toggle`, `/admin/products/{id}/toggle` | Tampil atau sembunyi dari toko |
+| GET | `/admin/logs?jenis=&page=` | Log aktivitas |
+| GET, PUT | `/admin/settings` | Baca dan simpan pengaturan toko |
+
 ## 8. Ringkasan
 
-Total 32 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran, 2 ulasan, 9 roaster dan admin. Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).
+Total 52 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran, 2 ulasan, 9 roaster dan admin inti, 20 menu admin lainnya. Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).
