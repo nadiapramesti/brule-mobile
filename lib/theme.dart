@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class Brule {
   static const bg = Color(0xFF121212);
@@ -11,14 +10,18 @@ class Brule {
   static const amber = Color(0xFFF2A266);
   static const red = Color(0xFFE26D6D);
 
-  static TextStyle mono(double size, {Color color = kraft}) =>
-      GoogleFonts.ibmPlexMono(fontSize: size, color: color, letterSpacing: 1.1);
+  static TextStyle mono(double size, {Color color = kraft}) => TextStyle(
+      fontFamily: 'IBMPlexMono',
+      fontSize: size,
+      color: color,
+      letterSpacing: 1.1);
 
   static TextStyle condensed(double size,
           {FontWeight weight = FontWeight.w600,
           Color color = cream,
           double spacing = 0}) =>
-      GoogleFonts.ibmPlexSansCondensed(
+      TextStyle(
+          fontFamily: 'IBMPlexSansCondensed',
           fontSize: size,
           fontWeight: weight,
           color: color,
@@ -42,8 +45,11 @@ ThemeData buildTheme() {
       onSurface: Brule.cream,
       error: Brule.red,
     ),
-    textTheme: GoogleFonts.ibmPlexSansTextTheme(base.textTheme)
-        .apply(bodyColor: Brule.cream, displayColor: Brule.cream),
+    textTheme: base.textTheme.apply(
+      fontFamily: 'IBMPlexSans',
+      bodyColor: Brule.cream,
+      displayColor: Brule.cream,
+    ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: Brule.field,
