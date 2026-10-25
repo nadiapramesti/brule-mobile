@@ -140,12 +140,12 @@ class Order {
   Order.fromJson(Map<String, dynamic> j)
       : code = '${j['code']}',
         status = '${j['status']}',
-        statusLabel = '${j['status_label']}',
+        statusLabel = statusLabelId('${j['status']}', '${j['status_label']}'),
         paymentMethod = '${j['payment_method']}',
         progress = _int(j['progress']),
         step = j['step'] == null ? null : _int(j['step']),
         steps = ((j['steps'] ?? []) as List)
-            .map((e) => e is Map ? '${e['label']}' : '$e')
+            .map((e) => e is Map ? statusLabelId('${e['key']}', '${e['label']}') : statusLabelId('$e', '$e'))
             .toList(),
         isPaid = j['is_paid'] == true,
         canPay = j['can_pay'] == true,
@@ -165,3 +165,19 @@ class Order {
             .map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
             .toList();
 }
+
+
+/// Label status bahasa Indonesia, sama dengan Order::STATUS_LABELS di web.
+/// Dipakai supaya tampilan tidak tergantung locale server.
+const _statusId = {
+  'pending_payment': 'Menunggu Pembayaran',
+  'queued': 'Masuk Antrian',
+  'roasting': 'Sedang Disangrai',
+  'grinding': 'Sedang Digiling',
+  'packing': 'Dikemas',
+  'shipped': 'Dikirim',
+  'completed': 'Selesai',
+  'cancelled': 'Dibatalkan',
+};
+
+String statusLabelId(String key, String fallback) => _statusId[key] ?? fallback;
