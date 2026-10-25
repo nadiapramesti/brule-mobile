@@ -77,6 +77,22 @@ class Api {
         ));
   }
 
+  static Future<Map<String, dynamic>> put(String path,
+      [Map<String, dynamic>? body]) {
+    return _send(() => http.put(
+          Uri.parse('$base/api$path'),
+          headers: _headers,
+          body: jsonEncode(body ?? {}),
+        ));
+  }
+
+  static Future<Map<String, dynamic>> delete(String path) {
+    return _send(() => http.delete(
+          Uri.parse('$base/api$path'),
+          headers: _headers,
+        ));
+  }
+
   static Future<void> login(String email, String password) async {
     final body = await _send(() => http.post(
           Uri.parse('$base/api/login'),

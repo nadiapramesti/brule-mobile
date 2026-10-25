@@ -181,3 +181,20 @@ const _statusId = {
 };
 
 String statusLabelId(String key, String fallback) => _statusId[key] ?? fallback;
+
+class Address {
+  final int id;
+  final String label;
+  final String recipient;
+  final String phone;
+  final String address;
+  final bool isDefault;
+
+  Address.fromJson(Map<String, dynamic> j)
+      : id = _int(j['id']),
+        label = '${j['label']}',
+        recipient = '${j['recipient']}',
+        phone = '${j['phone']}',
+        address = '${j['address']}',
+        isDefault = j['is_default'] == true;
+}

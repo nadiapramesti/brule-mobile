@@ -5,6 +5,7 @@ import '../models.dart';
 import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
+import 'addresses_screen.dart';
 import 'order_detail_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -24,6 +25,38 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool _gift = false;
   bool _busy = false;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDefault();
+  }
+
+  /// Isi otomatis dari alamat utama di buku alamat, kalau ada.
+  Future<void> _loadDefault() async {
+    try {
+      final res = await Api.get('/addresses');
+      final list = (res['data'] as List)
+          .map((e) => Address.fromJson(e as Map<String, dynamic>))
+          .toList();
+      if (list.isEmpty || !mounted) return;
+      final a = list.firstWhere((x) => x.isDefault, orElse: () => list.first);
+      setState(() => _fill(a));
+    } catch (_) {}
+  }
+
+  void _fill(Address a) {
+    _name.text = a.recipient;
+    _phone.text = a.phone;
+    _address.text = a.address;
+  }
+
+  Future<void> _pick() async {
+    final a = await Navigator.of(context).push<Address>(
+      MaterialPageRoute(builder: (_) => const AddressesScreen(pick: true)),
+    );
+    if (a != null && mounted) setState(() => _fill(a));
+  }
 
   @override
   void dispose() {
@@ -106,6 +139,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
           children: [
+            OutlinedButton.icon(
+              onPressed: _pick,
+              icon: const Icon(Icons.location_on_outlined, size: 18),
+              label: const Text('PILIH DARI BUKU ALAMAT'),
+            ),
             const Label('NAMA PENERIMA'),
             TextField(
               controller: _name,
