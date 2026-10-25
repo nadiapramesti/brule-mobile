@@ -1,17 +1,19 @@
-# brule_mobile
+# BRÛLÉ Mobile
 
-A new Flutter project.
+Aplikasi Flutter (Android) untuk pelanggan BRÛLÉ Specialty Coffee Lab.
+Backend: Laravel Sanctum API (repo `brule-coffee-lab`, branch `feature/mobile-api`).
 
-## Getting Started
+## Menjalankan
 
-This project is a starting point for a Flutter application.
+```
+adb reverse tcp:8001 tcp:8001
+flutter pub get
+flutter run
+```
 
-A few resources to get you started if this is your first Flutter project:
+API lokal: `php artisan serve --port=8001`. Untuk WiFi, pakai
+`flutter run --dart-define=API_BASE=http://IP-LAPTOP:8001`.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Kredit
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Dibuat dengan bantuan AI (Claude).
