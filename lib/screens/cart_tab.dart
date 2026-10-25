@@ -39,32 +39,7 @@ class CartTab extends StatelessWidget {
                         style: Brule.mono(11)),
                   ),
                 ] else ...[
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Brule.field,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text('SUBTOTAL (${Cart.I.count} ITEM)', style: Brule.mono(11)),
-                        const SizedBox(height: 4),
-                        Text(rupiah(Cart.I.subtotal), style: Brule.condensed(28)),
-                        const SizedBox(height: 4),
-                        Text('Ongkir dan diskon dihitung saat pesanan dibuat.',
-                            style: Brule.mono(10)),
-                        const SizedBox(height: 14),
-                        FilledButton(
-                          onPressed: () => Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const CheckoutScreen()),
-                          ),
-                          child: const Text('LANJUT KE CHECKOUT'),
-                        ),
-                      ],
-                    ),
-                  ),
+                  const _Summary(),
                   const SizedBox(height: 16),
                   for (final l in List.of(lines)) _Line(line: l),
                 ],
@@ -72,6 +47,73 @@ class CartTab extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _Summary extends StatelessWidget {
+  const _Summary();
+
+  Widget _row(String k, Widget v) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: Row(
+          children: [
+            Text(k, style: Brule.mono(11)),
+            const Spacer(),
+            v,
+          ],
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Brule.field,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(height: 3, color: Brule.amber),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('RINGKASAN BELANJA', style: Brule.mono(11, color: Brule.amber)),
+                const SizedBox(height: 8),
+                _row('SUBTOTAL · ${Cart.I.count} ITEM',
+                    Text(rupiah(Cart.I.subtotal), style: const TextStyle(fontSize: 14))),
+                _row('ONGKIR', Text('dihitung di checkout', style: Brule.mono(10))),
+                _row('DISKON', Text('dihitung di checkout', style: Brule.mono(10))),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Divider(height: 1, color: Color(0x1FFFFFFF)),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('TOTAL SEMENTARA', style: Brule.mono(11)),
+                    const Spacer(),
+                    Text(rupiah(Cart.I.subtotal), style: Brule.condensed(30)),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const CheckoutScreen()),
+                  ),
+                  icon: const Icon(Icons.lock_outline, size: 18),
+                  label: const Text('LANJUT KE CHECKOUT'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
