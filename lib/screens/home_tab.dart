@@ -13,8 +13,6 @@ import 'coffee_detail_screen.dart';
 import 'gear_detail_screen.dart';
 
 const _ember = Color(0xFFE8782A);
-const _ink = Color(0xFF1A1208);
-const _kraftInk = Color(0xFF5C4B33);
 
 const _stages = [
   ('Antrian', 'Pesanan masuk papan roastery, biji mentah ditimbang.', 'assets/images/step1.jpg'),
@@ -682,75 +680,91 @@ class _Stages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Brule.kraft,
-      padding: const EdgeInsets.fromLTRB(20, 40, 20, 40),
-      child: Narrow(
-        maxWidth: 1000,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Yang terjadi setelah kamu bayar',
-                style: Brule.condensed(30, color: _ink)),
-            const SizedBox(height: 10),
-            const Text(
-              'Lima tahap, dan kamu bisa melihat pesananmu ada di tahap mana lewat tab Pesanan.',
-              style: TextStyle(color: _kraftInk, height: 1.5, fontSize: 15),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 32),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Setelah kamu bayar', style: Brule.condensed(24)),
+                const SizedBox(height: 2),
+                Text('5 tahap, pantau di tab PESANAN', style: Brule.mono(10)),
+              ],
             ),
-            const SizedBox(height: 24),
-            for (var i = 0; i < _stages.length; i++)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: SizedBox(
-                        width: 112,
-                        height: 112,
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            height: 232,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: _stages.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, i) {
+                final st = _stages[i];
+                return Container(
+                  width: 200,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    color: Brule.field,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 104,
+                        width: double.infinity,
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            Image.asset(_stages[i].$3, fit: BoxFit.cover),
+                            Image.asset(st.$3, fit: BoxFit.cover),
                             Positioned(
-                              left: 8,
-                              top: 8,
+                              left: 10,
+                              top: 10,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF121212).withValues(alpha: 0.8),
+                                  color: const Color(0xFF121212).withValues(alpha: 0.85),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
-                                child: Text('0${i + 1}', style: Brule.mono(11, color: Brule.cream)),
+                                child: Text('0${i + 1}', style: Brule.mono(11, color: _ember)),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(_stages[i].$1, style: Brule.condensed(21, color: _ink)),
-                          const SizedBox(height: 4),
-                          Text(_stages[i].$2,
-                              style: const TextStyle(color: _kraftInk, height: 1.45, fontSize: 13.5)),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(st.$1, style: Brule.condensed(19)),
+                            const SizedBox(height: 4),
+                            Text(st.$2,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    color: Brule.kraft.withValues(alpha: 0.8),
+                                    fontSize: 12,
+                                    height: 1.4)),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            const SizedBox(height: 16),
-            Center(
-              child: Text('BRÛLÉ · SPECIALTY COFFEE LAB',
-                  style: Brule.mono(10, color: _kraftInk)),
+                    ],
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 24),
+          Center(child: Text('BRÛLÉ · SPECIALTY COFFEE LAB', style: Brule.mono(10))),
+        ],
       ),
     );
   }
