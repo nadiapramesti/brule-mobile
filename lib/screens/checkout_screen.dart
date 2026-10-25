@@ -16,73 +16,68 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  final _name = TextEditingController(text: '${Api.user?['name'] ?? ''}');
-  final _phone = TextEditingController(text: '${Api.user?['phone'] ?? ''}');
-  final _address = TextEditingController();
   final _voucher = TextEditingController();
   final _card = TextEditingController();
   String _payment = 'online';
   bool _gift = false;
   bool _busy = false;
+  bool _loadingAddr = true;
+  Address? _addr;
   String? _error;
 
   @override
   void initState() {
     super.initState();
-    _loadDefault();
+    _loadAddress();
   }
 
-  /// Isi otomatis dari alamat utama di buku alamat, kalau ada.
-  Future<void> _loadDefault() async {
+  @override
+  void dispose() {
+    _voucher.dispose();
+    _card.dispose();
+    super.dispose();
+  }
+
+  /// Alamat utama dari buku alamat dipakai otomatis.
+  Future<void> _loadAddress() async {
     try {
       final res = await Api.get('/addresses');
       final list = (res['data'] as List)
           .map((e) => Address.fromJson(e as Map<String, dynamic>))
           .toList();
-      if (list.isEmpty || !mounted) return;
-      final a = list.firstWhere((x) => x.isDefault, orElse: () => list.first);
-      setState(() => _fill(a));
-    } catch (_) {}
-  }
-
-  void _fill(Address a) {
-    _name.text = a.recipient;
-    _phone.text = a.phone;
-    _address.text = a.address;
+      if (!mounted) return;
+      setState(() {
+        _addr = list.isEmpty
+            ? null
+            : list.firstWhere((x) => x.isDefault, orElse: () => list.first);
+        _loadingAddr = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _loadingAddr = false);
+    }
   }
 
   Future<void> _pick() async {
     final a = await Navigator.of(context).push<Address>(
       MaterialPageRoute(builder: (_) => const AddressesScreen(pick: true)),
     );
-    if (a != null && mounted) setState(() => _fill(a));
+    if (a != null && mounted) setState(() => _addr = a);
   }
 
-  @override
-  void dispose() {
-    _name.dispose();
-    _phone.dispose();
-    _address.dispose();
-    _voucher.dispose();
-    _card.dispose();
-    super.dispose();
-  }
-
-  String? _validate() {
-    if (_name.text.trim().isEmpty) return 'Nama penerima wajib diisi.';
-    if (!RegExp(r'^(\+62|62|0)8[0-9]{7,12}$').hasMatch(_phone.text.trim())) {
-      return 'Nomor WhatsApp tidak valid. Contoh: 0812xxxxxxxx';
+  Future<void> _addNew() async {
+    final ok = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const AddressFormScreen()),
+    );
+    if (ok == true) {
+      setState(() => _loadingAddr = true);
+      await _loadAddress();
     }
-    if (_address.text.trim().length < 15) {
-      return 'Alamat terlalu pendek. Tulis jalan, nomor, kota, dan kode pos.';
-    }
-    return null;
   }
 
   Future<void> _submit() async {
-    final problem = _validate();
-    if (problem != null) {
-      setState(() => _error = problem);
+    final a = _addr;
+    if (a == null) {
+      setState(() => _error = 'Pilih atau tambah alamat pengiriman dulu.');
       return;
     }
     setState(() {
@@ -109,9 +104,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           .toList();
 
       final res = await Api.post('/orders', {
-        'name': _name.text.trim(),
-        'phone': _phone.text.trim(),
-        'address': _address.text.trim(),
+        'name': a.recipient,
+        'phone': a.phone,
+        'address': a.address,
         'payment': _payment,
         if (_voucher.text.trim().isNotEmpty) 'voucher': _voucher.text.trim(),
         'gift_wrap': _gift,
@@ -131,6 +126,160 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
   }
 
+  Widget _box({required Widget child, Color? border}) => Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Brule.field,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: border ?? Colors.white.withValues(alpha: 0.1)),
+        ),
+        child: child,
+      );
+
+  Widget _addressSection() {
+    if (_loadingAddr) {
+      return _box(
+        child: const Center(
+          child: Padding(
+            padding: EdgeInsets.all(8),
+            child: SizedBox(
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(strokeWidth: 2.4, color: Brule.amber),
+            ),
+          ),
+        ),
+      );
+    }
+    final a = _addr;
+    if (a == null) {
+      return _box(
+        border: Brule.amber.withValues(alpha: 0.45),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.location_off_outlined, color: Brule.amber),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text('Belum ada alamat tersimpan.',
+                      style: Brule.condensed(17)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text('Simpan alamat dulu, nanti dipakai otomatis tiap checkout.',
+                style: Brule.mono(10)),
+            const SizedBox(height: 14),
+            FilledButton.icon(
+              style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
+              onPressed: _addNew,
+              icon: const Icon(Icons.add, size: 20),
+              label: const Text('TAMBAH ALAMAT'),
+            ),
+          ],
+        ),
+      );
+    }
+    return _box(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Tag(a.label.toUpperCase()),
+              if (a.isDefault) ...[
+                const SizedBox(width: 8),
+                const Tag('UTAMA', color: Brule.amber),
+              ],
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(a.recipient, style: Brule.condensed(18)),
+          const SizedBox(height: 2),
+          Text(a.phone, style: Brule.mono(11, color: Brule.amber)),
+          const SizedBox(height: 8),
+          Text(a.address,
+              style: TextStyle(color: Brule.kraft.withValues(alpha: 0.9), height: 1.45)),
+          const SizedBox(height: 14),
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(42)),
+            onPressed: _pick,
+            icon: const Icon(Icons.swap_horiz, size: 18),
+            label: const Text('GANTI ALAMAT'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryRow(String k, String v, {Color? color}) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            Text(k, style: Brule.mono(11)),
+            const Spacer(),
+            Text(v, style: Brule.mono(11, color: color ?? Brule.cream)),
+          ],
+        ),
+      );
+
+  Widget _summary() {
+    final voucher = _voucher.text.trim();
+    return _box(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final l in Cart.I.lines)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${l.qty}× ${l.name}'),
+                        const SizedBox(height: 2),
+                        Text(l.detail, style: Brule.mono(10, color: Brule.amber)),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(rupiah(l.total)),
+                ],
+              ),
+            ),
+          const Divider(height: 20),
+          _summaryRow('SUBTOTAL · ${Cart.I.count} ITEM', rupiah(Cart.I.subtotal)),
+          _summaryRow('ONGKIR', 'dihitung saat pesanan dibuat', color: Brule.kraft),
+          _summaryRow(
+            voucher.isEmpty ? 'VOUCHER' : 'VOUCHER ${voucher.toUpperCase()}',
+            voucher.isEmpty ? 'tidak dipakai' : 'dicek saat pesanan dibuat',
+            color: Brule.kraft,
+          ),
+          if (_gift)
+            _summaryRow('KEMASAN KADO', 'ditambahkan saat pesanan dibuat',
+                color: Brule.kraft),
+          const Divider(height: 20),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text('TOTAL SEMENTARA', style: Brule.mono(11)),
+              const Spacer(),
+              Text(rupiah(Cart.I.subtotal), style: Brule.condensed(28)),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text('Total akhir muncul di detail pesanan setelah dibuat.',
+              style: Brule.mono(10)),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,35 +288,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
           children: [
-            OutlinedButton.icon(
-              onPressed: _pick,
-              icon: const Icon(Icons.location_on_outlined, size: 18),
-              label: const Text('PILIH DARI BUKU ALAMAT'),
-            ),
-            const Label('NAMA PENERIMA'),
-            TextField(
-              controller: _name,
-              textCapitalization: TextCapitalization.words,
-              textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(hintText: 'contoh: Nadia Pramesti'),
-            ),
-            const Label('NOMOR WHATSAPP'),
-            TextField(
-              controller: _phone,
-              keyboardType: TextInputType.phone,
-              textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(hintText: 'contoh: 081234567890'),
-            ),
             const Label('ALAMAT PENGIRIMAN'),
-            TextField(
-              controller: _address,
-              minLines: 3,
-              maxLines: 5,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                hintText: 'contoh: Jl. Melati No. 5, Karawang, 41361',
-              ),
-            ),
+            _addressSection(),
             const Label('PEMBAYARAN'),
             ChipPicker<String>(
               items: const ['online', 'cod'],
@@ -179,6 +301,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             TextField(
               controller: _voucher,
               textCapitalization: TextCapitalization.characters,
+              onChanged: (_) => setState(() {}),
               decoration: const InputDecoration(hintText: 'contoh: HEMAT10'),
             ),
             const SizedBox(height: 8),
@@ -201,11 +324,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   hintText: 'contoh: Selamat ulang tahun! Semoga harimu harum kopi.',
                 ),
               ),
+            const Label('RINGKASAN PESANAN'),
+            _summary(),
             if (_error != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               ErrorBox(_error!),
             ],
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             FilledButton(
               onPressed: _busy ? null : _submit,
               child: _busy
@@ -216,37 +341,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     )
                   : const Text('BUAT PESANAN'),
             ),
-            const Label('RINGKASAN'),
-            for (final l in Cart.I.lines)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('${l.qty}× ${l.name}'),
-                          Text(l.detail, style: Brule.mono(10, color: Brule.amber)),
-                        ],
-                      ),
-                    ),
-                    Text(rupiah(l.total)),
-                  ],
-                ),
-              ),
-            const Divider(),
-            Row(
-              children: [
-                Text('Subtotal', style: Brule.mono(12)),
-                const Spacer(),
-                Text(rupiah(Cart.I.subtotal), style: Brule.condensed(20)),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text('Ongkir, diskon voucher, dan biaya kado dihitung server saat pesanan dibuat.',
-                style: Brule.mono(10)),
           ],
         ),
       ),
