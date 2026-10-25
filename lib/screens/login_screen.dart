@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../api.dart';
+import '../brand_logo.dart';
 import '../theme.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
@@ -86,16 +87,8 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Row(
-                    children: [
-                      Container(width: 18, height: 3, color: Brule.amber),
-                      const SizedBox(width: 10),
-                      Text('BRÛLÉ', style: Brule.condensed(26, spacing: 3)),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text('SPECIALTY COFFEE LAB', style: Brule.mono(11)),
-                  const SizedBox(height: 32),
+                  const Align(alignment: Alignment.centerLeft, child: BrandLogo(height: 64)),
+                  const SizedBox(height: 28),
                   Text('Masuk', style: Brule.condensed(30)),
                   const SizedBox(height: 6),
                   if (widget.reason != null) ...[

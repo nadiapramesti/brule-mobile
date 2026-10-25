@@ -7,6 +7,7 @@ import '../auth_gate.dart';
 import '../cart.dart';
 import '../coffee_bag.dart';
 import '../models.dart';
+import '../brand_logo.dart';
 import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
@@ -77,9 +78,7 @@ class _HomeTabState extends State<HomeTab> {
                   children: [
                     Row(
                       children: [
-                        Container(width: 18, height: 3, color: Brule.amber),
-                        const SizedBox(width: 10),
-                        Text('BRÛLÉ', style: Brule.condensed(22, spacing: 3)),
+                        const BrandLogo(height: 34),
                         const Spacer(),
                         ValueListenableBuilder<int>(
                           valueListenable: Api.session,
