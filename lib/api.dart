@@ -72,6 +72,30 @@ class Api {
         ));
   }
 
+  /// Unduh berkas (PDF/Excel). Mengembalikan isi berkas dan nama dari header Content-Disposition.
+  static Future<({List<int> bytes, String filename})> download(String path,
+      [Map<String, String>? query]) async {
+    final http.Response res;
+    try {
+      res = await http
+          .get(Uri.parse('$base/api$path').replace(queryParameters: query), headers: _headers)
+          .timeout(const Duration(seconds: 60));
+    } catch (_) {
+      throw ApiException('Tidak bisa terhubung ke server.');
+    }
+    if (res.statusCode >= 400) {
+      var msg = 'Gagal mengunduh berkas (${res.statusCode}).';
+      try {
+        final b = jsonDecode(res.body);
+        if (b is Map && b['message'] != null) msg = '${b['message']}';
+      } catch (_) {}
+      throw ApiException(msg, res.statusCode);
+    }
+    final cd = res.headers['content-disposition'] ?? '';
+    final m = RegExp(r'filename="?([^";]+)"?').firstMatch(cd);
+    return (bytes: res.bodyBytes, filename: m?.group(1) ?? 'laporan');
+  }
+
   static Future<Map<String, dynamic>> post(String path,
       [Map<String, dynamic>? body]) {
     return _send(() => http.post(

@@ -3,9 +3,12 @@ import '../api.dart';
 import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
+import 'admin_kit.dart';
+import 'order_row.dart';
 import 'staff_order_screen.dart';
 
-/// Antrian roastery: pesanan per tahap, majukan tahap, kirim dengan resi.
+/// Antrian roastery per tahap. Satu tahap tampil sekali, jadi ratusan pesanan tetap rapi:
+/// pilih tahap di atas, cari/filter, centang banyak pesanan, lalu lanjutkan sekaligus dari bar bawah.
 class QueueTab extends StatefulWidget {
   const QueueTab({super.key});
 
@@ -14,22 +17,89 @@ class QueueTab extends StatefulWidget {
 }
 
 class _QueueTabState extends State<QueueTab> {
-  int _v = 0;
+  final List<Map<String, dynamic>> _items = [];
+  final Set<String> _sel = {};
+  Map<String, dynamic> _meta = {};
+  String _stage = 'queued';
   String _q = '';
   bool _late = false;
-  final Set<String> _sel = {};
+  bool _newest = false;
+  int _page = 0;
+  int _last = 1;
+  bool _loading = false;
   bool _busy = false;
+  String? _error;
+  int _gen = 0; // hanya respons terbaru yang dipakai
 
-  Future<Map<String, dynamic>> _load() => Api.get('/staff/queue', {
+  @override
+  void initState() {
+    super.initState();
+    _fetch(reset: true);
+  }
+
+  Future<void> _fetch({bool reset = false}) async {
+    if (_loading && !reset) return;
+    final g = reset ? ++_gen : _gen;
+    setState(() {
+      _loading = true;
+      _error = null;
+      if (reset) {
+        _items.clear();
+        _page = 0;
+        _last = 1;
+      }
+    });
+    try {
+      final res = await Api.get('/staff/queue', {
+        'stage': _stage,
+        'sort': _newest ? 'newest' : 'oldest',
         if (_q.isNotEmpty) 'q': _q,
         if (_late) 'late': '1',
+        'page': '${_page + 1}',
       });
+      if (!mounted || g != _gen) return;
+      setState(() {
+        _meta = res;
+        _items.addAll(((res['data'] ?? []) as List).cast<Map<String, dynamic>>());
+        _page = asInt(res['page']);
+        _last = asInt(res['last_page']) == 0 ? 1 : asInt(res['last_page']);
+      });
+    } on ApiException catch (e) {
+      if (mounted && g == _gen) setState(() => _error = e.message);
+    } finally {
+      if (mounted && g == _gen) setState(() => _loading = false);
+    }
+  }
 
-  void _reload() => setState(() => _v++);
+  void _reset({String? stage}) {
+    if (stage != null) _stage = stage;
+    _sel.clear();
+    _fetch(reset: true);
+  }
+
+  void _toast(String m) => toast(context, m);
 
   void _toggle(String code) => setState(() {
         if (!_sel.remove(code)) _sel.add(code);
       });
+
+  List<Map<String, dynamic>> get _advanceable => _items.where((e) => e['can_advance'] == true).toList();
+
+  Future<void> _advance(Map<String, dynamic> o) async {
+    if (await runAction(context, () => Api.post('/staff/orders/${o['code']}/advance'),
+        done: '${o['code']} dilanjutkan')) {
+      _reset();
+    }
+  }
+
+  Future<void> _ship(Map<String, dynamic> o) async {
+    final resi = await askTracking(context, '${o['code']}');
+    if (resi == null || !mounted) return;
+    if (await runAction(context, () => Api.post('/staff/orders/${o['code']}/ship', {'tracking_number': resi}),
+        done: '${o['code']} dikirim')) {
+      _reset();
+    }
+  }
 
   Future<void> _advanceSelected() async {
     if (_sel.isEmpty || _busy) return;
@@ -40,9 +110,8 @@ class _QueueTabState extends State<QueueTab> {
       final skipped = asInt(res['skipped']);
       _toast(moved > 0
           ? '$moved pesanan dilanjutkan${skipped > 0 ? ', $skipped dilewati' : ''}'
-          : 'Tidak ada yang bisa dilanjutkan. Tahap Dikemas butuh nomor resi.');
-      _sel.clear();
-      _reload();
+          : 'Tidak ada yang bisa dilanjutkan.');
+      _reset();
     } on ApiException catch (e) {
       _toast(e.message);
     } finally {
@@ -50,388 +119,256 @@ class _QueueTabState extends State<QueueTab> {
     }
   }
 
-  void _toast(String m) =>
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
-
-  Future<void> _advance(Map<String, dynamic> o) async {
-    try {
-      await Api.post('/staff/orders/${o['code']}/advance');
-      _toast('${o['code']} dilanjutkan');
-      _reload();
-    } on ApiException catch (e) {
-      _toast(e.message);
-    }
-  }
-
-  Future<void> _ship(Map<String, dynamic> o) async {
-    final ok = await askTracking(context, '${o['code']}');
-    if (ok == null) return;
-    try {
-      await Api.post('/staff/orders/${o['code']}/ship', {'tracking_number': ok});
-      _toast('${o['code']} dikirim');
-      _reload();
-    } on ApiException catch (e) {
-      _toast(e.message);
-    }
-  }
-
   Future<void> _open(String code) async {
-    await Navigator.of(context)
-        .push(MaterialPageRoute(builder: (_) => StaffOrderScreen(code: code)));
-    if (mounted) _reload();
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => StaffOrderScreen(code: code)));
+    if (mounted) _reset();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(width: 18, height: 3, color: Brule.amber),
-                    const SizedBox(width: 10),
-                    Text('ANTRIAN ROASTERY', style: Brule.condensed(22, spacing: 2)),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                SearchBox(
-                  hint: 'cari kode, nama, atau biji, contoh: BRL-2026',
-                  onChanged: (v) => setState(() => _q = v),
-                ),
-                const SizedBox(height: 8),
-                FilterChip(
-                  label: const Text('TERLAMBAT > 24 JAM'),
-                  selected: _late,
-                  onSelected: (v) => setState(() => _late = v),
-                ),
-                const SizedBox(height: 6),
-                Text('Tahan kartu untuk memilih beberapa pesanan sekaligus.', style: Brule.mono(9)),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Loader<Map<String, dynamic>>(
-              key: ValueKey('$_v|$_q|$_late'),
-              load: _load,
-              builder: (context, data, reload) {
-                final stats = (data['stats'] ?? {}) as Map;
-                final columns = ((data['columns'] ?? []) as List).cast<Map<String, dynamic>>();
-                final batches = ((data['batches'] ?? []) as List).cast<Map<String, dynamic>>();
-                return RefreshIndicator(
-                  color: Brule.amber,
-                  onRefresh: reload,
-                  child: ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+    final stats = (_meta['stats'] ?? {}) as Map;
+    final stages = ((_meta['stages'] ?? []) as List).cast<Map<String, dynamic>>();
+    final batches = ((_meta['batches'] ?? []) as List).cast<Map<String, dynamic>>();
+    final adv = _advanceable;
+    final allSelected = adv.isNotEmpty && adv.every((e) => _sel.contains('${e['code']}'));
+    final total = asInt(_meta['total']);
+
+    return Column(
+      children: [
+        Expanded(
+          child: Narrow(
+            maxWidth: 720,
+            child: RefreshIndicator(
+              color: Brule.amber,
+              onRefresh: () async => _reset(),
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          _Stat('MENUNGGU BAYAR', '${stats['waiting'] ?? 0}'),
-                          _Stat('PRODUKSI', '${stats['in_production'] ?? 0}'),
-                          _Stat('KIRIM HARI INI', '${stats['shipped_today'] ?? 0}'),
-                          _Stat('GRAM', '${stats['grams'] ?? 0}'),
-                        ],
-                      ),
-                      if (batches.isNotEmpty) ...[
-                        const SizedBox(height: 12),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Brule.field,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-                          ),
-                          child: ExpansionTile(
-                            shape: const Border(),
-                            collapsedShape: const Border(),
-                            title: Text('RENCANA SANGRAI', style: Brule.mono(11, color: Brule.amber)),
-                            subtitle: Text('Antrian masuk dikelompokkan per biji dan level',
-                                style: Brule.mono(9)),
-                            childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                            children: [
-                              for (final b in batches)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 5),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text('${b['name']} · ${b['level']}'),
-                                      ),
-                                      Text('${b['grams']} g · ${b['orders']} pesanan',
-                                          style: Brule.mono(10)),
-                                    ],
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                      for (final col in columns) ...[
-                        const SizedBox(height: 22),
-                        Row(
-                          children: [
-                            Text('${col['label']}'.toUpperCase(),
-                                style: Brule.condensed(18, spacing: 1.5)),
-                            const SizedBox(width: 10),
-                            Tag('${col['total']} PESANAN'),
-                            const SizedBox(width: 6),
-                            Tag('${col['grams']} g', color: Brule.blueText),
-                            const Spacer(),
-                            if (((col['orders'] ?? []) as List).any((e) => (e as Map)['can_advance'] == true))
-                              TextButton(
-                                onPressed: () => setState(() {
-                                  final codes = ((col['orders'] as List).cast<Map<String, dynamic>>())
-                                      .where((e) => e['can_advance'] == true)
-                                      .map((e) => '${e['code']}')
-                                      .toList();
-                                  final all = codes.every(_sel.contains);
-                                  if (all) {
-                                    _sel.removeAll(codes);
-                                  } else {
-                                    _sel.addAll(codes);
-                                  }
-                                }),
-                                child: const Text('PILIH SEMUA'),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        if (((col['orders'] ?? []) as List).isEmpty)
-                          Text('Tidak ada pesanan di tahap ini.', style: Brule.mono(10))
-                        else
-                          for (final o in ((col['orders'] as List).cast<Map<String, dynamic>>()))
-                            OrderCard(
-                              o: o,
-                              selected: _sel.contains('${o['code']}'),
-                              onLongPress: o['can_advance'] == true ? () => _toggle('${o['code']}') : null,
-                              onTap: () => _sel.isNotEmpty && o['can_advance'] == true
-                                  ? _toggle('${o['code']}')
-                                  : _open('${o['code']}'),
-                              onAdvance: () => _advance(o),
-                              onShip: () => _ship(o),
-                            ),
-                      ],
+                      Container(width: 18, height: 3, color: Brule.amber),
+                      const SizedBox(width: 10),
+                      Text('ANTRIAN ROASTERY', style: Brule.condensed(22, spacing: 2)),
                     ],
                   ),
-                );
-              },
-            ),
-          ),
-          if (_sel.isNotEmpty)
-            Container(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-              decoration: BoxDecoration(
-                color: const Color(0xFF161616),
-                border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
-              ),
-              child: Row(
-                children: [
-                  Text('${_sel.length} DIPILIH', style: Brule.mono(11, color: Brule.cream)),
-                  const Spacer(),
-                  TextButton(onPressed: () => setState(_sel.clear), child: const Text('BATAL')),
-                  const SizedBox(width: 6),
-                  FilledButton(
-                    onPressed: _busy ? null : _advanceSelected,
-                    child: Text(_busy ? 'MEMPROSES...' : 'LANJUTKAN SEMUA'),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Stat('MENUNGGU BAYAR', '${asInt(stats['waiting'])}'),
+                      Stat('PRODUKSI', '${asInt(stats['in_production'])}'),
+                      Stat('KIRIM HARI INI', '${asInt(stats['shipped_today'])}'),
+                      Stat('BERAT', '${(asInt(stats['grams']) / 1000).toStringAsFixed(1)} kg'),
+                    ],
                   ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      for (final s in stages)
+                        _StageTile(
+                          label: '${s['label']}',
+                          total: asInt(s['total']),
+                          late: asInt(s['late']),
+                          grams: asInt(s['grams']),
+                          selected: _stage == '${s['status']}',
+                          onTap: () => _reset(stage: '${s['status']}'),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  SearchBox(
+                    hint: 'cari kode, nama, atau biji, contoh: BRL-2026',
+                    onChanged: (v) {
+                      _q = v.trim();
+                      _reset();
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        FilterChip(
+                          label: const Text('TERLAMBAT > 24 JAM'),
+                          selected: _late,
+                          onSelected: (v) {
+                            _late = v;
+                            _reset();
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        ChoiceChip(
+                          label: Text(_newest ? 'TERBARU DULU' : 'TERLAMA DULU'),
+                          selected: true,
+                          onSelected: (_) {
+                            _newest = !_newest;
+                            _reset();
+                          },
+                        ),
+                        if (adv.isNotEmpty) ...[
+                          const SizedBox(width: 8),
+                          ActionChip(
+                            avatar: Icon(allSelected ? Icons.deselect : Icons.select_all, size: 16),
+                            label: Text(allSelected ? 'LEPAS SEMUA' : 'PILIH SEMUA (${adv.length})'),
+                            onPressed: () => setState(() {
+                              final codes = adv.map((e) => '${e['code']}');
+                              if (allSelected) {
+                                _sel.removeAll(codes);
+                              } else {
+                                _sel.addAll(codes);
+                              }
+                            }),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  if (_stage == 'queued' && batches.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Brule.field,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                      ),
+                      child: ExpansionTile(
+                        shape: const Border(),
+                        collapsedShape: const Border(),
+                        title: Text('RENCANA SANGRAI', style: Brule.mono(11, color: Brule.amber)),
+                        subtitle: Text('Antrian masuk dikelompokkan per biji dan level', style: Brule.mono(9)),
+                        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                        children: [
+                          for (final b in batches)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: Row(
+                                children: [
+                                  Expanded(child: Text('${b['name']} · ${b['level']}')),
+                                  Text('${b['grams']} g · ${b['orders']} pesanan', style: Brule.mono(10)),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Text('$total PESANAN', style: Brule.mono(10, color: Brule.cream)),
+                      const Spacer(),
+                      Text('Tahan baris untuk memilih', style: Brule.mono(9)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  if (_error != null) ErrorBox(_error!),
+                  if (_items.isEmpty && !_loading && _error == null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 36),
+                      child: Center(child: Text('Tidak ada pesanan di tahap ini.', style: Brule.mono(11))),
+                    ),
+                  for (final o in _items)
+                    OrderRow(
+                      o: o,
+                      selectable: true,
+                      selected: _sel.contains('${o['code']}'),
+                      onToggle: () => _toggle('${o['code']}'),
+                      onLongPress: o['can_advance'] == true ? () => _toggle('${o['code']}') : null,
+                      onTap: () => _sel.isNotEmpty && o['can_advance'] == true
+                          ? _toggle('${o['code']}')
+                          : _open('${o['code']}'),
+                      onAdvance: () => _advance(o),
+                      onShip: () => _ship(o),
+                    ),
+                  if (_loading)
+                    const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Center(child: CircularProgressIndicator(color: Brule.amber)),
+                    )
+                  else if (_page < _last && _error == null)
+                    OutlinedButton(onPressed: _fetch, child: const Text('MUAT LEBIH BANYAK')),
                 ],
               ),
             ),
-        ],
-      ),
+          ),
+        ),
+        if (_sel.isNotEmpty)
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF161616),
+              border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+            ),
+            child: Row(
+              children: [
+                Text('${_sel.length} DIPILIH', style: Brule.mono(11, color: Brule.cream)),
+                const Spacer(),
+                TextButton(onPressed: () => setState(_sel.clear), child: const Text('BATAL')),
+                const SizedBox(width: 6),
+                FilledButton(
+                  onPressed: _busy ? null : _advanceSelected,
+                  child: Text(_busy ? 'MEMPROSES...' : 'LANJUTKAN SEMUA'),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }
 
-class _Stat extends StatelessWidget {
+class _StageTile extends StatelessWidget {
   final String label;
-  final String value;
-  const _Stat(this.label, this.value);
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.only(right: 6),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-        decoration: BoxDecoration(
-          color: Brule.field,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-        ),
-        child: Column(
-          children: [
-            Text(value, style: Brule.condensed(20)),
-            const SizedBox(height: 2),
-            Text(label,
-                textAlign: TextAlign.center,
-                style: Brule.mono(7.5)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Kartu pesanan untuk antrian dan daftar pesanan admin.
-class OrderCard extends StatelessWidget {
-  final Map<String, dynamic> o;
-  final VoidCallback onTap;
-  final VoidCallback? onAdvance;
-  final VoidCallback? onShip;
-  final bool showTotal;
+  final int total;
+  final int late;
+  final int grams;
   final bool selected;
-  final VoidCallback? onLongPress;
-  const OrderCard({
-    super.key,
-    required this.o,
+  final VoidCallback onTap;
+  const _StageTile({
+    required this.label,
+    required this.total,
+    required this.late,
+    required this.grams,
+    required this.selected,
     required this.onTap,
-    this.onAdvance,
-    this.onShip,
-    this.showTotal = false,
-    this.selected = false,
-    this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
-    final status = '${o['status']}';
-    final late = o['is_late'] == true;
-    final canAdvance = onAdvance != null && o['can_advance'] == true;
-    final canShip = onShip != null && o['can_ship'] == true;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Material(
-        color: Brule.field,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: selected
-                ? Brule.amber
-                : (late ? Brule.amber.withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.1)),
-            width: selected ? 2 : 1,
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.only(right: 6),
+        child: Material(
+          color: selected ? Brule.amber.withValues(alpha: 0.1) : Brule.field,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: selected ? Brule.amber : Colors.white.withValues(alpha: 0.1),
+              width: selected ? 1.5 : 1,
+            ),
           ),
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(10),
-          onTap: onTap,
-          onLongPress: onLongPress,
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    if (selected) ...[
-                      const Icon(Icons.check_circle, size: 18, color: Brule.amber),
-                      const SizedBox(width: 6),
-                    ],
-                    Expanded(child: Text('${o['code']}', style: Brule.mono(12, color: Brule.cream))),
-                    if (late) ...[
-                      const Tag('TERLAMBAT', color: Brule.amber),
-                      const SizedBox(width: 6),
-                    ],
-                    Tag('${o['status_label']}'.toUpperCase(), color: statusColor(status)),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text('${o['recipient'] ?? ''}', style: Brule.condensed(18)),
-                const SizedBox(height: 2),
-                Text('${o['summary'] ?? ''}',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Brule.kraft.withValues(alpha: 0.9), fontSize: 13)),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    Text(
-                      [
-                        if (asInt(o['grams']) > 0) '${o['grams']} g',
-                        dateTime('${o['since']}'),
-                      ].join(' · '),
-                      style: Brule.mono(10),
-                    ),
-                    const Spacer(),
-                    if (showTotal)
-                      Text(rupiah(asInt(o['total'])), style: Brule.condensed(17)),
-                  ],
-                ),
-                if (canAdvance || canShip) ...[
-                  const SizedBox(height: 12),
-                  if (canAdvance)
-                    FilledButton.icon(
-                      style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(42)),
-                      onPressed: onAdvance,
-                      icon: const Icon(Icons.arrow_forward, size: 18),
-                      iconAlignment: IconAlignment.end,
-                      label: Text('LANJUT: ${'${o['next_label']}'.toUpperCase()}'),
-                    ),
-                  if (canShip)
-                    FilledButton.icon(
-                      style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(42)),
-                      onPressed: onShip,
-                      icon: const Icon(Icons.local_shipping_outlined, size: 18),
-                      label: const Text('KIRIM + NOMOR RESI'),
-                    ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(10),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+              child: Column(
+                children: [
+                  Text(label.toUpperCase(),
+                      maxLines: 1, overflow: TextOverflow.ellipsis, style: Brule.mono(8.5)),
+                  const SizedBox(height: 4),
+                  Text('$total', style: Brule.condensed(24, color: selected ? Brule.amber : Brule.cream)),
+                  const SizedBox(height: 2),
+                  Text(
+                    late > 0 ? '$late telat' : '${(grams / 1000).toStringAsFixed(1)} kg',
+                    style: Brule.mono(8.5, color: late > 0 ? Brule.amber : Brule.kraft),
+                  ),
                 ],
-              ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
-}
-
-/// Dialog isi nomor resi. Mengembalikan teks resi atau null kalau dibatalkan.
-Future<String?> askTracking(BuildContext context, String code) {
-  final c = TextEditingController();
-  String? error;
-  return showDialog<String>(
-    context: context,
-    builder: (ctx) => StatefulBuilder(
-      builder: (ctx, setState) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF1A1A1A),
-          title: Text('Kirim $code', style: Brule.condensed(20)),
-          content: TextField(
-            controller: c,
-            autofocus: true,
-            textCapitalization: TextCapitalization.characters,
-            decoration: InputDecoration(
-              hintText: 'contoh: JNE1234567890',
-              errorText: error,
-            ),
-          ),
-          actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          actions: [
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(minimumSize: const Size(96, 44)),
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('BATAL'),
-            ),
-            FilledButton(
-              style: FilledButton.styleFrom(minimumSize: const Size(96, 44)),
-              onPressed: () {
-                final v = c.text.trim();
-                if (v.length < 6) {
-                  setState(() => error = 'Nomor resi terlalu pendek.');
-                  return;
-                }
-                Navigator.pop(ctx, v);
-              },
-              child: const Text('KIRIM'),
-            ),
-          ],
-        );
-      },
-    ),
-  );
 }

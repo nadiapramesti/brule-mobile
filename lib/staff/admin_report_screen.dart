@@ -4,6 +4,7 @@ import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
 import 'admin_kit.dart';
+import 'download.dart';
 
 const _kPresets = {
   '7d': '7 hari',
@@ -23,6 +24,13 @@ class AdminReportScreen extends StatefulWidget {
 
 class _AdminReportScreenState extends State<AdminReportScreen> {
   String _preset = '30d';
+  String? _exporting; // 'pdf' | 'xlsx'
+
+  Future<void> _export(String format) async {
+    setState(() => _exporting = format);
+    await downloadAndShare(context, '/admin/reports/export', {'format': format, 'preset': _preset});
+    if (mounted) setState(() => _exporting = null);
+  }
 
   List<Map<String, dynamic>> _list(dynamic v) => ((v ?? []) as List).cast<Map<String, dynamic>>();
 
@@ -30,7 +38,37 @@ class _AdminReportScreenState extends State<AdminReportScreen> {
   Widget build(BuildContext context) {
     return AdminPage(
       title: 'Laporan',
-      child: Loader<Map<String, dynamic>>(
+      child: Column(
+        children: [
+          Expanded(child: _body()),
+          BottomBar(
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _exporting != null ? null : () => _export('pdf'),
+                    icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
+                    label: Text(_exporting == 'pdf' ? 'MENYIAPKAN...' : 'UNDUH PDF'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: _exporting != null ? null : () => _export('xlsx'),
+                    icon: const Icon(Icons.table_chart_outlined, size: 18),
+                    label: Text(_exporting == 'xlsx' ? 'MENYIAPKAN...' : 'UNDUH EXCEL'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _body() {
+    return Loader<Map<String, dynamic>>(
         key: ValueKey(_preset),
         load: () => Api.get('/admin/reports', {'preset': _preset}),
         builder: (context, d, reload) {
@@ -169,7 +207,6 @@ class _AdminReportScreenState extends State<AdminReportScreen> {
             ),
           );
         },
-      ),
     );
   }
 }

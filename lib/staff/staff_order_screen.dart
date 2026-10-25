@@ -3,7 +3,7 @@ import '../api.dart';
 import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
-import 'queue_tab.dart';
+import 'order_row.dart';
 
 /// Detail pesanan untuk roaster dan admin, dengan aksi sesuai peran dan tahap.
 class StaffOrderScreen extends StatefulWidget {
@@ -130,12 +130,10 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
                   children: [
-                    _actions(o),
                     if (_error != null) ...[
-                      const SizedBox(height: 12),
                       ErrorBox(_error!),
+                      const SizedBox(height: 12),
                     ],
-                    const SizedBox(height: 16),
                     Row(
                       children: [
                         Expanded(
@@ -237,6 +235,21 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                 ),
               ),
             ),
+      bottomNavigationBar: o == null ? null : _bar(o),
+    );
+  }
+
+  /// Tombol aksi menempel di bawah layar supaya selalu terjangkau jempol.
+  Widget? _bar(Map<String, dynamic> o) {
+    final a = _actions(o);
+    if (a == null) return null;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF161616),
+        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+      ),
+      child: SafeArea(top: false, child: Narrow(child: a)),
     );
   }
 
@@ -250,8 +263,8 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
       );
 
-  /// Tombol aksi di atas halaman, sesuai peran dan tahap pesanan.
-  Widget _actions(Map<String, dynamic> o) {
+  /// Tombol aksi sesuai peran dan tahap pesanan. Null bila tidak ada aksi.
+  Widget? _actions(Map<String, dynamic> o) {
     final buttons = <Widget>[
       if (o['can_advance'] == true)
         FilledButton.icon(
@@ -298,10 +311,7 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
           label: const Text('BATALKAN PESANAN'),
         ),
     ];
-    if (buttons.isEmpty) {
-      return Text('Tidak ada aksi untuk pesanan ini di tahap sekarang.',
-          style: Brule.mono(10));
-    }
+    if (buttons.isEmpty) return null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

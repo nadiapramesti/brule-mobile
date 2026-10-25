@@ -30,7 +30,7 @@ class _StaffShellState extends State<StaffShell> {
       const QueueTab(),
       admin
           ? const AdminStockTab()
-          : const AdminStockTab(path: '/staff/stock', products: false),
+          : const AdminStockTab(path: '/staff/stock', products: false, manage: false),
       admin ? const AdminMenuTab() : const AccountTab(),
     ];
     final dest = <NavigationDestination>[

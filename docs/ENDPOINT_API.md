@@ -95,7 +95,7 @@ Ulasan hanya boleh ditulis pelanggan yang punya pesanan **selesai** berisi kopi 
 
 | Method | Endpoint | Role | Fungsi |
 |---|---|---|---|
-| GET | `/staff/queue` | roaster, admin | Antrian produksi (queued sampai packing) |
+| GET | `/staff/queue?stage=&q=&late=&sort=&page=` | roaster, admin | Antrian satu tahap per halaman (20 pesanan), ringkasan keempat tahap, statistik, rencana sangrai |
 | GET | `/staff/orders/{code}` | roaster, admin | Detail pesanan untuk produksi |
 | POST | `/staff/orders/{code}/advance` | roaster, admin | Maju ke tahap berikutnya (queued, roasting, grinding, packing) |
 | POST | `/staff/orders/{code}/ship` | roaster, admin | Tandai dikirim, body `tracking_number` (resi) |
@@ -126,7 +126,11 @@ Pelanggan yang memanggil endpoint staff menerima `403`.
 | POST | `/admin/coffees/{id}/toggle`, `/admin/products/{id}/toggle` | Tampil atau sembunyi dari toko |
 | GET | `/admin/logs?jenis=&page=` | Log aktivitas |
 | GET, PUT | `/admin/settings` | Baca dan simpan pengaturan toko |
+| GET | `/admin/reports/export?format=pdf\|xlsx&preset=` | Unduh laporan penjualan sebagai PDF atau Excel |
+| GET | `/admin/stock/history?jenis=&kopi=&page=` | Riwayat stok masuk dan keluar beserta saldo |
+| POST | `/admin/stock/coffees/{id}` | Stok biji: `mode` restock (masuk), waste (keluar), count (koreksi hitung), `amount` gram, `reason` |
+| POST | `/admin/stock/products/{id}` | Tambah stok perlengkapan, `amount` unit |
 
 ## 8. Ringkasan
 
-Total 54 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran, 2 ulasan, 11 roaster dan admin inti, 20 menu admin lainnya. Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).
+Total 58 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran, 2 ulasan, 11 roaster dan admin inti, 24 menu admin lainnya. Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).

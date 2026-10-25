@@ -278,22 +278,22 @@ class _VoucherFormState extends State<_VoucherForm> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 8, 20, 20 + MediaQuery.viewInsetsOf(context).bottom),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Expanded(child: Text(_v == null ? 'Voucher baru' : 'Ubah voucher', style: Brule.condensed(22))),
-                IconButton(tooltip: 'Tutup', icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
-              ],
-            ),
-            if (_error != null) ...[ErrorBox(_error!), const SizedBox(height: 4)],
-            FilledButton(
-              onPressed: _busy ? null : _save,
-              child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN VOUCHER'),
-            ),
+      padding: EdgeInsets.fromLTRB(20, 8, 20, 16 + MediaQuery.viewInsetsOf(context).bottom),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(child: Text(_v == null ? 'Voucher baru' : 'Ubah voucher', style: Brule.condensed(22))),
+              IconButton(tooltip: 'Tutup', icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
+            ],
+          ),
+          Flexible(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
             _field('KODE', _code, 'contoh: HEMAT10', maxLength: 24, cap: TextCapitalization.characters),
             const Label('JENIS POTONGAN'),
             ChipPicker<String>(
@@ -318,8 +318,17 @@ class _VoucherFormState extends State<_VoucherForm> {
               value: _active,
               onChanged: (v) => setState(() => _active = v),
             ),
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+          if (_error != null) ...[const SizedBox(height: 8), ErrorBox(_error!)],
+          const SizedBox(height: 12),
+          FilledButton(
+            onPressed: _busy ? null : _save,
+            child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN VOUCHER'),
+          ),
+        ],
       ),
     );
   }

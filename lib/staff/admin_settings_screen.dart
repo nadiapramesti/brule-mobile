@@ -93,14 +93,27 @@ class _SettingsFormState extends State<_SettingsForm> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.fromLTRB(16, 8, 16, 28 + MediaQuery.viewInsetsOf(context).bottom),
+    return Column(
       children: [
-        if (_error != null) ...[ErrorBox(_error!), const SizedBox(height: 8)],
-        FilledButton(
-          onPressed: _busy ? null : _save,
-          child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN PENGATURAN'),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+            children: _fields(),
+          ),
         ),
+        BottomBar(
+          child: FilledButton(
+            onPressed: _busy ? null : _save,
+            child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN PENGATURAN'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _fields() {
+    return [
+        if (_error != null) ...[const SizedBox(height: 8), ErrorBox(_error!)],
         const Label('IDENTITAS TOKO'),
         _f('store_name', 'NAMA TOKO', 'contoh: BRÛLÉ', maxLength: 40),
         _f('tagline', 'TAGLINE', 'contoh: Specialty Coffee Lab', maxLength: 60),
@@ -133,7 +146,6 @@ class _SettingsFormState extends State<_SettingsForm> {
         _f('cod_max', 'BATAS NILAI COD (Rp, 0 = tanpa batas)', 'contoh: 500000', number: true),
         const SizedBox(height: 4),
         Text('Footer, checkout, dan invoice di web langsung memakai nilai baru.', style: Brule.mono(9)),
-      ],
-    );
+    ];
   }
 }

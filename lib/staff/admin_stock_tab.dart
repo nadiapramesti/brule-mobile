@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import '../api.dart';
 import '../theme.dart';
 import '../util.dart';
+import 'admin_kit.dart';
 import '../widgets.dart';
+import 'stock_history_screen.dart';
+import 'stock_sheets.dart';
 
 /// Stok biji mentah dan perlengkapan untuk admin.
 class AdminStockTab extends StatefulWidget {
   final String path;
   final bool products;
-  const AdminStockTab({super.key, this.path = '/admin/stock', this.products = true});
+  final bool manage; // admin: tambah/kurangi stok dan lihat riwayat
+  const AdminStockTab({super.key, this.path = '/admin/stock', this.products = true, this.manage = true});
 
   @override
   State<AdminStockTab> createState() => _AdminStockTabState();
@@ -17,6 +21,14 @@ class AdminStockTab extends StatefulWidget {
 class _AdminStockTabState extends State<AdminStockTab> {
   String _q = '';
   bool _low = false;
+  int _v = 0;
+
+  Future<void> _after(Future<bool> f, String done) async {
+    if (await f && mounted) {
+      setState(() => _v++);
+      toast(context, done);
+    }
+  }
 
   Color _state(String s) => s == 'soldout'
       ? Brule.red
@@ -31,6 +43,7 @@ class _AdminStockTabState extends State<AdminStockTab> {
     return SafeArea(
       bottom: false,
       child: Loader<Map<String, dynamic>>(
+        key: ValueKey(_v),
         load: () => Api.get(widget.path),
         builder: (context, d, reload) {
           final sum = (d['summary'] ?? {}) as Map;
@@ -58,6 +71,14 @@ class _AdminStockTabState extends State<AdminStockTab> {
                       Container(width: 18, height: 3, color: Brule.amber),
                       const SizedBox(width: 10),
                       Text('STOK', style: Brule.condensed(22, spacing: 2)),
+                      const Spacer(),
+                      if (widget.manage)
+                        OutlinedButton.icon(
+                          onPressed: () => Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (_) => const StockHistoryScreen())),
+                          icon: const Icon(Icons.history, size: 18),
+                          label: const Text('RIWAYAT'),
+                        ),
                     ],
                   ),
                   const SizedBox(height: 14),
@@ -122,7 +143,45 @@ class _AdminStockTabState extends State<AdminStockTab> {
                             ),
                           ),
                           const SizedBox(height: 6),
-                          Text('${c['grams']} g', style: Brule.mono(11, color: Brule.cream)),
+                          Row(
+                            children: [
+                              Text(gram(asInt(c['grams'])), style: Brule.mono(11, color: Brule.cream)),
+                              const Spacer(),
+                              if (c['days_left'] != null)
+                                Text('≈ ${c['days_left']} hari lagi', style: Brule.mono(9.5)),
+                            ],
+                          ),
+                          if (widget.manage) ...[
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: FilledButton.icon(
+                                    onPressed: () => _after(showCoffeeStockSheet(context, c), 'Stok ${c['name']} diperbarui'),
+                                    icon: const Icon(Icons.add, size: 18),
+                                    label: const Text('MASUK'),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () => _after(
+                                        showCoffeeStockSheet(context, c, mode: 'waste'), 'Stok ${c['name']} diperbarui'),
+                                    icon: const Icon(Icons.remove, size: 18),
+                                    label: const Text('KELUAR'),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: OutlinedButton(
+                                    onPressed: () => _after(
+                                        showCoffeeStockSheet(context, c, mode: 'count'), 'Stok ${c['name']} dikoreksi'),
+                                    child: const Text('HITUNG'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -158,6 +217,13 @@ class _AdminStockTabState extends State<AdminStockTab> {
                                         ? Brule.red
                                         : (asInt(p['stock']) < 5 ? Brule.amber : Brule.blueText),
                                   ),
+                                  if (widget.manage)
+                                    IconButton.filledTonal(
+                                      tooltip: 'Tambah stok',
+                                      onPressed: () =>
+                                          _after(showProductStockSheet(context, p), 'Stok ${p['name']} ditambah'),
+                                      icon: const Icon(Icons.add, size: 18),
+                                    ),
                                 ],
                               ),
                             ),

@@ -216,3 +216,29 @@ class _PagedListState extends State<PagedList> {
     );
   }
 }
+
+/// Bar tombol yang menempel di bawah layar (jempol gampang jangkau).
+class BottomBar extends StatelessWidget {
+  final Widget child;
+  const BottomBar({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFF161616),
+        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+      ),
+      child: child,
+    );
+  }
+}
+
+/// 12300 -> "12.300 g"
+String gram(int v) {
+  final neg = v < 0;
+  final s = v.abs().toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (_) => '.');
+  return '${neg ? '-' : ''}$s g';
+}

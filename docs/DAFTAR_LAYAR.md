@@ -30,7 +30,7 @@ Aplikasi Android (Flutter). Katalog bisa dijelajahi tanpa login; belanja dan che
 | 24 | Pesanan Admin | `staff/admin_orders_tab.dart` | Semua pesanan, filter tab, pencarian, paginasi | Ya (admin) |
 | 25 | Stok Admin | `staff/admin_stock_tab.dart` | Stok kopi dan perlengkapan, penanda stok menipis | Ya (admin) |
 | 26 | Menu Admin | `staff/admin_menu_tab.dart` | Pintu ke semua menu panel web, kartu akun, keluar | Ya (admin) |
-| 27 | Laporan | `staff/admin_report_screen.dart` | Omzet, pembanding periode lalu, grafik, kopi terlaris | Ya (admin) |
+| 27 | Laporan | `staff/admin_report_screen.dart` | Omzet, pembanding periode lalu, grafik, kopi terlaris, unduh PDF dan Excel | Ya (admin) |
 | 28 | Pelanggan | `staff/admin_customers_screen.dart` | Statistik, filter, urutan, pencarian | Ya (admin) |
 | 29 | Pengguna | `staff/admin_users_screen.dart` | Semua peran, blokir/buka blokir | Ya (admin) |
 | 30 | Voucher | `staff/admin_vouchers_screen.dart` | Daftar, buat, ubah, aktif/mati, hapus | Ya (admin) |
@@ -38,6 +38,8 @@ Aplikasi Android (Flutter). Katalog bisa dijelajahi tanpa login; belanja dan che
 | 32 | Kopi dan Produk | `staff/admin_catalog_screen.dart` | Harga, stok, tampil/sembunyi dari toko | Ya (admin) |
 | 33 | Log Aktivitas | `staff/admin_logs_screen.dart` | Riwayat perubahan dengan filter jenis | Ya (admin) |
 | 34 | Pengaturan Toko | `staff/admin_settings_screen.dart` | Identitas, kontak, ongkir, add-on, COD, batas stok | Ya (admin) |
+| 35 | Riwayat Stok | `staff/stock_history_screen.dart` | Barang masuk dan keluar, saldo, pelaku, alasan; filter jenis dan kopi | Ya (admin) |
+| 36 | Form Stok | `staff/stock_sheets.dart` | Masuk (restock), keluar (susut), koreksi hitung, tambah unit perlengkapan | Ya (admin) |
 
 ## Checklist screenshot untuk laporan
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../api.dart';
 import '../theme.dart';
 import '../widgets.dart';
-import 'queue_tab.dart';
+import 'order_row.dart';
 import 'staff_order_screen.dart';
 
 /// Semua pesanan untuk admin: filter status, cari, dan buka detail.
@@ -131,7 +131,7 @@ class _AdminOrdersTabState extends State<AdminOrdersTab> {
                       child: Center(child: Text('Tidak ada pesanan.')),
                     ),
                   for (final o in _items)
-                    OrderCard(o: o, showTotal: true, onTap: () => _open('${o['code']}')),
+                    OrderRow(o: o, showTotal: true, onTap: () => _open('${o['code']}')),
                   if (_loading)
                     const Padding(
                       padding: EdgeInsets.all(20),
