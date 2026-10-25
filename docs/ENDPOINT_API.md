@@ -109,4 +109,4 @@ Pelanggan yang memanggil endpoint staff menerima `403`.
 
 ## 8. Ringkasan
 
-Total 38 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran, 2 ulasan, 9 roaster dan admin (ditambah 6 endpoint pendukung akun yang sudah terhitung di bagian 1). Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).
+Total 32 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran, 2 ulasan, 9 roaster dan admin. Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).
