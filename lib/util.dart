@@ -34,3 +34,31 @@ String dayMonth(String? iso) {
   if (d == null) return '';
   return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}';
 }
+
+const _dayNames = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU', 'MINGGU'];
+const _monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
+
+DateTime? _whenOf(Object? iso) => DateTime.tryParse('$iso')?.toLocal();
+
+/// Judul kelompok: HARI INI, KEMARIN, atau "SENIN, 26 OKT 2026".
+String dayGroup(Map<String, dynamic> m, [String key = 'created_at']) {
+  return dayTitleOf(m[key]);
+}
+
+String dayTitleOf(Object? iso) {
+  final d = _whenOf(iso);
+  if (d == null) return '-';
+  final now = DateTime.now();
+  final a = DateTime(d.year, d.month, d.day);
+  final t = DateTime(now.year, now.month, now.day);
+  final diff = t.difference(a).inDays;
+  if (diff == 0) return 'HARI INI';
+  if (diff == 1) return 'KEMARIN';
+  return '${_dayNames[d.weekday - 1]}, ${d.day} ${_monthNames[d.month - 1]} ${d.year}';
+}
+
+String clockOf(Object? iso) {
+  final d = _whenOf(iso);
+  if (d == null) return '';
+  return '${d.hour.toString().padLeft(2, '0')}.${d.minute.toString().padLeft(2, '0')}';
+}

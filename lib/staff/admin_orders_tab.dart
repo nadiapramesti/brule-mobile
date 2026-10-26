@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../motion.dart';
 import '../api.dart';
 import '../theme.dart';
+import '../util.dart';
+import 'admin_kit.dart';
 import '../widgets.dart';
 import 'order_row.dart';
 import 'staff_order_screen.dart';
@@ -126,8 +128,11 @@ class _AdminOrdersTabState extends State<AdminOrdersTab> {
                       padding: EdgeInsets.all(32),
                       child: Center(child: Text('Tidak ada pesanan.')),
                     ),
-                  for (final (i, o) in _items.indexed)
+                  for (final (i, o) in _items.indexed) ...[
+                    if (i == 0 || dayGroup(_items[i - 1], 'since') != dayGroup(o, 'since'))
+                      GroupTitle(dayGroup(o, 'since'), first: i == 0),
                     Reveal(index: i, child: OrderRow(o: o, showTotal: true, onTap: () => _open('${o['code']}'))),
+                  ],
                   if (_loading)
                     const Padding(
                       padding: EdgeInsets.all(20),

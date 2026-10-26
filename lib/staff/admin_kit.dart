@@ -362,10 +362,7 @@ class _PagedListState extends State<PagedList> {
             ),
           for (final (i, it) in _items.indexed) ...[
             if (widget.groupBy != null && (i == 0 || widget.groupBy!(_items[i - 1]) != widget.groupBy!(it)))
-              Padding(
-                padding: EdgeInsets.only(top: i == 0 ? 2 : 14, bottom: 8),
-                child: Text(widget.groupBy!(it), style: Brule.mono(10)),
-              ),
+              GroupTitle(widget.groupBy!(it), first: i == 0),
             Reveal(index: i, child: widget.item(context, it, _refresh)),
           ],
           if (_loading)
@@ -405,4 +402,17 @@ String gram(int v) {
   final neg = v < 0;
   final s = v.abs().toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (_) => '.');
   return '${neg ? '-' : ''}$s g';
+}
+
+/// Judul kelompok daftar (mis. HARI INI), dipakai semua daftar bergrup supaya seragam.
+class GroupTitle extends StatelessWidget {
+  final String text;
+  final bool first;
+  const GroupTitle(this.text, {super.key, this.first = false});
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: EdgeInsets.only(top: first ? 2 : 14, bottom: 8),
+        child: Text(text, style: Brule.mono(10)),
+      );
 }

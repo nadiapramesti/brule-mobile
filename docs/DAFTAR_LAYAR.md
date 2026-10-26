@@ -77,3 +77,6 @@ Tips: aktifkan mode jam tetap/baterai penuh sebelum screenshot, dan pakai data u
 
 - `ENDPOINT_API.md`: daftar endpoint, body, dan alur pembayaran
 - `erd.png` dan `erd.mmd`: ERD database (gambar dan sumber Mermaid)
+
+## Daftar bergrup per hari (gaya Riwayat stok)
+Notifikasi, Semua Pesanan (admin), Pesanan (pelanggan), Ulasan, dan Riwayat stok memakai judul kelompok HARI INI / KEMARIN / tanggal (`GroupTitle`, `dayGroup` di util.dart). Pelanggan memakai dua kotak pilihan FILTER + URUTKAN (`PickField`) menggantikan dua baris chip. Notifikasi tidak lagi memunculkan banner; lonceng memakai lencana + getar.

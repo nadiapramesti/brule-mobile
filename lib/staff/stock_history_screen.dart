@@ -3,30 +3,6 @@ import '../theme.dart';
 import '../util.dart';
 import 'admin_kit.dart';
 
-const _days = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU', 'MINGGU'];
-const _months = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
-
-DateTime? _when(Object? iso) => DateTime.tryParse('$iso')?.toLocal();
-
-/// Judul kelompok: HARI INI, KEMARIN, atau "SENIN, 26 OKT 2026".
-String _dayTitle(Map<String, dynamic> m) {
-  final d = _when(m['created_at']);
-  if (d == null) return '-';
-  final now = DateTime.now();
-  final a = DateTime(d.year, d.month, d.day);
-  final t = DateTime(now.year, now.month, now.day);
-  final diff = t.difference(a).inDays;
-  if (diff == 0) return 'HARI INI';
-  if (diff == 1) return 'KEMARIN';
-  return '${_days[d.weekday - 1]}, ${d.day} ${_months[d.month - 1]} ${d.year}';
-}
-
-String _clock(Object? iso) {
-  final d = _when(iso);
-  if (d == null) return '';
-  return '${d.hour.toString().padLeft(2, '0')}.${d.minute.toString().padLeft(2, '0')}';
-}
-
 /// Riwayat stok biji: barang masuk dan keluar dikelompokkan per hari, satu baris ringkas per kejadian.
 class StockHistoryScreen extends StatefulWidget {
   const StockHistoryScreen({super.key});
@@ -48,7 +24,7 @@ class _StockHistoryScreenState extends State<StockHistoryScreen> {
         path: '/admin/stock/history',
         params: {'jenis': _type, if (_coffee > 0) 'kopi': '$_coffee'},
         empty: 'Belum ada pergerakan stok.',
-        groupBy: _dayTitle,
+        groupBy: dayGroup,
         header: (meta) {
           final types = ((meta?['types'] ?? []) as List).cast<Map<String, dynamic>>();
           final coffees = ((meta?['coffees'] ?? []) as List).cast<Map<String, dynamic>>();
@@ -112,7 +88,7 @@ class _StockHistoryScreenState extends State<StockHistoryScreen> {
                       const SizedBox(height: 2),
                       Text(note, maxLines: 1, overflow: TextOverflow.ellipsis, style: Brule.mono(9.5)),
                       const SizedBox(height: 1),
-                      Text('${m['by'] ?? 'Sistem'} · ${_clock(m['created_at'])}',
+                      Text('${m['by'] ?? 'Sistem'} · ${clockOf(m['created_at'])}',
                           maxLines: 1, overflow: TextOverflow.ellipsis, style: Brule.mono(9)),
                     ],
                   ),

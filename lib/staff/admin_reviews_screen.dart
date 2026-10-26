@@ -53,7 +53,8 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 40),
                     child: Center(child: Text('Belum ada ulasan.', style: Brule.mono(11))),
                   ),
-                for (final r in list)
+                for (final (i, r) in list.indexed) ...[
+                  if (i == 0 || dayGroup(list[i - 1]) != dayGroup(r)) GroupTitle(dayGroup(r), first: i == 0),
                   Panel(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,7 +79,7 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
                               style: TextStyle(color: Brule.kraft.withValues(alpha: 0.95), height: 1.4)),
                         ],
                         const SizedBox(height: 4),
-                        Text(dateTime('${r['created_at']}'), style: Brule.mono(9)),
+                        Text(clockOf(r['created_at']), style: Brule.mono(9)),
                         const SizedBox(height: 10),
                         ButtonRow(
                           children: [
@@ -102,6 +103,7 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
                       ],
                     ),
                   ),
+                ],
               ],
             ),
           );

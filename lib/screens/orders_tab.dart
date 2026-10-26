@@ -7,6 +7,7 @@ import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
 import '../auth_gate.dart';
+import '../staff/admin_kit.dart' show GroupTitle;
 import 'order_detail_screen.dart';
 
 class OrdersTab extends StatelessWidget {
@@ -96,7 +97,17 @@ class OrdersTab extends StatelessWidget {
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
                                 itemCount: list.length,
-                                itemBuilder: (context, i) => Reveal(index: i, child: _OrderCard(order: list[i])),
+                                itemBuilder: (context, i) {
+                                  final g = dayTitleOf(list[i].createdAt);
+                                  final head = i == 0 || dayTitleOf(list[i - 1].createdAt) != g;
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      if (head) GroupTitle(g, first: i == 0),
+                                      Reveal(index: i, child: _OrderCard(order: list[i])),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
                     );

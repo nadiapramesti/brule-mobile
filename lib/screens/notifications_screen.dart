@@ -5,6 +5,7 @@ import '../staff/admin_kit.dart';
 import '../staff/order_row.dart';
 import '../staff/staff_order_screen.dart';
 import '../theme.dart';
+import '../util.dart';
 import '../widgets.dart';
 import 'order_detail_screen.dart';
 
@@ -87,6 +88,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               key: ValueKey(_v),
               path: '/notices',
               params: const {},
+              groupBy: dayGroup,
               empty: 'Belum ada notifikasi. Kabar pesanan dan stok akan muncul di sini.',
               header: (meta) {
                 final alerts = ((meta?['alerts'] ?? []) as List).cast<Map<String, dynamic>>();
@@ -107,7 +109,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           ],
                         ),
                       ),
-                    const Label('RIWAYAT'),
                   ],
                 );
               },
@@ -116,9 +117,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 final unread = n['read'] != true;
                 return Panel(
                   onTap: () => _open(n),
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
                         width: 36,
@@ -145,12 +146,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                     ),
                                   ),
                                 ),
-                                Text(ageLabel('${n['created_at']}'), style: Brule.mono(9.5)),
+                                Text(clockOf(n['created_at']), style: Brule.mono(9.5)),
                               ],
                             ),
                             if (n['body'] != null) ...[
                               const SizedBox(height: 2),
-                              Text('${n['body']}', style: Brule.mono(10)),
+                              Text('${n['body']}', style: Brule.mono(10), maxLines: 2, overflow: TextOverflow.ellipsis),
                             ],
                           ],
                         ),
@@ -158,8 +159,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       if (unread) ...[
                         const SizedBox(width: 8),
                         Container(
-                          margin: const EdgeInsets.only(top: 6),
-                          width: 8,
+                                                    width: 8,
                           height: 8,
                           decoration: const BoxDecoration(color: Brule.amber, shape: BoxShape.circle),
                         ),

@@ -56,19 +56,30 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
               const SizedBox(height: 10),
               SearchBox(hint: 'cari nama, email, atau nomor HP', onChanged: (v) => setState(() => _q = v.trim())),
               const SizedBox(height: 10),
-              ChipPicker<String>(
-                items: _kTabs.keys.toList(),
-                value: _tab,
-                label: (k) => _kTabs[k]!,
-                onChanged: (k) => setState(() => _tab = k),
+              Row(
+                children: [
+                  Expanded(
+                    child: PickField<String>(
+                      label: 'FILTER',
+                      options: _kTabs,
+                      value: _tab,
+                      all: '',
+                      onChanged: (k) => setState(() => _tab = k),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: PickField<String>(
+                      label: 'URUTKAN',
+                      options: _kSorts,
+                      value: _sort,
+                      all: 'newest',
+                      onChanged: (k) => setState(() => _sort = k),
+                    ),
+                  ),
+                ],
               ),
-              const Label('URUTKAN'),
-              ChipPicker<String>(
-                items: _kSorts.keys.toList(),
-                value: _sort,
-                label: (k) => _kSorts[k]!,
-                onChanged: (k) => setState(() => _sort = k),
-              ),
+              const SizedBox(height: 12),
             ],
           );
         },
