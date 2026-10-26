@@ -68,7 +68,7 @@ Tips: aktifkan mode jam tetap/baterai penuh sebelum screenshot, dan pakai data u
 - **Notifikasi**: ikon lonceng di header (pelanggan dan staf), halaman daftar notifikasi, banner saat ada yang baru
 - **Linimasa pesanan**: tahap vertikal bertanda waktu, sama seperti di web (pelanggan dan staf)
 - **Login**: kotak "Ingat saya", tombol Google dan Facebook
-- **Struk dan label**: tombol Unduh Struk (pelanggan, bawah layar), Unduh Label Paket (staf, detail dan antrian)
+- **Struk dan label**: tombol Unduh Struk (pelanggan, bawah layar), Unduh Label Paket (staf, hanya di detail pesanan setelah nomor resi diisi)
 
 - **Motion**: transisi halaman (fade + geser), daftar muncul bertahap, perpindahan tab memudar, bel bergoyang saat ada notifikasi baru, grafik dan bar stok tumbuh saat dibuka
 - **Pilihan (chip)**: selalu satu baris; bila melebihi layar bisa digeser dan muncul tombol panah > di tepi
