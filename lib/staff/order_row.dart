@@ -72,6 +72,15 @@ class OrderRow extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(4, 8, 8, 8),
             child: Row(
               children: [
+                Container(
+                  width: 3,
+                  height: 46,
+                  margin: const EdgeInsets.only(left: 4),
+                  decoration: BoxDecoration(
+                    color: statusColor(status).withValues(alpha: 0.9),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
                 if (selectable)
                   SizedBox(
                     width: 40,
@@ -84,7 +93,7 @@ class OrderRow extends StatelessWidget {
                     ),
                   )
                 else
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -404,15 +404,33 @@ String gram(int v) {
   return '${neg ? '-' : ''}$s g';
 }
 
-/// Judul kelompok daftar (mis. HARI INI), dipakai semua daftar bergrup supaya seragam.
+/// Judul kelompok daftar (mis. HARI INI): titik aksen, garis tipis, dan ringkasan di kanan.
+/// Dipakai semua daftar bergrup supaya seragam.
 class GroupTitle extends StatelessWidget {
   final String text;
   final bool first;
-  const GroupTitle(this.text, {super.key, this.first = false});
+  final String? trailing;
+  const GroupTitle(this.text, {super.key, this.first = false, this.trailing});
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: EdgeInsets.only(top: first ? 2 : 14, bottom: 8),
-        child: Text(text, style: Brule.mono(10)),
+        padding: EdgeInsets.only(top: first ? 2 : 18, bottom: 10),
+        child: Row(
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              decoration: const BoxDecoration(color: Brule.amber, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 8),
+            Text(text, style: Brule.mono(10, color: Brule.cream)),
+            const SizedBox(width: 10),
+            Expanded(child: Container(height: 1, color: Colors.white.withValues(alpha: 0.08))),
+            if (trailing != null) ...[
+              const SizedBox(width: 10),
+              Text(trailing!, style: Brule.mono(9.5)),
+            ],
+          ],
+        ),
       );
 }

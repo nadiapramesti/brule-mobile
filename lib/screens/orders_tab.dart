@@ -103,7 +103,9 @@ class OrdersTab extends StatelessWidget {
                                   return Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      if (head) GroupTitle(g, first: i == 0),
+                                      if (head)
+                                        GroupTitle(g, first: i == 0,
+                                            trailing: '${list.where((e) => dayTitleOf(e.createdAt) == g).length} pesanan'),
                                       Reveal(index: i, child: _OrderCard(order: list[i])),
                                     ],
                                   );

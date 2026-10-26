@@ -63,6 +63,13 @@ class _AdminOrdersTabState extends State<AdminOrdersTab> {
     }
   }
 
+  /// Ringkasan satu hari: jumlah pesanan dan total nilainya (dari yang sudah dimuat).
+  String _sum(String group) {
+    final day = _items.where((e) => dayGroup(e, 'since') == group);
+    final total = day.fold<int>(0, (s, e) => e['status'] == 'cancelled' ? s : s + asInt(e['total']));
+    return '${day.length} pesanan · ${_short(total)}';
+  }
+
   Future<void> _open(String code) async {
     await Navigator.of(context)
         .push(MaterialPageRoute(builder: (_) => StaffOrderScreen(code: code)));
@@ -130,7 +137,7 @@ class _AdminOrdersTabState extends State<AdminOrdersTab> {
                     ),
                   for (final (i, o) in _items.indexed) ...[
                     if (i == 0 || dayGroup(_items[i - 1], 'since') != dayGroup(o, 'since'))
-                      GroupTitle(dayGroup(o, 'since'), first: i == 0),
+                      GroupTitle(dayGroup(o, 'since'), first: i == 0, trailing: _sum(dayGroup(o, 'since'))),
                     Reveal(index: i, child: OrderRow(o: o, showTotal: true, onTap: () => _open('${o['code']}'))),
                   ],
                   if (_loading)
@@ -151,4 +158,10 @@ class _AdminOrdersTabState extends State<AdminOrdersTab> {
       ),
     );
   }
+}
+
+String _short(int v) {
+  if (v >= 1000000) return 'Rp ${(v / 1000000).toStringAsFixed(1).replaceAll('.', ',')} jt';
+  if (v >= 1000) return 'Rp ${(v / 1000).toStringAsFixed(0)} rb';
+  return 'Rp $v';
 }
