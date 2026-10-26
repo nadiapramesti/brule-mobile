@@ -5,7 +5,6 @@ import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
 import 'admin_kit.dart';
-import 'download.dart';
 import 'order_row.dart';
 import 'staff_order_screen.dart';
 
@@ -303,13 +302,6 @@ class _QueueTabState extends State<QueueTab> {
                 Text('${_sel.length} DIPILIH', style: Brule.mono(11, color: Brule.cream)),
                 const Spacer(),
                 TextButton(onPressed: () => setState(_sel.clear), child: const Text('BATAL')),
-                IconButton(
-                  tooltip: 'Unduh label paket',
-                  onPressed: _busy
-                      ? null
-                      : () => downloadAndShare(context, '/staff/labels', {'codes': _sel.join(',')}),
-                  icon: const Icon(Icons.local_shipping_outlined),
-                ),
                 const SizedBox(width: 4),
                 FilledButton(
                   style: FilledButton.styleFrom(

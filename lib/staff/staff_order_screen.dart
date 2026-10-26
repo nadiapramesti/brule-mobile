@@ -312,7 +312,7 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
           icon: const Icon(Icons.cancel_outlined, size: 18),
           label: const Text('BATALKAN PESANAN'),
         ),
-      if (o['status'] != 'cancelled' && (o['is_paid'] == true || o['payment_method'] == 'cod'))
+      if (o['status'] != 'cancelled' && ('${o['tracking_number'] ?? ''}').isNotEmpty)
         OutlinedButton.icon(
           onPressed: _busy
               ? null
