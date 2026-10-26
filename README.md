@@ -21,11 +21,12 @@ mengubah peran, mengganti kata sandi, dan menghapus akun staf di sana.
 
 **Pelanggan:** katalog kopi dan perlengkapan, racik blend, keranjang, checkout (COD atau Midtrans),
 voucher, garis waktu pesanan, tanggal "terbaik dinikmati sebelum", unduh struk (muncul setelah resi
-diisi), ulasan, login "ingat saya" dan Google/Facebook, buku alamat, **Bantuan (FAQ)**.
+diisi), beli lagi dari pesanan lama, lacak pesanan lewat kode tanpa login, ulasan, login "ingat saya" dan Google/Facebook, buku alamat, **Bantuan (FAQ)**.
 
 **Roaster dan admin:** dashboard penjualan, antrian per tahap dengan aksi massal, detail pesanan,
 isi resi dan unduh label paket, stok biji (masuk, keluar, hitung ulang) dengan riwayat,
-laporan PDF/Excel, kelola voucher, ulasan, perlengkapan (termasuk foto), akun staf, dan pengaturan toko.
+laporan PDF/Excel, ekspor daftar pesanan, unduh invoice, kelola voucher, ulasan, kopi dan perlengkapan
+(tambah/ubah lengkap dengan foto, asal-usul, dan level sangrai), akun staf, dan pengaturan toko.
 
 **Notifikasi dalam aplikasi:** pesanan baru, pesanan lebih dari 24 jam, stok menipis, ulasan baru.
 Tampil sebagai lencana di ikon lonceng.
@@ -152,6 +153,14 @@ lib/
   screens/             layar pelanggan: beranda, katalog, keranjang, checkout, pesanan, akun, bantuan
   staff/               layar roaster dan admin: dashboard, antrian, stok, laporan, pengguna, pengaturan toko
 ```
+
+## Tes otomatis
+
+```
+flutter test
+```
+
+Isinya tes unit untuk terjemahan (`tr()`, pola `{}`, konsistensi kamus) dan helper rupiah/tanggal di `test/`.
 
 ## Dokumentasi
 

@@ -126,6 +126,12 @@ Pelanggan yang memanggil endpoint staff menerima `403`.
 | GET | `/admin/reviews?tampil=` | Moderasi ulasan |
 | POST, DELETE | `/admin/reviews/{id}/toggle`, `/admin/reviews/{id}` | Sembunyikan atau hapus ulasan |
 | GET | `/admin/coffees`, `/admin/products` | Daftar kopi dan produk |
+| GET | `/admin/coffees/meta` | Daftar level sangrai, kunci rasa, dan pilihan proses untuk form kopi baru |
+| GET | `/admin/coffees/{id}` | Detail kopi lengkap (cerita, asal-usul, profil per level sangrai) untuk form ubah (admin) |
+| POST | `/admin/coffees` | Tambah kopi: name, story, stock, asal-usul (farmer, region, altitude, varietal, process), `profiles` per level (price, agtron, notes, flavors); stok awal dicatat sebagai pergerakan stok (admin) |
+| PUT | `/admin/coffees/{id}` | Ubah kopi; level yang sudah pernah dipesan tidak bisa dimatikan (admin) |
+| POST | `/admin/coffees/{id}/photo` | Unggah foto kopi (multipart, field `photo`, JPG/PNG/WebP maks 3 MB) |
+| DELETE | `/admin/coffees/{id}/photo` | Hapus foto kopi |
 | POST | `/admin/coffees/{id}/toggle`, `/admin/products/{id}/toggle` | Tampil atau sembunyi dari toko |
 | GET | `/admin/products/{id}` | Detail perlengkapan untuk form ubah (admin) |
 | POST | `/admin/products` | Tambah perlengkapan: name, category, description, price, stock, option_label, options (pisah koma), is_active (admin) |
@@ -148,6 +154,10 @@ Pelanggan yang memanggil endpoint staff menerima `403`.
 | POST | `/notices/{id}/read` | Tandai satu notifikasi dibaca |
 | POST | `/notices/read-all` | Tandai semua dibaca |
 | GET | `/orders/{code}/receipt` | Unduh struk PDF (pesanan lunas atau COD) |
+| POST | `/orders/{code}/reorder` | Beli lagi: isi pesanan lama jadi baris keranjang (`lines[]`), `skipped` = jumlah item yang sudah tidak tersedia |
+| GET | `/track/{code}` | Lacak pesanan publik tanpa login (tahapan dan isi pesanan saja, tanpa data penerima), throttle 30/menit |
+| GET | `/help/{page}` | Isi halaman bantuan: `faq` atau halaman kebijakan (mengikuti `Accept-Language`) |
+| GET | `/admin/orders/export?format=xlsx\|pdf&tab=&q=` | Ekspor daftar pesanan sesuai tab dan pencarian (admin) |
 | GET | `/staff/labels?codes=A,B` | Unduh label paket PDF untuk satu atau banyak pesanan |
 | POST | `/auth/exchange` | Tukar kode sekali pakai hasil login Google/Facebook jadi token |
 | GET | `/auth/{google\|facebook}/mobile` (web) | Awal alur OAuth di Chrome Custom Tab, kembali ke `brule://oauth?code=` |

@@ -35,7 +35,7 @@ Aplikasi Android (Flutter). Katalog bisa dijelajahi tanpa login; belanja dan che
 | 29 | Pengguna | `staff/admin_users_screen.dart` | Semua peran, blokir/buka blokir | Ya (admin) |
 | 30 | Voucher | `staff/admin_vouchers_screen.dart` | Daftar, buat, ubah, aktif/mati, hapus | Ya (admin) |
 | 31 | Ulasan Admin | `staff/admin_reviews_screen.dart` | Sembunyikan, tampilkan, hapus ulasan | Ya (admin) |
-| 32 | Kopi dan Produk | `staff/admin_catalog_screen.dart` | Harga, stok, tampil/sembunyi dari toko | Ya (admin) |
+| 32 | Kopi dan Produk | `staff/admin_catalog_screen.dart` | Harga, stok, tampil/sembunyi dari toko; tambah dan ubah kopi atau perlengkapan | Ya (admin) |
 | 33 | Log Aktivitas | `staff/admin_logs_screen.dart` | Riwayat perubahan dengan filter jenis | Ya (admin) |
 | 34 | Pengaturan Toko | `staff/admin_settings_screen.dart` | Identitas, kontak, ongkir, add-on, COD, batas stok | Ya (admin) |
 | 35 | Riwayat Stok | `staff/stock_history_screen.dart` | Barang masuk dan keluar, saldo, pelaku, alasan; filter jenis dan kopi | Ya (admin) |
