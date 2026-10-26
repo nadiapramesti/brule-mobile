@@ -287,6 +287,12 @@ class _VoucherFormState extends State<_VoucherForm> {
               IconButton(tooltip: 'Tutup', icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
             ],
           ),
+          FilledButton(
+            onPressed: _busy ? null : _save,
+            child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN VOUCHER'),
+          ),
+          if (_error != null) ...[const SizedBox(height: 8), ErrorBox(_error!)],
+          const SizedBox(height: 8),
           Flexible(
             child: SingleChildScrollView(
               child: Column(
@@ -319,12 +325,6 @@ class _VoucherFormState extends State<_VoucherForm> {
                 ],
               ),
             ),
-          ),
-          if (_error != null) ...[const SizedBox(height: 8), ErrorBox(_error!)],
-          const SizedBox(height: 12),
-          FilledButton(
-            onPressed: _busy ? null : _save,
-            child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN VOUCHER'),
           ),
         ],
       ),

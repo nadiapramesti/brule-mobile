@@ -82,6 +82,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       title: 'Notifikasi',
       child: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: FilledButton.icon(
+              onPressed: _busy ? null : _readAll,
+              icon: const Icon(Icons.done_all, size: 18),
+              label: const Text('TANDAI SEMUA DIBACA'),
+            ),
+          ),
           Expanded(
             child: PagedList(
               key: ValueKey(_v),
@@ -167,13 +175,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   ),
                 );
               },
-            ),
-          ),
-          BottomBar(
-            child: FilledButton.icon(
-              onPressed: _busy ? null : _readAll,
-              icon: const Icon(Icons.done_all, size: 18),
-              label: const Text('TANDAI SEMUA DIBACA'),
             ),
           ),
         ],

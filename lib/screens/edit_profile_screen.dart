@@ -61,6 +61,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
           children: [
+            FilledButton(
+              onPressed: _busy ? null : _save,
+              child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN PERUBAHAN'),
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              ErrorBox(_error!),
+            ],
             const Label('NAMA LENGKAP'),
             TextField(
               controller: _name,
@@ -80,15 +88,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               controller: _phone,
               keyboardType: TextInputType.phone,
               decoration: const InputDecoration(hintText: 'contoh: 081234567890'),
-            ),
-            if (_error != null) ...[
-              const SizedBox(height: 16),
-              ErrorBox(_error!),
-            ],
-            const SizedBox(height: 20),
-            FilledButton(
-              onPressed: _busy ? null : _save,
-              child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN PERUBAHAN'),
             ),
           ],
         ),

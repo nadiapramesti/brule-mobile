@@ -311,6 +311,14 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
           children: [
+            FilledButton(
+              onPressed: _busy ? null : _save,
+              child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN ALAMAT'),
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              ErrorBox(_error!),
+            ],
             const Label('NAMA ALAMAT'),
             TextField(
               controller: _label,
@@ -341,15 +349,6 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
               decoration: const InputDecoration(
                 hintText: 'contoh: Jl. Melati No. 5, Karawang, 41361',
               ),
-            ),
-            if (_error != null) ...[
-              const SizedBox(height: 16),
-              ErrorBox(_error!),
-            ],
-            const SizedBox(height: 20),
-            FilledButton(
-              onPressed: _busy ? null : _save,
-              child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN ALAMAT'),
             ),
           ],
         ),
