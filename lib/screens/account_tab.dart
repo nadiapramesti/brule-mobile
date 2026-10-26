@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart' hide Text;
 import '../i18n.dart';
 import '../settings_screen.dart';
-import 'help_screen.dart';
 import 'track_screen.dart';
 import '../api.dart';
 import '../cart.dart';
@@ -99,15 +98,9 @@ class _AccountTabState extends State<AccountTab> {
               onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const TrackScreen())),
             ),
             _Tile(
-              icon: Icons.help_outline,
-              title: 'Bantuan (FAQ)',
-              subtitle: 'Pertanyaan umum dan kebijakan',
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HelpScreen())),
-            ),
-            _Tile(
               icon: Icons.settings_outlined,
               title: 'Pengaturan',
-              subtitle: 'Tema dan bahasa',
+              subtitle: 'Tema, bahasa, dan bantuan (FAQ)',
               onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
             ),
             const SizedBox(height: 16),
@@ -212,15 +205,9 @@ class _AccountTabState extends State<AccountTab> {
               onTap: () => _open(const PasswordScreen(), 'Password diubah'),
             ),
             _Tile(
-              icon: Icons.help_outline,
-              title: 'Bantuan (FAQ)',
-              subtitle: 'Pertanyaan umum dan kebijakan',
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HelpScreen())),
-            ),
-            _Tile(
               icon: Icons.settings_outlined,
               title: 'Pengaturan',
-              subtitle: 'Tema dan bahasa',
+              subtitle: 'Tema, bahasa, dan bantuan (FAQ)',
               onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
             ),
             const SizedBox(height: 16),
