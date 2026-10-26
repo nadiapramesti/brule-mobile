@@ -4,6 +4,7 @@ import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
 import 'admin_kit.dart';
+import 'user_form_screen.dart';
 
 const _kRoles = {
   '': 'Semua',
@@ -24,6 +25,12 @@ class AdminUsersScreen extends StatefulWidget {
 class _AdminUsersScreenState extends State<AdminUsersScreen> {
   String _role = '';
   String _q = '';
+  int _v = 0;
+
+  Future<void> _form([Map<String, dynamic>? u]) async {
+    final ok = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (_) => UserFormScreen(user: u)));
+    if (ok == true && mounted) setState(() => _v++);
+  }
 
   Future<void> _block(Map<String, dynamic> u, Future<void> Function() refresh) async {
     final c = TextEditingController();
@@ -68,7 +75,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     return AdminPage(
       title: 'Pengguna',
       child: PagedList(
-        key: ValueKey('$_role|$_q'),
+        key: ValueKey('$_role|$_q|$_v'),
         path: '/admin/users',
         params: {'role': _role, if (_q.isNotEmpty) 'q': _q},
         header: (meta) {
@@ -76,6 +83,12 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              FilledButton.icon(
+                onPressed: () => _form(),
+                icon: const Icon(Icons.person_add_alt_1_outlined, size: 20),
+                label: const Text('TAMBAH AKUN STAF'),
+              ),
+              const SizedBox(height: 12),
               SearchBox(hint: 'cari nama, email, atau nomor HP', onChanged: (v) => setState(() => _q = v.trim())),
               const SizedBox(height: 10),
               ChipPicker<String>(
@@ -85,7 +98,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 onChanged: (k) => setState(() => _role = k),
               ),
               const SizedBox(height: 4),
-              Text('Tambah staf, ubah peran, dan hapus akun dilakukan lewat panel web.', style: Brule.mono(9)),
+              Text('Tap akun untuk mengubah peran, data, atau menghapus akun staf.', style: Brule.mono(9)),
             ],
           );
         },
@@ -94,6 +107,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           final staff = role != 'customer';
           final blocked = u['blocked'] == true;
           return Panel(
+            onTap: () => _form(u),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

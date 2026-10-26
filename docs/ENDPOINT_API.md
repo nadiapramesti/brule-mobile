@@ -116,6 +116,9 @@ Pelanggan yang memanggil endpoint staff menerima `403`.
 | GET | `/admin/reports?preset=` | Laporan penjualan: ringkasan, selisih periode lalu, seri harian, per kopi/level/produk/voucher |
 | GET | `/admin/customers?tab=&sort=&q=&page=` | Pelanggan beserta statistik, total belanja, terakhir pesan |
 | GET | `/admin/users?role=&q=&page=` | Semua pengguna dan jumlah per peran |
+| POST | `/admin/users` | Buat akun staf: name, email, role (admin/roaster), password (admin) |
+| PUT | `/admin/users/{id}` | Ubah peran; untuk akun staf juga name, email, phone, password (admin) |
+| DELETE | `/admin/users/{id}` | Hapus akun staf (admin, bukan akun sendiri, sisakan minimal satu admin) |
 | POST | `/admin/users/{id}/block` / `unblock` | Blokir atau buka blokir akun pembeli |
 | GET, POST | `/admin/vouchers` | Daftar dan buat voucher |
 | PUT, DELETE | `/admin/vouchers/{id}` | Ubah, hapus (hanya yang belum dipakai) |
