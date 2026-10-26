@@ -36,8 +36,16 @@ class CoffeeBagArt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Latar kraft hangat seperti foto studio perlengkapan, supaya kartu kopi dan perlengkapan seragam.
     return Container(
-      color: const Color(0xFF1A1A1A),
+      decoration: const BoxDecoration(
+        gradient: RadialGradient(
+          center: Alignment(0, -0.2),
+          radius: 0.95,
+          colors: [Color(0xFFD9CCB8), Color(0xFFB8A78E), Color(0xFF9C8A70)],
+          stops: [0.0, 0.65, 1.0],
+        ),
+      ),
       padding: const EdgeInsets.symmetric(vertical: 8),
       alignment: Alignment.center,
       child: AspectRatio(
