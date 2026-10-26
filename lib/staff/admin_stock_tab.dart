@@ -170,22 +170,15 @@ class _AdminStockTabState extends State<AdminStockTab> {
                           ),
                           if (widget.manage) ...[
                             const SizedBox(height: 10),
-                            ButtonRow(
-                              children: [
-                                FilledButton(
-                                  onPressed: () => _after(showCoffeeStockSheet(context, c), 'Stok ${c['name']} diperbarui'),
-                                  child: const Text('MASUK'),
-                                ),
-                                OutlinedButton(
-                                  onPressed: () => _after(
-                                      showCoffeeStockSheet(context, c, mode: 'waste'), 'Stok ${c['name']} diperbarui'),
-                                  child: const Text('KELUAR'),
-                                ),
-                                OutlinedButton(
-                                  onPressed: () => _after(
-                                      showCoffeeStockSheet(context, c, mode: 'count'), 'Stok ${c['name']} dikoreksi'),
-                                  child: const Text('HITUNG'),
-                                ),
+                            SegmentActions(
+                              actions: [
+                                SegmentAction('MASUK', Icons.add,
+                                    () => _after(showCoffeeStockSheet(context, c), 'Stok ${c['name']} diperbarui'),
+                                    primary: true),
+                                SegmentAction('KELUAR', Icons.remove,
+                                    () => _after(showCoffeeStockSheet(context, c, mode: 'waste'), 'Stok ${c['name']} diperbarui')),
+                                SegmentAction('HITUNG', Icons.fact_check_outlined,
+                                    () => _after(showCoffeeStockSheet(context, c, mode: 'count'), 'Stok ${c['name']} dikoreksi')),
                               ],
                             ),
                           ],
