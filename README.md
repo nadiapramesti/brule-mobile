@@ -34,6 +34,12 @@ Tampil sebagai lencana di ikon lonceng.
 **Daftar rapi:** riwayat, pesanan, notifikasi, dan ulasan dikelompokkan per hari
 (HARI INI, KEMARIN, lalu tanggal). Tombol simpan atau aksi utama selalu di bawah layar.
 
+## Batasan yang diketahui
+
+- **Notifikasi dorong (push)** belum ada. Notifikasi hanya muncul di dalam aplikasi (lonceng, dipolling), karena push butuh akun Firebase.
+- **Login Google/Facebook** di HP asli hanya jalan lewat kabel USB (alamat server lokal); di server publik jalan normal.
+- Teks dari server yang belum ada di `lang/en.json` tetap berbahasa Indonesia saat mode English.
+
 ## Tampilan dan bahasa
 
 Sama seperti di web: **mode gelap/terang** dan **bahasa Indonesia/English**. Pilihan tersimpan di HP.
@@ -68,7 +74,7 @@ atau bahasa membangun ulang seluruh layar tanpa menutup halaman yang sedang dibu
 
 ## Bantuan (FAQ)
 
-**Akun → Bantuan (FAQ)** (atau **Pengaturan → BANTUAN**, juga untuk tamu yang belum masuk). Pertanyaan
+**Akun → Pengaturan → BANTUAN** (juga untuk tamu yang belum masuk). Pertanyaan
 dikelompokkan, bisa dibuka satu per satu dan dicari. Di bawahnya ada Pengiriman dan pengembalian,
 Syarat dan ketentuan, dan Kebijakan privasi. Isinya diambil dari API (`GET /api/help/{page}`), sama
 dengan halaman Bantuan di web (`lang/{id,en}/pages.php`), jadi cukup diubah di satu tempat.
