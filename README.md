@@ -38,7 +38,7 @@ Tampil sebagai lencana di ikon lonceng.
 
 - **Notifikasi dorong (push)** belum ada. Notifikasi hanya muncul di dalam aplikasi (lonceng, dipolling), karena push butuh akun Firebase.
 - **Login Google/Facebook** di HP asli hanya jalan lewat kabel USB (alamat server lokal); di server publik jalan normal.
-- Teks dari server yang belum ada di `lang/en.json` tetap berbahasa Indonesia saat mode English.
+- Pesan error dari server sudah diterjemahkan lewat `lang/en.json` di API; pesan baru yang ditambahkan nanti perlu ditambah ke file itu juga, kalau tidak tetap Indonesia.
 
 ## Tampilan dan bahasa
 
