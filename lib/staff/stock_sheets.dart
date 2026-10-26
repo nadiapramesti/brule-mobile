@@ -36,7 +36,7 @@ class _CoffeeStock extends StatefulWidget {
 }
 
 class _CoffeeStockState extends State<_CoffeeStock> {
-  late String _mode = widget.mode;
+  late final String _mode = widget.mode;
   final _amount = TextEditingController();
   final _reason = TextEditingController();
   bool _busy = false;
