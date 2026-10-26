@@ -124,6 +124,9 @@ Pelanggan yang memanggil endpoint staff menerima `403`.
 | POST, DELETE | `/admin/reviews/{id}/toggle`, `/admin/reviews/{id}` | Sembunyikan atau hapus ulasan |
 | GET | `/admin/coffees`, `/admin/products` | Daftar kopi dan produk |
 | POST | `/admin/coffees/{id}/toggle`, `/admin/products/{id}/toggle` | Tampil atau sembunyi dari toko |
+| GET | `/admin/products/{id}` | Detail perlengkapan untuk form ubah (admin) |
+| POST | `/admin/products` | Tambah perlengkapan: name, category, description, price, stock, option_label, options (pisah koma), is_active (admin) |
+| PUT | `/admin/products/{id}` | Ubah perlengkapan (admin) |
 | GET | `/admin/logs?jenis=&page=` | Log aktivitas |
 | GET, PUT | `/admin/settings` | Baca dan simpan pengaturan toko |
 | GET | `/admin/reports/export?format=pdf\|xlsx&preset=` | Unduh laporan penjualan sebagai PDF atau Excel |
