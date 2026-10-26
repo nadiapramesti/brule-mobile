@@ -148,13 +148,7 @@ class _HomeTabState extends State<HomeTab> {
               if (snap.hasError) {
                 return Padding(
                   padding: const EdgeInsets.all(24),
-                  child: Column(
-                    children: [
-                      ErrorBox('${snap.error}'),
-                      const SizedBox(height: 16),
-                      OutlinedButton(onPressed: _refresh, child: const Text('COBA LAGI')),
-                    ],
-                  ),
+                  child: ErrorPanel('${snap.error}', onRetry: _refresh),
                 );
               }
               final (coffees, gear) = snap.data!;
@@ -288,16 +282,20 @@ class _BannersState extends State<_Banners> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
-          height: 204,
-          child: PageView.builder(
+        LayoutBuilder(
+          builder: (context, box) => SizedBox(
+            height: 204,
+            child: OverflowBox(
+              minWidth: box.maxWidth + 12,
+              maxWidth: box.maxWidth + 12,
+              child: PageView.builder(
             controller: _c,
             itemCount: _slides.length,
             onPageChanged: (i) => setState(() => _i = i),
             itemBuilder: (context, i) {
               final s = _slides[i];
               return Padding(
-                padding: const EdgeInsets.only(right: 0),
+                padding: const EdgeInsets.symmetric(horizontal: 6),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(14),
                   child: Stack(
@@ -358,6 +356,8 @@ class _BannersState extends State<_Banners> {
                 ),
               );
             },
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 10),

@@ -48,6 +48,50 @@ class ErrorBox extends StatelessWidget {
   }
 }
 
+/// Kartu masalah koneksi/data yang rapi: ikon, pesan, dan tombol coba lagi.
+class ErrorPanel extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+  const ErrorPanel(this.message, {super.key, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(18, 22, 18, 18),
+      decoration: BoxDecoration(
+        color: Brule.field,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Brule.red.withValues(alpha: 0.4)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Brule.red.withValues(alpha: 0.12),
+            ),
+            child: const Icon(Icons.cloud_off_outlined, color: Brule.red, size: 26),
+          ),
+          const SizedBox(height: 14),
+          Text(message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Brule.kraft.withValues(alpha: 0.95), height: 1.45)),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            onPressed: onRetry,
+            icon: const Icon(Icons.refresh, size: 18),
+            label: const Text('COBA LAGI'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class Tag extends StatelessWidget {
   final String text;
   final Color color;
@@ -504,14 +548,7 @@ class _LoaderState<T> extends State<Loader<T>> {
           constraints: const BoxConstraints(maxWidth: 420),
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ErrorBox('${snap.error}'),
-                const SizedBox(height: 16),
-                OutlinedButton(onPressed: _reload, child: const Text('COBA LAGI')),
-              ],
-            ),
+            child: ErrorPanel('${snap.error}', onRetry: _reload),
           ),
         ),
       );
