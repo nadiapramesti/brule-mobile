@@ -14,8 +14,9 @@ class ApiException implements Exception {
 class Api {
   // Lewat kabel USB: adb reverse tcp:8001 tcp:8001. Ganti dengan
   // --dart-define=API_BASE=http://IP-LAPTOP:8001 kalau lewat WiFi.
-  static const base =
-      String.fromEnvironment('API_BASE', defaultValue: 'http://127.0.0.1:8001');
+  // Bisa diganti dari dalam app (kartu error > UBAH ALAMAT SERVER), tersimpan di HP.
+  static String base =
+      const String.fromEnvironment('API_BASE', defaultValue: 'http://127.0.0.1:8001');
 
   static String? _token;
 
@@ -34,6 +35,19 @@ class Api {
   static Future<void> loadToken() async {
     final p = await SharedPreferences.getInstance();
     _token = p.getString('token');
+    final saved = p.getString('api_base');
+    if (saved != null && saved.isNotEmpty) base = saved;
+  }
+
+  /// Simpan alamat server baru, contoh: http://192.168.1.10:8001
+  static Future<void> setBase(String url) async {
+    var u = url.trim();
+    while (u.endsWith('/')) {
+      u = u.substring(0, u.length - 1);
+    }
+    base = u;
+    final p = await SharedPreferences.getInstance();
+    await p.setString('api_base', u);
   }
 
   static Future<Map<String, dynamic>> _send(

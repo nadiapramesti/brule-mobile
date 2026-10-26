@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'api.dart';
 import 'theme.dart';
 
 /// Gambar jaringan dengan cadangan bila kosong atau gagal dimuat.
@@ -86,10 +87,72 @@ class ErrorPanel extends StatelessWidget {
             icon: const Icon(Icons.refresh, size: 18),
             label: const Text('COBA LAGI'),
           ),
+          const SizedBox(height: 10),
+          Text('Server: ${Api.base}', style: Brule.mono(10)),
+          const SizedBox(height: 6),
+          TextButton.icon(
+            onPressed: () async {
+              if (await askServerAddress(context)) onRetry();
+            },
+            icon: const Icon(Icons.dns_outlined, size: 18),
+            label: const Text('UBAH ALAMAT SERVER'),
+          ),
         ],
       ),
     );
   }
+}
+
+/// Dialog untuk mengetik alamat API (mis. IP laptop lewat Wi-Fi). True bila disimpan.
+Future<bool> askServerAddress(BuildContext context) async {
+  final c = TextEditingController(text: Api.base);
+  String? err;
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setS) => AlertDialog(
+        title: Text('Alamat server API', style: Brule.condensed(20)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Isi IP laptop yang menjalankan API. HP dan laptop harus di Wi-Fi yang sama.',
+                style: Brule.mono(10)),
+            const SizedBox(height: 12),
+            TextField(
+              controller: c,
+              keyboardType: TextInputType.url,
+              autocorrect: false,
+              decoration: InputDecoration(
+                hintText: 'contoh: http://192.168.1.10:8001',
+                errorText: err,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('BATAL')),
+          FilledButton(
+            style: FilledButton.styleFrom(minimumSize: const Size(96, 44)),
+            onPressed: () {
+              final v = c.text.trim();
+              if (!RegExp(r'^https?://[^\s/]+').hasMatch(v)) {
+                setS(() => err = 'Harus diawali http://, contoh: http://192.168.1.10:8001');
+                return;
+              }
+              Navigator.of(ctx).pop(true);
+            },
+            child: const Text('SIMPAN'),
+          ),
+        ],
+      ),
+    ),
+  );
+  final v = c.text;
+  c.dispose();
+  if (ok != true) return false;
+  await Api.setBase(v);
+  return true;
 }
 
 class Tag extends StatelessWidget {
