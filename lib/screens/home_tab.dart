@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart' hide Text;
 import '../i18n.dart';
-import '../prefs.dart';
 import '../add_sheet.dart';
 import '../api.dart';
 import '../auth_gate.dart';
