@@ -50,7 +50,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
     final yes = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A1A),
+        backgroundColor: Brule.field,
         title: Text('Hapus alamat "${a.label}"?', style: Brule.condensed(20)),
         content: const Text('Alamat ini dihapus dari buku alamatmu.'),
         actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -167,7 +167,7 @@ class _AddressCard extends StatelessWidget {
         border: Border.all(
           color: a.isDefault
               ? Brule.amber.withValues(alpha: 0.5)
-              : Colors.white.withValues(alpha: 0.1),
+              : Brule.hair(0.1),
         ),
       ),
       child: Column(
@@ -178,7 +178,7 @@ class _AddressCard extends StatelessWidget {
               Tag(a.label.toUpperCase()),
               if (a.isDefault) ...[
                 const SizedBox(width: 8),
-                const Tag('UTAMA', color: Brule.amber),
+                Tag('UTAMA', color: Brule.amber),
               ],
               const Spacer(),
               if (!pick)

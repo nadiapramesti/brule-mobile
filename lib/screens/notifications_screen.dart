@@ -104,7 +104,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             Icon(_kIcons['${a['type']}'] ?? Icons.info_outline, color: _tone('${a['type']}')),
                             const SizedBox(width: 12),
                             Expanded(child: Text('${a['text']}')),
-                            const Icon(Icons.chevron_right, color: Brule.kraft),
+                            Icon(Icons.chevron_right, color: Brule.kraft),
                           ],
                         ),
                       ),
@@ -160,7 +160,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         Container(
                                                     width: 8,
                           height: 8,
-                          decoration: const BoxDecoration(color: Brule.amber, shape: BoxShape.circle),
+                          decoration: BoxDecoration(color: Brule.amber, shape: BoxShape.circle),
                         ),
                       ],
                     ],

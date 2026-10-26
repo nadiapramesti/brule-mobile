@@ -141,7 +141,7 @@ class _AdminOrdersTabState extends State<AdminOrdersTab> {
                     Reveal(index: i, child: OrderRow(o: o, showTotal: true, onTap: () => _open('${o['code']}'))),
                   ],
                   if (_loading)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.all(20),
                       child: Center(child: CircularProgressIndicator(color: Brule.amber)),
                     )

@@ -32,7 +32,7 @@ class OrderTimeline extends StatelessWidget {
       decoration: BoxDecoration(
         color: Brule.field,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Brule.hair(0.1)),
       ),
       child: Column(
         children: [

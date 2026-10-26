@@ -46,7 +46,7 @@ class _NoticeBellState extends State<NoticeBell> with SingleTickerProviderStateM
           message: 'Notifikasi',
           child: Material(
             color: Brule.field,
-            shape: CircleBorder(side: BorderSide(color: Colors.white.withValues(alpha: 0.16))),
+            shape: CircleBorder(side: BorderSide(color: Brule.hair(0.16))),
             child: InkWell(
               customBorder: const CircleBorder(),
               onTap: Notices.open,
@@ -88,7 +88,7 @@ class _NoticeBellState extends State<NoticeBell> with SingleTickerProviderStateM
                           ),
                           child: Text(
                             label,
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 10.5, fontWeight: FontWeight.w700, color: Brule.bg, height: 1.1),
                           ),
                         ),

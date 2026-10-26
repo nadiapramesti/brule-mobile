@@ -66,7 +66,7 @@ class _GearDetailScreenState extends State<GearDetailScreen> {
               spacing: 8,
               children: [
                 Tag(g.category.toUpperCase()),
-                if (!g.inStock) const Tag('STOK HABIS', color: Brule.red),
+                if (!g.inStock) Tag('STOK HABIS', color: Brule.red),
               ],
             ),
             if (g.options.isNotEmpty) ...[

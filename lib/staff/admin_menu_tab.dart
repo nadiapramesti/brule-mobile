@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../prefs.dart';
 import '../motion.dart';
 import '../api.dart';
 import '../brand_logo.dart';
@@ -52,6 +53,8 @@ class AdminMenuTab extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 14),
+            const ThemeSwitch(),
+            const SizedBox(height: 12),
             for (final (i, it) in items.indexed)
               Reveal(index: i, child: Panel(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -70,7 +73,7 @@ class AdminMenuTab extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const Icon(Icons.chevron_right, color: Brule.kraft),
+                    Icon(Icons.chevron_right, color: Brule.kraft),
                   ],
                 ),
               )),
@@ -84,7 +87,7 @@ class AdminMenuTab extends StatelessWidget {
                       Expanded(
                         child: Text('${Api.user?['name'] ?? ''}', style: Brule.condensed(20)),
                       ),
-                      const Tag('ADMIN', color: Brule.amber),
+                      Tag('ADMIN', color: Brule.amber),
                     ],
                   ),
                   const SizedBox(height: 2),

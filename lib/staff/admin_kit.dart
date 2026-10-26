@@ -37,7 +37,7 @@ class Panel extends StatelessWidget {
       decoration: BoxDecoration(
         color: Brule.field,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Brule.hair(0.1)),
       ),
       child: child,
     );
@@ -99,7 +99,7 @@ class Stat extends StatelessWidget {
         side: BorderSide(
           color: selected
               ? Brule.amber
-              : (warn ? Brule.amber.withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.1)),
+              : (warn ? Brule.amber.withValues(alpha: 0.6) : Brule.hair(0.1)),
           width: selected ? 1.5 : 1,
         ),
       ),
@@ -162,7 +162,7 @@ class PickField<T> extends StatelessWidget {
       color: active ? Brule.blue.withValues(alpha: 0.18) : Brule.field,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: BorderSide(color: active ? Brule.blueText.withValues(alpha: 0.7) : Colors.white.withValues(alpha: 0.16)),
+        side: BorderSide(color: active ? Brule.blueText.withValues(alpha: 0.7) : Brule.hair(0.16)),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
@@ -187,7 +187,7 @@ class PickField<T> extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.expand_more, color: Brule.kraft),
+              Icon(Icons.expand_more, color: Brule.kraft),
             ],
           ),
         ),
@@ -202,7 +202,7 @@ Future<T?> pickOne<T>(BuildContext context, String title, Map<T, String> options
     context: context,
     useSafeArea: true,
     isScrollControlled: true,
-    backgroundColor: const Color(0xFF161616),
+    backgroundColor: Brule.sheet,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
     builder: (ctx) => ConstrainedBox(
       constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(ctx).height * 0.7),
@@ -210,7 +210,7 @@ Future<T?> pickOne<T>(BuildContext context, String title, Map<T, String> options
         mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(height: 10),
-          Container(width: 38, height: 4, decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(2))),
+          Container(width: 38, height: 4, decoration: BoxDecoration(color: Brule.hair(0.24), borderRadius: BorderRadius.circular(2))),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
             child: Align(alignment: Alignment.centerLeft, child: Text(title, style: Brule.mono(11))),
@@ -226,7 +226,7 @@ Future<T?> pickOne<T>(BuildContext context, String title, Map<T, String> options
                     selected: e.key == value,
                     selectedTileColor: Brule.blue.withValues(alpha: 0.2),
                     title: Text(e.value, style: Brule.condensed(17)),
-                    trailing: e.key == value ? const Icon(Icons.check, color: Brule.blueText) : null,
+                    trailing: e.key == value ? Icon(Icons.check, color: Brule.blueText) : null,
                     onTap: () => Navigator.of(ctx).pop(e.key),
                   ),
               ],
@@ -366,7 +366,7 @@ class _PagedListState extends State<PagedList> {
             Reveal(index: i, child: widget.item(context, it, _refresh)),
           ],
           if (_loading)
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(20),
               child: Center(child: CircularProgressIndicator(color: Brule.amber)),
             )
@@ -389,8 +389,8 @@ class BottomBar extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF161616),
-        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+        color: Brule.sheet,
+        border: Border(top: BorderSide(color: Brule.hair(0.1))),
       ),
       child: child,
     );
@@ -420,12 +420,12 @@ class GroupTitle extends StatelessWidget {
             Container(
               width: 6,
               height: 6,
-              decoration: const BoxDecoration(color: Brule.amber, shape: BoxShape.circle),
+              decoration: BoxDecoration(color: Brule.amber, shape: BoxShape.circle),
             ),
             const SizedBox(width: 8),
             Text(text, style: Brule.mono(10, color: Brule.cream)),
             const SizedBox(width: 10),
-            Expanded(child: Container(height: 1, color: Colors.white.withValues(alpha: 0.08))),
+            Expanded(child: Container(height: 1, color: Brule.hair(0.08))),
             if (trailing != null) ...[
               const SizedBox(width: 10),
               Text(trailing!, style: Brule.mono(9.5)),
@@ -453,7 +453,7 @@ class MenuButton extends StatelessWidget {
   Future<void> _open(BuildContext context) async {
     final pick = await showModalBottomSheet<MenuAction>(
       context: context,
-      backgroundColor: const Color(0xFF161616),
+      backgroundColor: Brule.sheet,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (ctx) => SafeArea(
         child: Padding(
@@ -471,7 +471,7 @@ class MenuButton extends StatelessWidget {
                     color: Brule.field,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+                      side: BorderSide(color: Brule.hair(0.1)),
                     ),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(10),
@@ -491,7 +491,7 @@ class MenuButton extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            const Icon(Icons.chevron_right, color: Brule.kraft),
+                            Icon(Icons.chevron_right, color: Brule.kraft),
                           ],
                         ),
                       ),

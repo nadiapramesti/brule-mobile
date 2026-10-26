@@ -48,7 +48,7 @@ class _ReviewsSectionState extends State<ReviewsSection> {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      backgroundColor: const Color(0xFF161616),
+      backgroundColor: Brule.sheet,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
       ),
@@ -124,7 +124,7 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                     decoration: BoxDecoration(
                       color: Brule.field,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                      border: Border.all(color: Brule.hair(0.1)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

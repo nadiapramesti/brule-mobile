@@ -226,7 +226,7 @@ class _QueueTabState extends State<QueueTab> {
                       decoration: BoxDecoration(
                         color: Brule.field,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                        border: Border.all(color: Brule.hair(0.1)),
                       ),
                       child: ExpansionTile(
                         shape: const Border(),
@@ -279,7 +279,7 @@ class _QueueTabState extends State<QueueTab> {
                       onShip: () => _ship(o),
                     )),
                   if (_loading)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.all(20),
                       child: Center(child: CircularProgressIndicator(color: Brule.amber)),
                     )
@@ -294,8 +294,8 @@ class _QueueTabState extends State<QueueTab> {
           Container(
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
             decoration: BoxDecoration(
-              color: const Color(0xFF161616),
-              border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+              color: Brule.sheet,
+              border: Border(top: BorderSide(color: Brule.hair(0.1))),
             ),
             child: Row(
               children: [

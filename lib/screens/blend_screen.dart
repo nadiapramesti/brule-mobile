@@ -220,7 +220,7 @@ class _BlendScreenState extends State<BlendScreen> {
                           decoration: BoxDecoration(
                             color: Brule.field,
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                            border: Border.all(color: Brule.hair(0.1)),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,8 +258,8 @@ class _BlendScreenState extends State<BlendScreen> {
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF161616),
-                      border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+                      color: Brule.sheet,
+                      border: Border(top: BorderSide(color: Brule.hair(0.1))),
                     ),
                     child: Row(
                       children: [
@@ -304,7 +304,7 @@ class _FlavorBar extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: (value / 100).clamp(0, 1).toDouble(),
                 minHeight: 6,
-                backgroundColor: Colors.white.withValues(alpha: 0.08),
+                backgroundColor: Brule.hair(0.08),
                 color: Brule.amber,
               ),
             ),

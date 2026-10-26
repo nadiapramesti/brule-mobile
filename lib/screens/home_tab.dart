@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../prefs.dart';
 import '../add_sheet.dart';
 import '../api.dart';
 import '../auth_gate.dart';
@@ -81,6 +82,8 @@ class _HomeTabState extends State<HomeTab> {
                       children: [
                         const BrandLogo(height: 34),
                         const Spacer(),
+                        const ThemeIconButton(),
+                        const SizedBox(width: 8),
                         ValueListenableBuilder<int>(
                           valueListenable: Api.session,
                           builder: (context, _, _) => Api.loggedIn
@@ -140,7 +143,7 @@ class _HomeTabState extends State<HomeTab> {
             future: _f,
             builder: (context, snap) {
               if (snap.connectionState != ConnectionState.done) {
-                return const Padding(
+                return Padding(
                   padding: EdgeInsets.symmetric(vertical: 64),
                   child: Center(child: CircularProgressIndicator(color: Brule.amber)),
                 );
@@ -217,7 +220,7 @@ class _FakeSearch extends StatelessWidget {
       color: Brule.field,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
-        side: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+        side: BorderSide(color: Brule.hair(0.12)),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
@@ -308,8 +311,8 @@ class _BannersState extends State<_Banners> {
                             begin: Alignment.centerLeft,
                             end: Alignment.centerRight,
                             colors: [
-                              const Color(0xFF121212).withValues(alpha: 0.92),
-                              const Color(0xFF121212).withValues(alpha: 0.55),
+                              Brule.bg.withValues(alpha: 0.92),
+                              Brule.bg.withValues(alpha: 0.55),
                             ],
                           ),
                         ),
@@ -525,7 +528,7 @@ class _MiniCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+          side: BorderSide(color: Brule.hair(0.1)),
         ),
         child: InkWell(
           onTap: onTap,
@@ -541,7 +544,7 @@ class _MiniCard extends StatelessWidget {
                         ? art!
                         : NetImage(url: image),
                     if (soldOut)
-                      const Positioned(
+                      Positioned(
                           top: 8, left: 8, child: Tag('HABIS', color: Brule.red, filled: true)),
                   ],
                 ),
@@ -585,7 +588,7 @@ class _MiniCard extends StatelessWidget {
                             style: IconButton.styleFrom(
                               minimumSize: const Size(38, 38),
                               backgroundColor: Brule.blue,
-                              foregroundColor: Brule.cream,
+                              foregroundColor: Brule.paper,
                             ),
                           ),
                         ],
@@ -621,7 +624,7 @@ class _Trust extends StatelessWidget {
           decoration: BoxDecoration(
             color: Brule.field,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            border: Border.all(color: Brule.hair(0.1)),
           ),
           child: Row(
             children: [
@@ -681,7 +684,7 @@ class _RoastPillState extends State<_RoastPill> {
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 7, 16, 7),
       decoration: BoxDecoration(
-        color: const Color(0xFF121212).withValues(alpha: 0.5),
+        color: Brule.bg.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: Brule.cream.withValues(alpha: 0.15)),
       ),
@@ -742,7 +745,7 @@ class _Stages extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Brule.field,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                    border: Border.all(color: Brule.hair(0.1)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -760,7 +763,7 @@ class _Stages extends StatelessWidget {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF121212).withValues(alpha: 0.85),
+                                  color: Brule.bg.withValues(alpha: 0.85),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text('0${i + 1}', style: Brule.mono(11, color: _ember)),

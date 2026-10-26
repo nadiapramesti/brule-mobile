@@ -196,7 +196,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 180),
                 child: _busy
-                    ? const SizedBox(
+                    ? SizedBox(
                         key: ValueKey('spin'),
                         width: 22,
                         height: 22,

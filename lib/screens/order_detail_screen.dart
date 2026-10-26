@@ -203,8 +203,8 @@ class OrderDetailScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF161616),
-                  border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+                  color: Brule.sheet,
+                  border: Border(top: BorderSide(color: Brule.hair(0.1))),
                 ),
                 child: SafeArea(
                   top: false,

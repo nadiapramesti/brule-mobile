@@ -58,7 +58,7 @@ class OrderRow extends StatelessWidget {
         border: Border.all(
           color: selected
               ? Brule.amber
-              : (late ? Brule.amber.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.1)),
+              : (late ? Brule.amber.withValues(alpha: 0.5) : Brule.hair(0.1)),
           width: selected ? 1.5 : 1,
         ),
       ),
@@ -107,7 +107,7 @@ class OrderRow extends StatelessWidget {
                           ),
                           if (late) ...[
                             const SizedBox(width: 6),
-                            const Icon(Icons.schedule, size: 12, color: Brule.amber),
+                            Icon(Icons.schedule, size: 12, color: Brule.amber),
                           ],
                           if (showStatus) ...[
                             const SizedBox(width: 8),
@@ -165,7 +165,7 @@ Future<String?> askTracking(BuildContext context, String code) {
     builder: (ctx) => StatefulBuilder(
       builder: (ctx, setState) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1A1A1A),
+          backgroundColor: Brule.field,
           title: Text('Kirim $code', style: Brule.condensed(20)),
           content: TextField(
             controller: c,

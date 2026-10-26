@@ -44,7 +44,7 @@ class ErrorBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: Brule.red.withValues(alpha: 0.5)),
       ),
-      child: Text(text, style: const TextStyle(color: Brule.red)),
+      child: Text(text, style: TextStyle(color: Brule.red)),
     );
   }
 }
@@ -75,7 +75,7 @@ class ErrorPanel extends StatelessWidget {
               shape: BoxShape.circle,
               color: Brule.red.withValues(alpha: 0.12),
             ),
-            child: const Icon(Icons.cloud_off_outlined, color: Brule.red, size: 26),
+            child: Icon(Icons.cloud_off_outlined, color: Brule.red, size: 26),
           ),
           const SizedBox(height: 14),
           Text(message,
@@ -157,16 +157,17 @@ Future<bool> askServerAddress(BuildContext context) async {
 
 class Tag extends StatelessWidget {
   final String text;
-  final Color color;
+  final Color? tint;
   final bool filled;
-  const Tag(this.text, {super.key, this.color = Brule.kraft, this.filled = false});
+  Tag(this.text, {super.key, Color? color, this.filled = false}) : tint = color;
 
   @override
   Widget build(BuildContext context) {
+    final color = tint ?? Brule.kraft;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: filled ? const Color(0xFF121212).withValues(alpha: 0.88) : null,
+        color: filled ? Brule.bg.withValues(alpha: 0.88) : null,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: color.withValues(alpha: 0.6)),
       ),
@@ -309,7 +310,7 @@ class _ChipRowState extends State<ChipRow> {
                 child: SizedBox(
                   width: 30,
                   height: 30,
-                  child: Icon(left ? Icons.chevron_left : Icons.chevron_right, size: 22, color: Brule.cream),
+                  child: Icon(left ? Icons.chevron_left : Icons.chevron_right, size: 22, color: Brule.paper),
                 ),
               ),
             ),
@@ -323,7 +324,7 @@ class _ChipRowState extends State<ChipRow> {
   Widget build(BuildContext context) {
     final kids = widget.children;
     final fade = widget.fade ??
-        (context.findAncestorWidgetOfExactType<BottomSheet>() != null ? const Color(0xFF161616) : Brule.bg);
+        (context.findAncestorWidgetOfExactType<BottomSheet>() != null ? Brule.sheet : Brule.bg);
     return NotificationListener<ScrollMetricsNotification>(
       onNotification: (_) {
         _later();
@@ -394,7 +395,7 @@ class QtyStepper extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+        border: Border.all(color: Brule.hair(0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -448,7 +449,7 @@ class ProductCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+        side: BorderSide(color: Brule.hair(0.1)),
       ),
       child: InkWell(
         onTap: onTap,
@@ -464,7 +465,7 @@ class ProductCard extends StatelessWidget {
                       ? art!
                       : NetImage(url: image),
                   if (soldOut)
-                    const Positioned(top: 8, left: 8, child: Tag('HABIS', color: Brule.red, filled: true)),
+                    Positioned(top: 8, left: 8, child: Tag('HABIS', color: Brule.red, filled: true)),
                 ],
               ),
             ),
@@ -616,7 +617,7 @@ class _LoaderState<T> extends State<Loader<T>> {
 
   Widget _body(BuildContext context, AsyncSnapshot<T> snap) {
     if (snap.connectionState != ConnectionState.done) {
-      return const Center(child: CircularProgressIndicator(color: Brule.amber));
+      return Center(child: CircularProgressIndicator(color: Brule.amber));
     }
     if (snap.hasError) {
       return Center(

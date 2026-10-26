@@ -112,7 +112,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                   children: [
                     Expanded(child: Text('${u['name']}${u['is_me'] == true ? ' (kamu)' : ''}', style: Brule.condensed(18))),
                     Tag(role.toUpperCase(), color: _roleColor(role)),
-                    if (blocked) ...[const SizedBox(width: 6), const Tag('DIBLOKIR', color: Brule.red)],
+                    if (blocked) ...[const SizedBox(width: 6), Tag('DIBLOKIR', color: Brule.red)],
                   ],
                 ),
                 const SizedBox(height: 2),

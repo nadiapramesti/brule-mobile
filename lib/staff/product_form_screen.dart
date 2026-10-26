@@ -157,11 +157,11 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         future: _picked!.readAsBytes(),
         builder: (context, s) => s.hasData
             ? Image.memory(Uint8List.fromList(s.data!), fit: BoxFit.cover)
-            : const Center(child: CircularProgressIndicator(color: Brule.amber)),
+            : Center(child: CircularProgressIndicator(color: Brule.amber)),
       );
     } else if (hasOld) {
       preview = Image.network(_image!, fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => const Center(child: Icon(Icons.broken_image_outlined, color: Brule.kraft)));
+          errorBuilder: (_, _, _) => Center(child: Icon(Icons.broken_image_outlined, color: Brule.kraft)));
     } else {
       preview = Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -237,7 +237,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     return AdminPage(
       title: _isNew ? 'Perlengkapan baru' : 'Ubah perlengkapan',
       child: _loading
-          ? const Center(child: CircularProgressIndicator(color: Brule.amber))
+          ? Center(child: CircularProgressIndicator(color: Brule.amber))
           : Column(
               children: [
                 Expanded(
@@ -324,7 +324,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 FilledButton.icon(
                   onPressed: _busy ? null : _save,
                   icon: _busy
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Brule.cream))
                       : const Icon(Icons.check, size: 18),
                   label: Text(_busy ? 'MENYIMPAN...' : (_isNew ? 'SIMPAN PERLENGKAPAN' : 'SIMPAN PERUBAHAN')),

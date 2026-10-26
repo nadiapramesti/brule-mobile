@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../prefs.dart';
 import '../brand_logo.dart';
 import '../notice_bell.dart';
 import '../motion.dart';
@@ -79,13 +80,15 @@ class _StaffShellState extends State<StaffShell> {
               height: 54,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
               decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
+                border: Border(bottom: BorderSide(color: Brule.hair(0.08))),
               ),
               child: Row(
                 children: [
                   const BrandLogo(height: 28),
                   const Spacer(),
                   Tag(admin ? 'ADMIN' : 'ROASTER', color: admin ? Brule.amber : Brule.blueText),
+                  const SizedBox(width: 8),
+                  const ThemeIconButton(),
                   const SizedBox(width: 8),
                   const NoticeBell(),
                 ],

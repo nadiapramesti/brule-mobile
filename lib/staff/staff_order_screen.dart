@@ -59,7 +59,7 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
     final reason = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A1A),
+        backgroundColor: Brule.field,
         title: Text('Batalkan ${widget.code}?', style: Brule.condensed(20)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -123,7 +123,7 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
           ? Center(
               child: _error != null
                   ? Padding(padding: const EdgeInsets.all(24), child: ErrorBox(_error!))
-                  : const CircularProgressIndicator(color: Brule.amber),
+                  : CircularProgressIndicator(color: Brule.amber),
             )
           : Narrow(
               child: RefreshIndicator(
@@ -143,7 +143,7 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                           child: Text('${o['status_label']}', style: Brule.condensed(26)),
                         ),
                         if (o['is_late'] == true) ...[
-                          const Tag('TERLAMBAT', color: Brule.amber),
+                          Tag('TERLAMBAT', color: Brule.amber),
                           const SizedBox(width: 6),
                         ],
                         Tag(o['is_paid'] == true ? 'LUNAS' : 'BELUM BAYAR',
@@ -255,8 +255,8 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF161616),
-        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+        color: Brule.sheet,
+        border: Border(top: BorderSide(color: Brule.hair(0.1))),
       ),
       child: SafeArea(top: false, child: Narrow(child: a)),
     );
@@ -267,7 +267,7 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
         decoration: BoxDecoration(
           color: Brule.field,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: Brule.hair(0.1)),
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
       );

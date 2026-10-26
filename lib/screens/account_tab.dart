@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../prefs.dart';
 import '../api.dart';
 import '../cart.dart';
 import '../theme.dart';
@@ -30,7 +31,7 @@ class _AccountTabState extends State<AccountTab> {
     final yes = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A1A),
+        backgroundColor: Brule.field,
         title: Text('Keluar dari akun?', style: Brule.condensed(20)),
         content: const Text('Keranjang di perangkat ini ikut dikosongkan.'),
         actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -128,7 +129,7 @@ class _AccountTabState extends State<AccountTab> {
               decoration: BoxDecoration(
                 color: Brule.field,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                border: Border.all(color: Brule.hair(0.1)),
               ),
               child: Row(
                 children: [
@@ -137,7 +138,7 @@ class _AccountTabState extends State<AccountTab> {
                     backgroundColor: Brule.blue,
                     child: Text(
                       name.isEmpty ? '?' : name.characters.first.toUpperCase(),
-                      style: Brule.condensed(26),
+                      style: Brule.condensed(26, color: Brule.paper),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -188,6 +189,8 @@ class _AccountTabState extends State<AccountTab> {
               subtitle: 'Ganti password akunmu',
               onTap: () => _open(const PasswordScreen(), 'Password diubah'),
             ),
+            const Label('TAMPILAN'),
+            const ThemeSwitch(),
             const SizedBox(height: 16),
             OutlinedButton.icon(
               style: OutlinedButton.styleFrom(
@@ -229,7 +232,7 @@ class _Tile extends StatelessWidget {
         color: Brule.field,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+          side: BorderSide(color: Brule.hair(0.1)),
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),

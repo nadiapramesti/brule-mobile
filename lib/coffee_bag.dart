@@ -38,7 +38,7 @@ class CoffeeBagArt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Brule.field,
+      color: const Color(0xFF1A1A1A),
       padding: const EdgeInsets.symmetric(vertical: 8),
       alignment: Alignment.center,
       child: AspectRatio(
@@ -105,7 +105,7 @@ class _BagPainter extends CustomPainter {
     c.drawPath(
       body,
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           colors: [Color(0xFF232323), Color(0xFF121212), Color(0xFF1C1C1C)],
           stops: [0, 0.45, 1],
         ).createShader(const Rect.fromLTRB(18, 36, 184, 244)),
@@ -168,7 +168,7 @@ class _BagPainter extends CustomPainter {
     // label kraft
     c.drawRRect(
       RRect.fromRectAndRadius(const Rect.fromLTWH(38, 64, 124, 158), const Radius.circular(3)),
-      Paint()..color = Brule.kraft,
+      Paint()..color = const Color(0xFFD8C5A6),
     );
     c.drawRRect(
       RRect.fromRectAndRadius(const Rect.fromLTWH(42, 68, 116, 150), const Radius.circular(2)),

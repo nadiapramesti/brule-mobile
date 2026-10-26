@@ -67,7 +67,7 @@ class _Summary extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       decoration: BoxDecoration(
         color: Brule.field,
-        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.12))),
+        border: Border(top: BorderSide(color: Brule.hair(0.12))),
       ),
       child: Narrow(
         child: Row(
@@ -116,7 +116,7 @@ class _Line extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Brule.hair(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -193,7 +193,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
                 FilledButton.icon(
                   onPressed: _busy ? null : _save,
                   icon: _busy
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Brule.cream))
                       : const Icon(Icons.check, size: 18),
                   label: Text(_busy ? 'MENYIMPAN...' : (_isNew ? 'BUAT AKUN' : 'SIMPAN PERUBAHAN')),

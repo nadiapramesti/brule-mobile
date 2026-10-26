@@ -121,7 +121,7 @@ class _AdminDashboardTabState extends State<AdminDashboardTab> {
                             padding: EdgeInsets.only(top: i == 0 ? 0 : 10),
                             child: Row(
                               children: [
-                                const Icon(Icons.warning_amber_rounded, size: 16, color: Brule.amber),
+                                Icon(Icons.warning_amber_rounded, size: 16, color: Brule.amber),
                                 const SizedBox(width: 10),
                                 Expanded(child: Text('${c['name']}')),
                                 Text('${c['grams']} g', style: Brule.mono(11, color: Brule.amber)),
@@ -192,7 +192,7 @@ class _Hero extends StatelessWidget {
       decoration: BoxDecoration(
         color: Brule.field,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Brule.hair(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -303,7 +303,7 @@ class _StatusBox extends StatelessWidget {
                   builder: (context, v, _) => LinearProgressIndicator(
                     value: v,
                     minHeight: 4,
-                    backgroundColor: Colors.white.withValues(alpha: 0.07),
+                    backgroundColor: Brule.hair(0.07),
                     color: statusColor('${s['status']}'),
                   ),
                 ),
@@ -361,7 +361,7 @@ class _TopBox extends StatelessWidget {
                           builder: (context, v, _) => LinearProgressIndicator(
                             value: v,
                             minHeight: 3,
-                            backgroundColor: Colors.white.withValues(alpha: 0.07),
+                            backgroundColor: Brule.hair(0.07),
                             color: i == 0 ? Brule.amber : Brule.blue,
                           ),
                         ),
@@ -389,7 +389,7 @@ class _Box extends StatelessWidget {
         decoration: BoxDecoration(
           color: Brule.field,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: Brule.hair(0.1)),
         ),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
       );
@@ -407,7 +407,7 @@ class _BarPainter extends CustomPainter {
     final maxV = values.reduce((a, b) => a > b ? a : b);
     const gap = 4.0;
     final bw = (size.width - gap * (values.length - 1)) / values.length;
-    final base = Paint()..color = Colors.white.withValues(alpha: 0.06);
+    final base = Paint()..color = Brule.hair(0.06);
     final bar = Paint()..color = Brule.blue;
     final accent = Paint()..color = Brule.amber;
 
@@ -419,7 +419,7 @@ class _BarPainter extends CustomPainter {
       );
       if (maxV == 0 || values[i] == 0) {
         // hari tanpa penjualan tetap diberi garis tipis supaya kelihatan "nol", bukan rusak
-        canvas.drawRect(Rect.fromLTWH(x, size.height - 2, bw, 2), Paint()..color = Colors.white.withValues(alpha: 0.12));
+        canvas.drawRect(Rect.fromLTWH(x, size.height - 2, bw, 2), Paint()..color = Brule.hair(0.12));
         continue;
       }
       final local = ((t * 1.6) - i / values.length * 0.6).clamp(0.0, 1.0);

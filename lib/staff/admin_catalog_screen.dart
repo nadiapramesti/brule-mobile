@@ -115,7 +115,7 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
                 Row(
                   children: [
                     Flexible(child: Text('${it['name']}', style: Brule.condensed(18))),
-                    if (!active) ...[const SizedBox(width: 8), const Tag('DISEMBUNYIKAN', color: Brule.amber)],
+                    if (!active) ...[const SizedBox(width: 8), Tag('DISEMBUNYIKAN', color: Brule.amber)],
                   ],
                 ),
                 const SizedBox(height: 2),

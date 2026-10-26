@@ -90,7 +90,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
               Row(
                 children: [
                   Expanded(child: Text('${c['name']}', style: Brule.condensed(18))),
-                  if (c['blocked'] == true) const Tag('DIBLOKIR', color: Brule.red),
+                  if (c['blocked'] == true) Tag('DIBLOKIR', color: Brule.red),
                 ],
               ),
               const SizedBox(height: 2),

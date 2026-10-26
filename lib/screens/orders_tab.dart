@@ -134,7 +134,7 @@ class _OrderCard extends StatelessWidget {
         color: Brule.field,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+          side: BorderSide(color: Brule.hair(0.1)),
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(8),

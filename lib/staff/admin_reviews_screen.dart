@@ -62,7 +62,7 @@ class _AdminReviewsScreenState extends State<AdminReviewsScreen> {
                         Row(
                           children: [
                             Expanded(child: Text('${r['coffee']}', style: Brule.condensed(18))),
-                            if (r['is_hidden'] == true) const Tag('DISEMBUNYIKAN', color: Brule.amber),
+                            if (r['is_hidden'] == true) Tag('DISEMBUNYIKAN', color: Brule.amber),
                           ],
                         ),
                         const SizedBox(height: 4),

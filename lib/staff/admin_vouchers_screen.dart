@@ -32,7 +32,7 @@ class _AdminVouchersScreenState extends State<AdminVouchersScreen> {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      backgroundColor: const Color(0xFF161616),
+      backgroundColor: Brule.sheet,
       constraints: const BoxConstraints(maxWidth: 560),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(12))),
       builder: (_) => _VoucherForm(voucher: v),

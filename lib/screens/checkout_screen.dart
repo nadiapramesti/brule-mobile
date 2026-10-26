@@ -133,7 +133,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         decoration: BoxDecoration(
           color: Brule.field,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: border ?? Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: border ?? Brule.hair(0.1)),
         ),
         child: child,
       );
@@ -141,7 +141,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget _addressSection() {
     if (_loadingAddr) {
       return _box(
-        child: const Center(
+        child: Center(
           child: Padding(
             padding: EdgeInsets.all(8),
             child: SizedBox(
@@ -162,7 +162,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.location_off_outlined, color: Brule.amber),
+                Icon(Icons.location_off_outlined, color: Brule.amber),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text('Belum ada alamat tersimpan.',
@@ -193,7 +193,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               Tag(a.label.toUpperCase()),
               if (a.isDefault) ...[
                 const SizedBox(width: 8),
-                const Tag('UTAMA', color: Brule.amber),
+                Tag('UTAMA', color: Brule.amber),
               ],
             ],
           ),
@@ -336,7 +336,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             FilledButton(
               onPressed: _busy ? null : _submit,
               child: _busy
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 22,
                       height: 22,
                       child: CircularProgressIndicator(strokeWidth: 2.4, color: Brule.cream),

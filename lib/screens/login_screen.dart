@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              const Icon(Icons.info_outline, size: 16, color: Brule.amber),
+                              Icon(Icons.info_outline, size: 16, color: Brule.amber),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(widget.reason!,
@@ -295,7 +295,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 180),
                         child: emailBusy
-                            ? const SizedBox(
+                            ? SizedBox(
                                 key: ValueKey('spin'),
                                 width: 22,
                                 height: 22,
@@ -414,7 +414,7 @@ class _SocialButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           busy
-              ? const SizedBox(
+              ? SizedBox(
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2.2, color: Brule.amber),

@@ -93,7 +93,7 @@ class _CoffeeDetailScreenState extends State<CoffeeDetailScreen> {
                 if (c.cupping != null)
                   Tag('CUPPING ${c.cupping!.toStringAsFixed(1)}', color: Brule.amber),
                 if (_profile.agtron != null) Tag('AGTRON ${_profile.agtron}'),
-                if (!c.inStock) const Tag('STOK HABIS', color: Brule.red),
+                if (!c.inStock) Tag('STOK HABIS', color: Brule.red),
               ],
             ),
             if (_profile.notes.isNotEmpty) ...[

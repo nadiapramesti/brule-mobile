@@ -137,7 +137,7 @@ class _AdminReportScreenState extends State<AdminReportScreen> {
                                 height: 2 + 116 * asInt(e['total']) / maxV,
                                 decoration: BoxDecoration(
                                   color: asInt(e['total']) == 0
-                                      ? Colors.white.withValues(alpha: 0.12)
+                                      ? Brule.hair(0.12)
                                       : Brule.amber,
                                   borderRadius: BorderRadius.circular(1.5),
                                 ),
@@ -227,7 +227,7 @@ class _Kpi extends StatelessWidget {
         decoration: BoxDecoration(
           color: Brule.field,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: Brule.hair(0.1)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
