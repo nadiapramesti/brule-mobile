@@ -93,7 +93,15 @@ class _CoffeeStockState extends State<_CoffeeStock> {
         children: [
           Row(
             children: [
-              Expanded(child: Text('${widget.coffee['name']}', style: Brule.condensed(22))),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${widget.coffee['name']}', style: Brule.condensed(22)),
+                    Text(_kModes[_mode] ?? '', style: Brule.mono(10, color: Brule.blueText)),
+                  ],
+                ),
+              ),
               IconButton(tooltip: 'Tutup', icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
             ],
           ),
@@ -103,13 +111,7 @@ class _CoffeeStockState extends State<_CoffeeStock> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text('Stok biji mentah sekarang: ${gram(_now)}', style: Brule.mono(10, color: Brule.cream)),
-                  const Label('JENIS'),
-                  ChipPicker<String>(
-                    items: _kModes.keys.toList(),
-                    value: _mode,
-                    label: (k) => _kModes[k]!,
-                    onChanged: (k) => setState(() => _mode = k),
-                  ),
+                  const SizedBox(height: 4),
                   Label(_mode == 'count' ? 'HASIL HITUNG FISIK (gram)' : 'JUMLAH (gram)'),
                   TextField(
                     controller: _amount,
