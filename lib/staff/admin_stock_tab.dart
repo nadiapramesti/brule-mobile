@@ -35,7 +35,7 @@ class _AdminStockTabState extends State<AdminStockTab> {
       ? Brule.red
       : s == 'low'
           ? Brule.amber
-          : Brule.blue;
+          : Brule.blueText;
 
   String _stateLabel(String s) => s == 'soldout' ? 'HABIS' : (s == 'low' ? 'MENIPIS' : 'AMAN');
 
@@ -97,7 +97,7 @@ class _AdminStockTabState extends State<AdminStockTab> {
                   ),
                   const SizedBox(height: 12),
                   SearchBox(
-                    hint: 'cari nama, proses, atau daerah, contoh: Natural',
+                    hint: 'cari biji, contoh: Natural',
                     onChanged: (v) => setState(() => _q = v.trim()),
                   ),
                   const SizedBox(height: 8),
@@ -160,36 +160,31 @@ class _AdminStockTabState extends State<AdminStockTab> {
                               Text(gram(asInt(c['grams'])), style: Brule.mono(11, color: Brule.cream)),
                               const Spacer(),
                               if (c['days_left'] != null)
-                                Text('≈ ${c['days_left']} hari lagi', style: Brule.mono(9.5)),
+                                Text(
+                                  asInt(c['days_left']) > 365
+                                      ? 'cukup > 1 tahun'
+                                      : '≈ ${c['days_left']} hari lagi',
+                                  style: Brule.mono(9.5),
+                                ),
                             ],
                           ),
                           if (widget.manage) ...[
                             const SizedBox(height: 10),
-                            Row(
+                            ButtonRow(
                               children: [
-                                Expanded(
-                                  child: FilledButton.icon(
-                                    onPressed: () => _after(showCoffeeStockSheet(context, c), 'Stok ${c['name']} diperbarui'),
-                                    icon: const Icon(Icons.add, size: 18),
-                                    label: const Text('MASUK'),
-                                  ),
+                                FilledButton(
+                                  onPressed: () => _after(showCoffeeStockSheet(context, c), 'Stok ${c['name']} diperbarui'),
+                                  child: const Text('MASUK'),
                                 ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: OutlinedButton.icon(
-                                    onPressed: () => _after(
-                                        showCoffeeStockSheet(context, c, mode: 'waste'), 'Stok ${c['name']} diperbarui'),
-                                    icon: const Icon(Icons.remove, size: 18),
-                                    label: const Text('KELUAR'),
-                                  ),
+                                OutlinedButton(
+                                  onPressed: () => _after(
+                                      showCoffeeStockSheet(context, c, mode: 'waste'), 'Stok ${c['name']} diperbarui'),
+                                  child: const Text('KELUAR'),
                                 ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: OutlinedButton(
-                                    onPressed: () => _after(
-                                        showCoffeeStockSheet(context, c, mode: 'count'), 'Stok ${c['name']} dikoreksi'),
-                                    child: const Text('HITUNG'),
-                                  ),
+                                OutlinedButton(
+                                  onPressed: () => _after(
+                                      showCoffeeStockSheet(context, c, mode: 'count'), 'Stok ${c['name']} dikoreksi'),
+                                  child: const Text('HITUNG'),
                                 ),
                               ],
                             ),

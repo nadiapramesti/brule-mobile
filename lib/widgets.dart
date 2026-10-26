@@ -353,20 +353,33 @@ class _ChipRowState extends State<ChipRow> {
   }
 }
 
-/// Beberapa tombol sejajar satu baris dengan lebar sama (aman dipakai walau tema tombol penuh lebar).
+/// Beberapa tombol sejajar satu baris dengan lebar dan tinggi sama. Gayanya dipadatkan
+/// (padding dan jarak huruf kecil) supaya label seperti "SEMBUNYIKAN" tidak terpotong ke baris kedua.
 class ButtonRow extends StatelessWidget {
   final List<Widget> children;
   const ButtonRow({super.key, required this.children});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < children.length; i++) ...[
-          if (i > 0) const SizedBox(width: 8),
-          Expanded(child: children[i]),
+    final t = Theme.of(context);
+    final style = ButtonStyle(
+      minimumSize: const WidgetStatePropertyAll(Size(0, 46)),
+      padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 6)),
+      textStyle: WidgetStatePropertyAll(Brule.condensed(14, spacing: 0.5)),
+    );
+    return Theme(
+      data: t.copyWith(
+        filledButtonTheme: FilledButtonThemeData(style: t.filledButtonTheme.style?.merge(style) ?? style),
+        outlinedButtonTheme: OutlinedButtonThemeData(style: t.outlinedButtonTheme.style?.merge(style) ?? style),
+      ),
+      child: Row(
+        children: [
+          for (var i = 0; i < children.length; i++) ...[
+            if (i > 0) const SizedBox(width: 8),
+            Expanded(child: children[i]),
+          ],
         ],
-      ],
+      ),
     );
   }
 }
