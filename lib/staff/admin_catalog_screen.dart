@@ -35,7 +35,10 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
   Widget build(BuildContext context) {
     return AdminPage(
       title: widget.coffees ? 'Kopi' : 'Produk',
-      child: Loader<Map<String, dynamic>>(
+      child: Column(
+        children: [
+          Expanded(
+            child: Loader<Map<String, dynamic>>(
         key: ValueKey('$_q|$_v'),
         load: () => Api.get(_base, _q.isEmpty ? null : {'q': _q}),
         builder: (context, d, reload) {
@@ -50,14 +53,6 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
               children: [
-                if (!widget.coffees) ...[
-                  FilledButton.icon(
-                    onPressed: () => _edit(null),
-                    icon: const Icon(Icons.add, size: 20),
-                    label: const Text('TAMBAH PERLENGKAPAN'),
-                  ),
-                  const SizedBox(height: 12),
-                ],
                 SearchBox(
                   hint: widget.coffees ? 'cari nama kopi' : 'cari nama produk',
                   onChanged: (v) => setState(() => _q = v.trim()),
@@ -80,6 +75,17 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
             ),
           );
         },
+            ),
+          ),
+          if (!widget.coffees)
+            BottomBar(
+              child: FilledButton.icon(
+                onPressed: () => _edit(null),
+                icon: const Icon(Icons.add, size: 20),
+                label: const Text('TAMBAH PERLENGKAPAN'),
+              ),
+            ),
+        ],
       ),
     );
   }

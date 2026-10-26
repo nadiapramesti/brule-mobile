@@ -74,7 +74,10 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   Widget build(BuildContext context) {
     return AdminPage(
       title: 'Pengguna',
-      child: PagedList(
+      child: Column(
+        children: [
+          Expanded(
+            child: PagedList(
         key: ValueKey('$_role|$_q|$_v'),
         path: '/admin/users',
         params: {'role': _role, if (_q.isNotEmpty) 'q': _q},
@@ -83,12 +86,6 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              FilledButton.icon(
-                onPressed: () => _form(),
-                icon: const Icon(Icons.person_add_alt_1_outlined, size: 20),
-                label: const Text('TAMBAH AKUN STAF'),
-              ),
-              const SizedBox(height: 12),
               SearchBox(hint: 'cari nama, email, atau nomor HP', onChanged: (v) => setState(() => _q = v.trim())),
               const SizedBox(height: 10),
               ChipPicker<String>(
@@ -143,6 +140,16 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             ),
           );
         },
+            ),
+          ),
+          BottomBar(
+            child: FilledButton.icon(
+              onPressed: () => _form(),
+              icon: const Icon(Icons.person_add_alt_1_outlined, size: 20),
+              label: const Text('TAMBAH AKUN STAF'),
+            ),
+          ),
+        ],
       ),
     );
   }

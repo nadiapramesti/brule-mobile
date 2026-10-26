@@ -238,30 +238,12 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       title: _isNew ? 'Perlengkapan baru' : 'Ubah perlengkapan',
       child: _loading
           ? const Center(child: CircularProgressIndicator(color: Brule.amber))
-          : ListView(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+          : Column(
               children: [
-                // aksi utama di atas halaman
-                Reveal(
-                  child: FilledButton.icon(
-                    onPressed: _busy ? null : _save,
-                    icon: _busy
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Brule.cream))
-                        : const Icon(Icons.check, size: 18),
-                    label: Text(_busy ? 'MENYIMPAN...' : (_isNew ? 'SIMPAN PERLENGKAPAN' : 'SIMPAN PERUBAHAN')),
-                  ),
-                ),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 200),
-                  alignment: Alignment.topCenter,
-                  child: _error == null
-                      ? const SizedBox(width: double.infinity)
-                      : Padding(padding: const EdgeInsets.only(top: 10), child: ErrorBox(_error!)),
-                ),
-                const SizedBox(height: 4),
+                Expanded(
+                  child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+              children: [
                 Reveal(
                   index: 1,
                   child: Column(
@@ -324,6 +306,32 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     ],
                   ),
                 ),
+              ],
+            ),
+          ),
+          BottomBar(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 200),
+                  alignment: Alignment.bottomCenter,
+                  child: _error == null
+                      ? const SizedBox(width: double.infinity)
+                      : Padding(padding: const EdgeInsets.only(bottom: 10), child: ErrorBox(_error!)),
+                ),
+                FilledButton.icon(
+                  onPressed: _busy ? null : _save,
+                  icon: _busy
+                      ? const SizedBox(
+                          width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Brule.cream))
+                      : const Icon(Icons.check, size: 18),
+                  label: Text(_busy ? 'MENYIMPAN...' : (_isNew ? 'SIMPAN PERLENGKAPAN' : 'SIMPAN PERUBAHAN')),
+                ),
+              ],
+            ),
+          ),
               ],
             ),
     );
