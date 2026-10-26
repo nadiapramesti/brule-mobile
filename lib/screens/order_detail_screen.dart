@@ -26,32 +26,19 @@ class OrderDetailScreen extends StatelessWidget {
       await Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => PaymentScreen(url: '${r['redirect_url']}')),
       );
-      final o = await Api.post('/orders/$code/sync');
+      await Api.post('/orders/$code/sync');
       AppEvents.ordersChanged.value++;
       await reload();
-      if (context.mounted && o['is_paid'] == true) _offerReceipt(context);
     } on ApiException catch (e) {
       if (context.mounted) _toast(context, e.message);
     }
   }
 
-  void _offerReceipt(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      duration: const Duration(seconds: 8),
-      content: const Text('Pembayaran berhasil. Struk siap diunduh.'),
-      action: SnackBarAction(
-        label: 'UNDUH STRUK',
-        onPressed: () => downloadAndShare(context, '/orders/$code/receipt', {}),
-      ),
-    ));
-  }
-
   Future<void> _sync(BuildContext context, Future<void> Function() reload) async {
     try {
-      final o = await Api.post('/orders/$code/sync');
+      await Api.post('/orders/$code/sync');
       AppEvents.ordersChanged.value++;
       await reload();
-      if (context.mounted && o['is_paid'] == true) _offerReceipt(context);
     } on ApiException catch (e) {
       if (context.mounted) _toast(context, e.message);
     }
@@ -104,7 +91,8 @@ class OrderDetailScreen extends StatelessWidget {
       body: Loader<Order>(
         load: _load,
         builder: (context, o, reload) {
-          final canReceipt = o.status != 'cancelled' && (o.isPaid || o.paymentMethod == 'cod');
+          // Struk baru keluar setelah roaster mengisi nomor resi (pesanan sudah dikirim).
+          final canReceipt = o.status != 'cancelled' && (o.trackingNumber ?? '').isNotEmpty;
           final list = RefreshIndicator(
             color: Brule.amber,
             onRefresh: reload,
