@@ -45,7 +45,7 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
+              TileRow(
                 children: [
                   Stat('TOTAL', '${asInt(st['total'])}'),
                   Stat('PERNAH PESAN', '${asInt(st['ordered'])}'),

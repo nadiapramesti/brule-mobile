@@ -53,38 +53,189 @@ class Panel extends StatelessWidget {
   }
 }
 
-/// Angka ringkas (label kecil + nilai besar) untuk baris statistik.
-class Stat extends StatelessWidget {
-  final String label;
-  final String value;
-  final bool warn;
-  const Stat(this.label, this.value, {super.key, this.warn = false});
+/// Baris kotak ringkas dengan ukuran SERAGAM: tinggi dikunci, lebar dibagi rata,
+/// jarak hanya di antara kotak sehingga sisi kiri dan kanan sejajar dengan isi halaman.
+class TileRow extends StatelessWidget {
+  final List<Widget> children;
+  final double height;
+  const TileRow({super.key, required this.children, this.height = 88});
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.only(right: 6),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        decoration: BoxDecoration(
-          color: Brule.field,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label, style: Brule.mono(8.5)),
-            const SizedBox(height: 4),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(value, style: Brule.condensed(20, color: warn ? Brule.amber : Brule.cream)),
-            ),
+    return SizedBox(
+      height: height,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var i = 0; i < children.length; i++) ...[
+            if (i > 0) const SizedBox(width: 8),
+            Expanded(child: children[i]),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Satu kotak angka: label (maks 2 baris, tinggi tetap), nilai besar, dan catatan kecil di bawah.
+/// Dipakai di dalam [TileRow]. Bisa ditekan bila [onTap] diisi.
+class Stat extends StatelessWidget {
+  final String label;
+  final String value;
+  final String? foot;
+  final bool warn;
+  final bool selected;
+  final VoidCallback? onTap;
+  const Stat(this.label, this.value,
+      {super.key, this.foot, this.warn = false, this.selected = false, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final hot = warn || selected;
+    return Material(
+      color: selected ? Brule.amber.withValues(alpha: 0.1) : Brule.field,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(
+          color: selected
+              ? Brule.amber
+              : (warn ? Brule.amber.withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.1)),
+          width: selected ? 1.5 : 1,
+        ),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 22,
+                child: Center(
+                  child: Text(label,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Brule.mono(8.5).copyWith(height: 1.15, letterSpacing: 0.8)),
+                ),
+              ),
+              const SizedBox(height: 2),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(value, style: Brule.condensed(24, color: hot ? Brule.amber : Brule.cream)),
+              ),
+              const SizedBox(height: 2),
+              Text(foot ?? ' ',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Brule.mono(8.5, color: warn ? Brule.amber : Brule.kraft)),
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+/// Tombol filter berupa kotak: label kecil + pilihan sekarang, menekan membuka daftar pilihan.
+class PickField<T> extends StatelessWidget {
+  final String label;
+  final Map<T, String> options;
+  final T value;
+  final T all; // nilai "tidak difilter"
+  final ValueChanged<T> onChanged;
+  const PickField({
+    super.key,
+    required this.label,
+    required this.options,
+    required this.value,
+    required this.all,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final active = value != all;
+    return Material(
+      color: active ? Brule.blue.withValues(alpha: 0.18) : Brule.field,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: active ? Brule.blueText.withValues(alpha: 0.7) : Colors.white.withValues(alpha: 0.16)),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: () async {
+          final r = await pickOne<T>(context, label, options, value);
+          if (r != null) onChanged(r);
+        },
+        child: Container(
+          height: 58,
+          padding: const EdgeInsets.fromLTRB(12, 0, 8, 0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(label, style: Brule.mono(9)),
+                    const SizedBox(height: 2),
+                    Text(options[value] ?? '-',
+                        maxLines: 1, overflow: TextOverflow.ellipsis, style: Brule.condensed(16)),
+                  ],
+                ),
+              ),
+              const Icon(Icons.expand_more, color: Brule.kraft),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Lembar pilihan satu dari banyak. Mengembalikan null kalau ditutup tanpa memilih.
+Future<T?> pickOne<T>(BuildContext context, String title, Map<T, String> options, T value) {
+  return showModalBottomSheet<T>(
+    context: context,
+    useSafeArea: true,
+    isScrollControlled: true,
+    backgroundColor: const Color(0xFF161616),
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+    builder: (ctx) => ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(ctx).height * 0.7),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 10),
+          Container(width: 38, height: 4, decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(2))),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
+            child: Align(alignment: Alignment.centerLeft, child: Text(title, style: Brule.mono(11))),
+          ),
+          Flexible(
+            child: ListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+              children: [
+                for (final e in options.entries)
+                  ListTile(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    selected: e.key == value,
+                    selectedTileColor: Brule.blue.withValues(alpha: 0.2),
+                    title: Text(e.value, style: Brule.condensed(17)),
+                    trailing: e.key == value ? const Icon(Icons.check, color: Brule.blueText) : null,
+                    onTap: () => Navigator.of(ctx).pop(e.key),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 Future<bool> confirmDialog(BuildContext context, String title, String text,
@@ -133,6 +284,8 @@ class PagedList extends StatefulWidget {
   final Widget Function(Map<String, dynamic>? meta) header;
   final Widget Function(BuildContext, Map<String, dynamic> item, Future<void> Function() refresh) item;
   final String empty;
+  /// Bila diisi, daftar diberi judul kelompok (mis. tanggal) tiap kali nilainya berganti.
+  final String Function(Map<String, dynamic> item)? groupBy;
   const PagedList({
     super.key,
     required this.path,
@@ -140,6 +293,7 @@ class PagedList extends StatefulWidget {
     required this.header,
     required this.item,
     this.empty = 'Tidak ada data.',
+    this.groupBy,
   });
 
   @override
@@ -206,7 +360,14 @@ class _PagedListState extends State<PagedList> {
               padding: const EdgeInsets.symmetric(vertical: 40),
               child: Center(child: Text(widget.empty, style: Brule.mono(11))),
             ),
-          for (final (i, it) in _items.indexed) Reveal(index: i, child: widget.item(context, it, _refresh)),
+          for (final (i, it) in _items.indexed) ...[
+            if (widget.groupBy != null && (i == 0 || widget.groupBy!(_items[i - 1]) != widget.groupBy!(it)))
+              Padding(
+                padding: EdgeInsets.only(top: i == 0 ? 2 : 14, bottom: 8),
+                child: Text(widget.groupBy!(it), style: Brule.mono(10)),
+              ),
+            Reveal(index: i, child: widget.item(context, it, _refresh)),
+          ],
           if (_loading)
             const Padding(
               padding: EdgeInsets.all(20),

@@ -26,6 +26,7 @@ class OrderRow extends StatelessWidget {
   final bool selected;
   final VoidCallback? onToggle;
   final bool showTotal;
+  final bool showStatus;
 
   const OrderRow({
     super.key,
@@ -38,6 +39,7 @@ class OrderRow extends StatelessWidget {
     this.selected = false,
     this.onToggle,
     this.showTotal = false,
+    this.showStatus = true,
   });
 
   @override
@@ -73,15 +75,13 @@ class OrderRow extends StatelessWidget {
                 if (selectable)
                   SizedBox(
                     width: 40,
-                    child: showCheck
-                        ? Checkbox(
-                            value: selected,
-                            onChanged: (_) => onToggle?.call(),
-                            activeColor: Brule.amber,
-                            checkColor: Brule.bg,
-                            visualDensity: VisualDensity.compact,
-                          )
-                        : const SizedBox.shrink(),
+                    child: Checkbox(
+                      value: selected,
+                      onChanged: showCheck ? (_) => onToggle?.call() : null,
+                      activeColor: Brule.amber,
+                      checkColor: Brule.bg,
+                      visualDensity: VisualDensity.compact,
+                    ),
                   )
                 else
                   const SizedBox(width: 10),
@@ -100,7 +100,7 @@ class OrderRow extends StatelessWidget {
                             const SizedBox(width: 6),
                             const Icon(Icons.schedule, size: 12, color: Brule.amber),
                           ],
-                          if (!selectable) ...[
+                          if (showStatus) ...[
                             const SizedBox(width: 8),
                             Tag('${o['status_label']}'.toUpperCase(), color: statusColor(status)),
                           ],

@@ -87,12 +87,12 @@ class _AdminStockTabState extends State<AdminStockTab> {
                     ],
                   ),
                   const SizedBox(height: 14),
-                  Row(
+                  TileRow(
                     children: [
-                      _Sum('BIJI AKTIF', '${sum['total'] ?? 0}'),
-                      _Sum('TOTAL', '${sum['kg'] ?? 0} kg'),
-                      _Sum('MENIPIS', '${sum['low'] ?? 0}', warn: asInt(sum['low']) > 0),
-                      _Sum('HABIS', '${sum['soldout'] ?? 0}', warn: asInt(sum['soldout']) > 0),
+                      _sum('BIJI AKTIF', '${sum['total'] ?? 0}'),
+                      _sum('TOTAL', '${sum['kg'] ?? 0} kg'),
+                      _sum('MENIPIS', '${sum['low'] ?? 0}', warn: asInt(sum['low']) > 0),
+                      _sum('HABIS', '${sum['soldout'] ?? 0}', warn: asInt(sum['soldout']) > 0),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -249,34 +249,4 @@ class _AdminStockTabState extends State<AdminStockTab> {
   }
 }
 
-class _Sum extends StatelessWidget {
-  final String label;
-  final String value;
-  final bool warn;
-  const _Sum(this.label, this.value, {this.warn = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.only(right: 6),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-        decoration: BoxDecoration(
-          color: Brule.field,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-              color: warn ? Brule.amber.withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.1)),
-        ),
-        child: Column(
-          children: [
-            FittedBox(
-              child: Text(value, style: Brule.condensed(20, color: warn ? Brule.amber : Brule.cream)),
-            ),
-            const SizedBox(height: 2),
-            Text(label, style: Brule.mono(8)),
-          ],
-        ),
-      ),
-    );
-  }
-}
+Widget _sum(String label, String value, {bool warn = false}) => Stat(label, value, warn: warn);

@@ -155,7 +155,7 @@ class _QueueTabState extends State<QueueTab> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  Row(
+                  TileRow(
                     children: [
                       Stat('MENUNGGU BAYAR', '${asInt(stats['waiting'])}'),
                       Stat('PRODUKSI', '${asInt(stats['in_production'])}'),
@@ -164,14 +164,16 @@ class _QueueTabState extends State<QueueTab> {
                     ],
                   ),
                   const SizedBox(height: 14),
-                  Row(
+                  TileRow(
                     children: [
                       for (final s in stages)
-                        _StageTile(
-                          label: '${s['label']}',
-                          total: asInt(s['total']),
-                          late: asInt(s['late']),
-                          grams: asInt(s['grams']),
+                        Stat(
+                          '${s['label']}'.toUpperCase(),
+                          '${asInt(s['total'])}',
+                          foot: asInt(s['late']) > 0
+                              ? '${asInt(s['late'])} telat'
+                              : '${(asInt(s['grams']) / 1000).toStringAsFixed(1)} kg',
+                          warn: asInt(s['late']) > 0,
                           selected: _stage == '${s['status']}',
                           onTap: () => _reset(stage: '${s['status']}'),
                         ),
@@ -196,10 +198,10 @@ class _QueueTabState extends State<QueueTab> {
                             _reset();
                           },
                         ),
-                        ChoiceChip(
-                          label: Text(_newest ? 'TERBARU DULU' : 'TERLAMA DULU'),
-                          selected: true,
-                          onSelected: (_) {
+                        ActionChip(
+                          avatar: const Icon(Icons.swap_vert, size: 18),
+                          label: Text(_newest ? 'URUTAN: TERBARU DULU' : 'URUTAN: TERLAMA DULU'),
+                          onPressed: () {
                             _newest = !_newest;
                             _reset();
                           },
@@ -266,7 +268,8 @@ class _QueueTabState extends State<QueueTab> {
                   for (final (i, o) in _items.indexed)
                     Reveal(index: i, child: OrderRow(
                       o: o,
-                      selectable: true,
+                      selectable: _sel.isNotEmpty,
+                      showStatus: false,
                       selected: _sel.contains('${o['code']}'),
                       onToggle: () => _toggle('${o['code']}'),
                       onLongPress: o['can_advance'] == true ? () => _toggle('${o['code']}') : null,
@@ -320,62 +323,6 @@ class _QueueTabState extends State<QueueTab> {
             ),
           ),
       ],
-    );
-  }
-}
-
-class _StageTile extends StatelessWidget {
-  final String label;
-  final int total;
-  final int late;
-  final int grams;
-  final bool selected;
-  final VoidCallback onTap;
-  const _StageTile({
-    required this.label,
-    required this.total,
-    required this.late,
-    required this.grams,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.only(right: 6),
-        child: Material(
-          color: selected ? Brule.amber.withValues(alpha: 0.1) : Brule.field,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(
-              color: selected ? Brule.amber : Colors.white.withValues(alpha: 0.1),
-              width: selected ? 1.5 : 1,
-            ),
-          ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(10),
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-              child: Column(
-                children: [
-                  Text(label.toUpperCase(),
-                      maxLines: 1, overflow: TextOverflow.ellipsis, style: Brule.mono(8.5)),
-                  const SizedBox(height: 4),
-                  Text('$total', style: Brule.condensed(24, color: selected ? Brule.amber : Brule.cream)),
-                  const SizedBox(height: 2),
-                  Text(
-                    late > 0 ? '$late telat' : '${(grams / 1000).toStringAsFixed(1)} kg',
-                    style: Brule.mono(8.5, color: late > 0 ? Brule.amber : Brule.kraft),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

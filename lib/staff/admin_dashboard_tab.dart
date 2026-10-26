@@ -3,6 +3,7 @@ import '../api.dart';
 import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
+import 'admin_kit.dart';
 
 /// Ringkasan penjualan untuk admin.
 class AdminDashboardTab extends StatefulWidget {
@@ -70,12 +71,12 @@ class _AdminDashboardTabState extends State<AdminDashboardTab> {
                     ],
                   ),
                   const Label('PERLU PERHATIAN'),
-                  Row(
+                  TileRow(
                     children: [
-                      _Att('BELUM BAYAR', asInt(att['unpaid'])),
-                      _Att('ANTRIAN', asInt(att['queue'])),
-                      _Att('SIAP KIRIM', asInt(att['to_ship'])),
-                      _Att('STOK TIPIS', asInt(att['low']), warn: true),
+                      _att('BELUM BAYAR', asInt(att['unpaid'])),
+                      _att('ANTRIAN', asInt(att['queue'])),
+                      _att('SIAP KIRIM', asInt(att['to_ship'])),
+                      _att('STOK TIPIS', asInt(att['low']), warn: true),
                     ],
                   ),
                   const Label('PENDAPATAN HARIAN'),
@@ -213,36 +214,7 @@ class _Kpi extends StatelessWidget {
   }
 }
 
-class _Att extends StatelessWidget {
-  final String label;
-  final int n;
-  final bool warn;
-  const _Att(this.label, this.n, {this.warn = false});
-
-  @override
-  Widget build(BuildContext context) {
-    final hot = warn && n > 0;
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.only(right: 6),
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-        decoration: BoxDecoration(
-          color: Brule.field,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-              color: hot ? Brule.amber.withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.1)),
-        ),
-        child: Column(
-          children: [
-            Text('$n', style: Brule.condensed(22, color: hot ? Brule.amber : Brule.cream)),
-            const SizedBox(height: 2),
-            Text(label, textAlign: TextAlign.center, style: Brule.mono(8)),
-          ],
-        ),
-      ),
-    );
-  }
-}
+Widget _att(String label, int n, {bool warn = false}) => Stat(label, '$n', warn: warn && n > 0);
 
 class _Box extends StatelessWidget {
   final List<Widget> children;
