@@ -4,7 +4,9 @@ import '../motion.dart';
 import '../api.dart';
 import '../theme.dart';
 import '../util.dart';
+import '../settings_screen.dart';
 import 'admin_kit.dart';
+import 'download.dart';
 import '../widgets.dart';
 import 'order_row.dart';
 import 'staff_order_screen.dart';
@@ -64,6 +66,20 @@ class _AdminOrdersTabState extends State<AdminOrdersTab> {
     }
   }
 
+  Future<void> _export() async {
+    final f = await showChoiceSheet<String>(
+      context,
+      title: 'Ekspor pesanan',
+      current: '',
+      options: const {
+        'xlsx': ('Excel (.xlsx)', 'Semua kolom, untuk diolah di spreadsheet', Icons.table_chart_outlined),
+        'pdf': ('PDF', 'Ringkas, untuk dicetak atau dibagikan', Icons.picture_as_pdf_outlined),
+      },
+    );
+    if (f == null || !mounted) return;
+    await downloadAndShare(context, '/admin/orders/export', {'format': f, 'tab': _tab, if (_q.isNotEmpty) 'q': _q});
+  }
+
   /// Ringkasan satu hari: jumlah pesanan dan total nilainya (dari yang sudah dimuat).
   String _sum(String group) {
     final day = _items.where((e) => dayGroup(e, 'since') == group);
@@ -93,6 +109,13 @@ class _AdminOrdersTabState extends State<AdminOrdersTab> {
                     Container(width: 18, height: 3, color: Brule.amber),
                     const SizedBox(width: 10),
                     Text('SEMUA PESANAN', style: Brule.condensed(22, spacing: 2)),
+                    const Spacer(),
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(minimumSize: const Size(0, 38), padding: const EdgeInsets.symmetric(horizontal: 12)),
+                      onPressed: _export,
+                      icon: const Icon(Icons.file_download_outlined, size: 18),
+                      label: const Text('EKSPOR'),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),

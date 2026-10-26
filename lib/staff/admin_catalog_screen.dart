@@ -5,10 +5,11 @@ import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
 import 'admin_kit.dart';
+import 'coffee_form_screen.dart';
 import 'product_form_screen.dart';
 
 /// Kopi atau produk: lihat harga/stok dan tampilkan atau sembunyikan dari toko.
-/// Tambah dan ubah detail (foto, cerita, traceability) tetap lewat panel web.
+/// Tap item untuk mengubah detail (foto, cerita, asal-usul, level sangrai).
 class AdminCatalogScreen extends StatefulWidget {
   final bool coffees;
   const AdminCatalogScreen({super.key, required this.coffees});
@@ -25,7 +26,8 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
 
   Future<void> _edit(int? id) async {
     final saved = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (_) => ProductFormScreen(id: id, categories: _cats)),
+      MaterialPageRoute(
+          builder: (_) => widget.coffees ? CoffeeFormScreen(id: id) : ProductFormScreen(id: id, categories: _cats)),
     );
     if (saved == true && mounted) setState(() => _v++);
   }
@@ -61,7 +63,7 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
                 const SizedBox(height: 4),
                 Text(
                   widget.coffees
-                      ? 'Tambah dan ubah kopi (foto, cerita, traceability) lewat panel web.'
+                      ? 'Tap kopi untuk mengubah data, level sangrai, atau fotonya.'
                       : 'Tap produk untuk mengubah data atau fotonya.',
                   style: Brule.mono(9),
                 ),
@@ -78,14 +80,13 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
         },
             ),
           ),
-          if (!widget.coffees)
-            BottomBar(
-              child: FilledButton.icon(
-                onPressed: () => _edit(null),
-                icon: const Icon(Icons.add, size: 20),
-                label: const Text('TAMBAH PERLENGKAPAN'),
-              ),
+          BottomBar(
+            child: FilledButton.icon(
+              onPressed: () => _edit(null),
+              icon: const Icon(Icons.add, size: 20),
+              label: Text(widget.coffees ? 'TAMBAH KOPI' : 'TAMBAH PERLENGKAPAN'),
             ),
+          ),
         ],
       ),
     );
@@ -106,7 +107,7 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
             'stok ${asInt(it['stock'])} unit',
           ];
     return Panel(
-      onTap: widget.coffees ? null : () => _edit(asInt(it['id'])),
+      onTap: () => _edit(asInt(it['id'])),
       child: Row(
         children: [
           Expanded(

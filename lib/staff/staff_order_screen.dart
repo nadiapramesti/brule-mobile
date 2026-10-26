@@ -328,6 +328,12 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
           icon: const Icon(Icons.print_outlined, size: 18),
           label: const Text('UNDUH LABEL PAKET'),
         ),
+      if (o['status'] != 'cancelled' && ('${o['tracking_number'] ?? ''}').isNotEmpty)
+        OutlinedButton.icon(
+          onPressed: _busy ? null : () => downloadAndShare(context, '/orders/${widget.code}/receipt', {}),
+          icon: const Icon(Icons.receipt_long_outlined, size: 18),
+          label: const Text('UNDUH INVOICE'),
+        ),
     ];
     if (buttons.isEmpty) return null;
     return Column(
