@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Text;
 import '../i18n.dart';
 import '../settings_screen.dart';
+import 'help_screen.dart';
 import '../api.dart';
 import '../cart.dart';
 import '../theme.dart';
@@ -89,7 +90,20 @@ class _AccountTabState extends State<AccountTab> {
               onPressed: () => requireLogin(context),
               child: const Text('MASUK'),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 20),
+            _Tile(
+              icon: Icons.help_outline,
+              title: 'Bantuan (FAQ)',
+              subtitle: 'Pertanyaan umum dan kebijakan',
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HelpScreen())),
+            ),
+            _Tile(
+              icon: Icons.settings_outlined,
+              title: 'Pengaturan',
+              subtitle: 'Tema dan bahasa',
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
+            ),
+            const SizedBox(height: 16),
             Center(child: Text('BRÛLÉ · SPECIALTY COFFEE LAB', style: Brule.mono(10))),
           ],
         ),
@@ -189,6 +203,12 @@ class _AccountTabState extends State<AccountTab> {
               title: 'Ubah password',
               subtitle: 'Ganti password akunmu',
               onTap: () => _open(const PasswordScreen(), 'Password diubah'),
+            ),
+            _Tile(
+              icon: Icons.help_outline,
+              title: 'Bantuan (FAQ)',
+              subtitle: 'Pertanyaan umum dan kebijakan',
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HelpScreen())),
             ),
             _Tile(
               icon: Icons.settings_outlined,

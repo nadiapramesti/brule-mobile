@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Text;
 import 'i18n.dart';
 import 'prefs.dart';
+import 'screens/help_screen.dart';
 import 'staff/admin_kit.dart';
 import 'staff/admin_settings_screen.dart';
 import 'theme.dart';
@@ -58,6 +59,15 @@ class SettingsScreen extends StatelessWidget {
                   );
                   if (v != null) AppPrefs.setLang(v);
                 },
+              ),
+            ]),
+            const SettingHeader('BANTUAN'),
+            SettingGroup(children: [
+              SettingRow(
+                icon: Icons.help_outline,
+                title: 'Bantuan (FAQ)',
+                value: 'Pertanyaan umum, pengiriman, kebijakan',
+                onTap: () => _open(context, const HelpScreen()),
               ),
             ]),
             if (admin) ...[
