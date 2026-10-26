@@ -157,10 +157,12 @@ class _ChipRowState extends State<ChipRow> {
     final p = _c.position;
     final l = p.pixels > 4;
     final r = p.pixels < p.maxScrollExtent - 4;
-    if (l != _left || r != _right) setState(() {
-      _left = l;
-      _right = r;
-    });
+    if (l != _left || r != _right) {
+      setState(() {
+        _left = l;
+        _right = r;
+      });
+    }
   }
 
   void _nudge(double dir) {
@@ -482,7 +484,7 @@ class _LoaderState<T> extends State<Loader<T>> {
         layoutBuilder: (current, previous) => Stack(
           fit: StackFit.loose,
           alignment: Alignment.topCenter,
-          children: [...previous, if (current != null) current],
+          children: [...previous, ?current],
         ),
         child: KeyedSubtree(
           key: ValueKey(snap.connectionState != ConnectionState.done ? 'load' : (snap.hasError ? 'err' : 'ok')),
