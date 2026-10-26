@@ -23,7 +23,9 @@ class BruleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
       valueListenable: AppPrefs.light,
-      builder: (context, _, _) => MaterialApp(
+      builder: (context, isLight, _) => MaterialApp(
+        // ganti tema = bangun ulang seluruh app dari nol (warna Brule dibaca langsung)
+        key: ValueKey(isLight),
         title: 'BRÛLÉ',
         navigatorKey: Notices.navKey,
         scaffoldMessengerKey: Notices.messengerKey,

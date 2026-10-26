@@ -23,20 +23,8 @@ class AppPrefs {
     if (Brule.light == v) return;
     Brule.light = v;
     light.value = v;
-    _rebuildAll();
     final p = await SharedPreferences.getInstance();
     await p.setString('theme', v ? 'light' : 'dark');
-  }
-
-  /// Warna merek dibaca langsung lewat Brule.*, jadi semua layar perlu dibangun ulang
-  /// (state dan posisi scroll tetap terjaga).
-  static void _rebuildAll() {
-    void visit(Element e) {
-      e.markNeedsBuild();
-      e.visitChildren(visit);
-    }
-
-    WidgetsBinding.instance.rootElement?.visitChildren(visit);
   }
 }
 
