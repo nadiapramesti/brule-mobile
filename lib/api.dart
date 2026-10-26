@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'prefs.dart';
 
 class ApiException implements Exception {
   final String message;
@@ -29,6 +30,7 @@ class Api {
   static Map<String, String> get _headers => {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'Accept-Language': AppPrefs.lang.value,
         if (_token != null) 'Authorization': 'Bearer $_token',
       };
 
@@ -131,7 +133,7 @@ class Api {
   /// Unggah satu berkas (mis. foto) sebagai multipart.
   static Future<Map<String, dynamic>> upload(String path, String field, List<int> bytes, String filename) async {
     final req = http.MultipartRequest('POST', Uri.parse('$base/api$path'))
-      ..headers.addAll({'Accept': 'application/json', if (_token != null) 'Authorization': 'Bearer $_token'})
+      ..headers.addAll({'Accept': 'application/json', 'Accept-Language': AppPrefs.lang.value, if (_token != null) 'Authorization': 'Bearer $_token'})
       ..files.add(http.MultipartFile.fromBytes(field, bytes, filename: filename));
     final http.Response res;
     try {

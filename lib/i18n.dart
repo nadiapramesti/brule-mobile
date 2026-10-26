@@ -28,6 +28,15 @@ String tr(String s) {
 String _translate(String s) {
   final exact = kEn[s];
   if (exact != null) return exact;
+  final t = s.trim();
+  if (t.isEmpty) return s;
+  if (t != s) return s.replaceFirst(t, tr(t));
+  // "Semua 12", "Admin 3": kata + angka di belakang (label filter dengan hitungan).
+  final cnt = RegExp(r'^(.+?) (\d+)$').firstMatch(s);
+  if (cnt != null) {
+    final head = tr(cnt.group(1)!);
+    if (head != cnt.group(1)) return '$head ${cnt.group(2)}';
+  }
   for (final (re, out) in _patterns) {
     final m = re.firstMatch(s);
     if (m == null) continue;
@@ -37,12 +46,12 @@ String _translate(String s) {
   for (final sep in const [' · ', '\n', ' / ', ': ']) {
     if (!s.contains(sep)) continue;
     final parts = s.split(sep);
-    final t = [for (final p in parts) tr(p)];
+    final out = [for (final p in parts) tr(p)];
     var changed = false;
     for (var i = 0; i < parts.length; i++) {
-      if (parts[i] != t[i]) changed = true;
+      if (parts[i] != out[i]) changed = true;
     }
-    if (changed) return t.join(sep);
+    if (changed) return out.join(sep);
   }
   return s;
 }
