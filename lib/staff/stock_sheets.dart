@@ -140,11 +140,11 @@ class _CoffeeStockState extends State<_CoffeeStock> {
                     controller: _reason,
                     maxLength: 120,
                     decoration: InputDecoration(
-                      hintText: tr(switch) (_mode) {
+                      hintText: tr(switch (_mode) {
                         'restock' => 'contoh: Beli dari petani, invoice 0231',
                         'waste' => 'contoh: Kemasan sobek, biji lembap',
                         _ => 'contoh: Hasil stok opname akhir bulan',
-                      },
+                      }),
                       counterText: '',
                     ),
                   ),
