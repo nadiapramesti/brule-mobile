@@ -66,7 +66,7 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
                 Text(
                   widget.coffees
                       ? 'Tambah dan ubah kopi (foto, cerita, traceability) lewat panel web.'
-                      : 'Tap produk untuk mengubah. Foto produk diatur lewat panel web.',
+                      : 'Tap produk untuk mengubah data atau fotonya.',
                   style: Brule.mono(9),
                 ),
                 const SizedBox(height: 10),

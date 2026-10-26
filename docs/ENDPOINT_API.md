@@ -127,6 +127,8 @@ Pelanggan yang memanggil endpoint staff menerima `403`.
 | GET | `/admin/products/{id}` | Detail perlengkapan untuk form ubah (admin) |
 | POST | `/admin/products` | Tambah perlengkapan: name, category, description, price, stock, option_label, options (pisah koma), is_active (admin) |
 | PUT | `/admin/products/{id}` | Ubah perlengkapan (admin) |
+| POST | `/admin/products/{id}/photo` | Unggah foto produk (multipart, field `photo`, JPG/PNG/WebP maks 3 MB) |
+| DELETE | `/admin/products/{id}/photo` | Hapus foto produk |
 | GET | `/admin/logs?jenis=&page=` | Log aktivitas |
 | GET, PUT | `/admin/settings` | Baca dan simpan pengaturan toko |
 | GET | `/admin/reports/export?format=pdf\|xlsx&preset=` | Unduh laporan penjualan sebagai PDF atau Excel |

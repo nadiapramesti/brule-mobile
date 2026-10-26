@@ -128,6 +128,32 @@ class Api {
         ));
   }
 
+  /// Unggah satu berkas (mis. foto) sebagai multipart.
+  static Future<Map<String, dynamic>> upload(String path, String field, List<int> bytes, String filename) async {
+    final req = http.MultipartRequest('POST', Uri.parse('$base/api$path'))
+      ..headers.addAll({'Accept': 'application/json', if (_token != null) 'Authorization': 'Bearer $_token'})
+      ..files.add(http.MultipartFile.fromBytes(field, bytes, filename: filename));
+    final http.Response res;
+    try {
+      res = await http.Response.fromStream(await req.send().timeout(const Duration(seconds: 60)));
+    } on Exception {
+      throw ApiException('Tidak bisa terhubung ke server.');
+    }
+    Map<String, dynamic> body = {};
+    try {
+      final d = jsonDecode(res.body);
+      if (d is Map<String, dynamic>) body = d;
+    } catch (_) {}
+    if (res.statusCode >= 200 && res.statusCode < 300) return body;
+    var msg = (body['message'] as String?) ?? 'Gagal mengunggah (${res.statusCode})';
+    final errors = body['errors'];
+    if (errors is Map && errors.isNotEmpty) {
+      final first = errors.values.first;
+      if (first is List && first.isNotEmpty) msg = first.first.toString();
+    }
+    throw ApiException(msg, res.statusCode);
+  }
+
   static Future<Map<String, dynamic>> delete(String path) {
     return _send(() => http.delete(
           Uri.parse('$base/api$path'),
