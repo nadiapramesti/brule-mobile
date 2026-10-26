@@ -47,7 +47,6 @@ class _SplashGateState extends State<SplashGate> with SingleTickerProviderStateM
       curve.transform(((_c.value - a) / (b - a)).clamp(0.0, 1.0));
 
   Widget _splash() {
-    final t = _c.value;
     final scale = 0.96 + 0.04 * _iv(0, 0.45);
     final sweep = -0.5 + 2.0 * _iv(0.12, 0.62, Curves.easeInOut);
     final glow = 0.16 * _iv(0, 0.5);
