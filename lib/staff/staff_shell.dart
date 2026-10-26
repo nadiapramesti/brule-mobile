@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../prefs.dart';
 import '../brand_logo.dart';
 import '../notice_bell.dart';
 import '../motion.dart';
@@ -87,8 +86,6 @@ class _StaffShellState extends State<StaffShell> {
                   const BrandLogo(height: 28),
                   const Spacer(),
                   Tag(admin ? 'ADMIN' : 'ROASTER', color: admin ? Brule.amber : Brule.blueText),
-                  const SizedBox(width: 8),
-                  const ThemeIconButton(),
                   const SizedBox(width: 8),
                   const NoticeBell(),
                 ],

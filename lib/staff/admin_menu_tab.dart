@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../prefs.dart';
 import '../motion.dart';
 import '../api.dart';
 import '../brand_logo.dart';
@@ -53,8 +52,7 @@ class AdminMenuTab extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 14),
-            const ThemeSwitch(),
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
             for (final (i, it) in items.indexed)
               Reveal(index: i, child: Panel(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),

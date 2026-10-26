@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../api.dart';
+import '../prefs.dart';
 import '../theme.dart';
 import '../widgets.dart';
 import 'admin_kit.dart';
@@ -114,6 +115,9 @@ class _SettingsFormState extends State<_SettingsForm> {
   List<Widget> _fields() {
     return [
         if (_error != null) ...[const SizedBox(height: 8), ErrorBox(_error!)],
+        const Label('TAMPILAN APLIKASI'),
+        const ThemeSwitch(),
+        const SizedBox(height: 6),
         const Label('IDENTITAS TOKO'),
         _f('store_name', 'NAMA TOKO', 'contoh: BRÛLÉ', maxLength: 40),
         _f('tagline', 'TAGLINE', 'contoh: Specialty Coffee Lab', maxLength: 60),
