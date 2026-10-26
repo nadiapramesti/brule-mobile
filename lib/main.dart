@@ -4,6 +4,7 @@ import 'cart.dart';
 import 'notices.dart';
 import 'prefs.dart';
 import 'root_gate.dart';
+import 'splash_gate.dart';
 import 'theme.dart';
 
 Future<void> main() async {
@@ -30,7 +31,7 @@ class BruleApp extends StatelessWidget {
         scaffoldMessengerKey: Notices.messengerKey,
         debugShowCheckedModeBanner: false,
         theme: buildTheme(),
-        home: const RootGate(),
+        home: const SplashGate(child: RootGate()),
       ),
     );
   }
