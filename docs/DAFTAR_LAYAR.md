@@ -84,3 +84,9 @@ Notifikasi, Semua Pesanan (admin), Pesanan (pelanggan), Ulasan, dan Riwayat stok
 
 ## Best before kopi (sama seperti web)
 Detail pesanan (pelanggan dan staf) menampilkan "Terbaik dinikmati sebelum <tanggal>" di bawah tahap Sangrai setelah pesanan mulai disangrai. Detail staf juga punya baris TGL SANGRAI dan TERBAIK SEBELUM, dan label paket (PDF) mencetak keduanya. Lama masa segar (default 30 hari) diatur admin di Pengaturan > Kesegaran kopi. Pesanan tanpa kopi (hanya perlengkapan) tidak punya tanggal ini.
+
+## Pengaturan, bahasa, dan Bantuan
+
+- **Pengaturan** (Akun → Pengaturan; admin: Menu → Pengaturan): daftar berkelompok TAMPILAN (Tema, Bahasa), BANTUAN (FAQ), dan untuk admin TOKO (Identitas toko, Kontak, Ongkir dan stok, Kesegaran kopi, Add-on, COD). Tema dan Bahasa dipilih lewat bottom sheet.
+- **Bantuan (FAQ)**: pertanyaan berkelompok, bisa dibuka dan dicari; tautan ke Pengiriman dan pengembalian, Syarat dan ketentuan, Kebijakan privasi.
+- Semua layar tersedia dalam mode gelap dan terang, bahasa Indonesia dan English. Untuk screenshot laporan, ambil Beranda, Pengaturan, dan FAQ di kedua tema.

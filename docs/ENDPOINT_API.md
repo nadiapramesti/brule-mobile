@@ -2,7 +2,7 @@
 
 Base URL (development): `http://127.0.0.1:8001/api` (lewat `adb reverse tcp:8001 tcp:8001`)
 Format: JSON. Autentikasi: Laravel Sanctum, header `Authorization: Bearer <token>`.
-Pesan error validasi memakai status `422` dengan bentuk `{ "message": "...", "errors": { "field": ["..."] } }`.
+Bahasa respons mengikuti header `Accept-Language: id|en` (notifikasi, pesan galat, FAQ). Pesan error validasi memakai status `422` dengan bentuk `{ "message": "...", "errors": { "field": ["..."] } }`.
 
 ## 1. Autentikasi dan Akun
 
@@ -155,3 +155,12 @@ Pelanggan yang memanggil endpoint staff menerima `403`.
 ## 9. Ringkasan
 
 Total 66 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran, 2 ulasan, 11 roaster dan admin inti, 24 menu admin lainnya. Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).
+
+## Bantuan dan bahasa
+
+| Method | Endpoint | Auth | Fungsi |
+|---|---|---|---|
+| GET | `/help/{page}` | - | Isi halaman bantuan. `page`: `faq`, `shipping`, `terms`, `privacy`. Respons `{ data: { title, intro, groups|sections } }` |
+
+`faq` berisi `groups[].items[]` (`q`, `a`); halaman lain berisi `sections[]` (`h`, `p[]`, `li[]`).
+Kontak, ongkir, dan COD diisi dari Pengaturan toko. Bahasa mengikuti `Accept-Language`.

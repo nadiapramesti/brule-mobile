@@ -19,9 +19,9 @@ mengubah peran, mengganti kata sandi, dan menghapus akun staf di sana.
 
 ## Fitur
 
-**Pelanggan:** katalog kopi dan perlengkapan, keranjang, checkout (COD atau Midtrans), voucher,
-garis waktu pesanan, tanggal "terbaik dinikmati sebelum", unduh struk (muncul setelah resi diisi),
-ulasan, login "ingat saya" dan Google/Facebook.
+**Pelanggan:** katalog kopi dan perlengkapan, racik blend, keranjang, checkout (COD atau Midtrans),
+voucher, garis waktu pesanan, tanggal "terbaik dinikmati sebelum", unduh struk (muncul setelah resi
+diisi), ulasan, login "ingat saya" dan Google/Facebook, buku alamat, **Bantuan (FAQ)**.
 
 **Roaster dan admin:** dashboard penjualan, antrian per tahap dengan aksi massal, detail pesanan,
 isi resi dan unduh label paket, stok biji (masuk, keluar, hitung ulang) dengan riwayat,
@@ -29,6 +29,48 @@ laporan PDF/Excel, kelola voucher, ulasan, perlengkapan (termasuk foto), akun st
 
 **Notifikasi dalam aplikasi:** pesanan baru, pesanan lebih dari 24 jam, stok menipis, ulasan baru.
 Tampil sebagai lencana di ikon lonceng.
+
+**Daftar rapi:** riwayat, pesanan, notifikasi, dan ulasan dikelompokkan per hari
+(HARI INI, KEMARIN, lalu tanggal). Tombol simpan atau aksi utama selalu di bawah layar.
+
+## Tampilan dan bahasa
+
+Sama seperti di web: **mode gelap/terang** dan **bahasa Indonesia/English**. Pilihan tersimpan di HP.
+Bahasa bawaan Indonesia, tema bawaan mengikuti setelan HP sampai kamu memilih sendiri.
+
+| Peran | Tempat mengubah |
+|---|---|
+| Pelanggan | **Akun → Pengaturan** (juga ikon bulan/matahari di header Beranda) |
+| Roaster | **Akun → Pengaturan** |
+| Admin | **Menu → Pengaturan → TAMPILAN** |
+
+Pengaturan berbentuk daftar berkelompok: ketuk baris **Tema** atau **Bahasa** untuk memilih lewat
+bottom sheet. Admin juga melihat kelompok **TOKO** (identitas, kontak, ongkir dan stok, kesegaran kopi,
+add-on, COD), tiap kelompok punya form sendiri dengan tombol simpan di bawah.
+
+**Cara kerja bahasa.** Semua teks lewat widget `Text` pengganti (`lib/i18n.dart`) yang menerjemahkan
+lewat kamus `lib/i18n_en.dart`. Aplikasi juga mengirim header `Accept-Language` ke API, jadi notifikasi,
+pesan galat, dan FAQ dari server ikut berbahasa sama.
+
+Menambah atau memperbaiki terjemahan:
+
+1. Buka `lib/i18n_en.dart`.
+2. Tambah baris di `kEn`: `'Teks Indonesia persis': 'English text',`
+3. Untuk teks yang disisipi data, pakai pola di `kEnPatterns` dengan `{}` sebagai pengganti nilainya:
+   `('{} pesanan', '{} orders'),`
+
+Teks dari data toko (nama kopi, deskripsi, cerita) tampil apa adanya. Teks yang tidak ada di kamus
+tetap berbahasa Indonesia, jadi aplikasi tidak pernah kosong.
+
+**Warna.** Semua warna ada di `lib/theme.dart` (`Brule.*`), dibaca saat layar dibangun. Mengganti tema
+atau bahasa membangun ulang seluruh layar tanpa menutup halaman yang sedang dibuka.
+
+## Bantuan (FAQ)
+
+**Akun → Bantuan (FAQ)** (atau **Pengaturan → BANTUAN**, juga untuk tamu yang belum masuk). Pertanyaan
+dikelompokkan, bisa dibuka satu per satu dan dicari. Di bawahnya ada Pengiriman dan pengembalian,
+Syarat dan ketentuan, dan Kebijakan privasi. Isinya diambil dari API (`GET /api/help/{page}`), sama
+dengan halaman Bantuan di web (`lang/{id,en}/pages.php`), jadi cukup diubah di satu tempat.
 
 ## Menjalankan
 
@@ -54,6 +96,33 @@ HP dan laptop harus di WiFi yang sama.
 sudah cukup. Login Google/Facebook hanya berfungsi dengan cara ini (butuh `localhost`).
 
 Alamat server juga bisa diberikan saat build: `flutter run --dart-define=API_BASE=http://IP-LAPTOP:8001`.
+
+## Kalau ada masalah
+
+| Gejala | Penyebab dan solusi |
+|---|---|
+| "Tidak bisa terhubung ke server" | API belum jalan, atau IP laptop berubah. Jalankan `php artisan serve --host=0.0.0.0 --port=8001`, cek `ipconfig`, lalu **UBAH ALAMAT SERVER** di aplikasi |
+| Alamat benar tapi tetap gagal | Firewall Windows. Izinkan PHP di jaringan Private, dan pastikan HP dan laptop di WiFi yang sama |
+| Lewat USB tiba-tiba putus | `adb reverse` hilang tiap kabel dicabut. Jalankan lagi `adb reverse tcp:8001 tcp:8001` |
+| Setelah `git pull` muncul error aneh | Hentikan aplikasi lalu `flutter pub get` dan `flutter run` penuh (hot reload tidak cukup untuk paket baru) |
+| Notifikasi atau FAQ masih Indonesia saat mode English | API belum di-pull dan di-restart (butuh middleware `ApiLocale` dan endpoint `/help`) |
+| Teks tertentu belum diterjemahkan | Tambah ke `lib/i18n_en.dart` (lihat bagian Bahasa) |
+| Akun demo lama masih bernama lama | `php artisan db:seed --class=UserSeeder` |
+
+## Struktur kode
+
+```
+lib/
+  main.dart            titik masuk, tema dan bahasa dibangun ulang saat berubah
+  theme.dart           warna Brule.* (gelap/terang) dan ThemeData
+  prefs.dart           pilihan tema dan bahasa (tersimpan), switch kecil
+  i18n.dart            tr() dan widget Text yang menerjemahkan
+  i18n_en.dart         kamus Indonesia -> English
+  settings_screen.dart Pengaturan berkelompok dan bottom sheet pilihan
+  api.dart             klien HTTP (token, Accept-Language, unggah, unduh)
+  screens/             layar pelanggan: beranda, katalog, keranjang, checkout, pesanan, akun, bantuan
+  staff/               layar roaster dan admin: dashboard, antrian, stok, laporan, pengguna, pengaturan toko
+```
 
 ## Dokumentasi
 

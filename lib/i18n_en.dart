@@ -1,4 +1,4 @@
-// Dibuat otomatis dari kamus ID -> EN. Kunci = teks Indonesia persis seperti di layar.
+// Kamus ID -> EN (kunci = teks Indonesia persis seperti di layar). Boleh diedit langsung; lihat README bagian Bahasa.
 const Map<String, String> kEn = {
   '30 HARI': '30 DAYS',
   '30 hari': '30 days',
