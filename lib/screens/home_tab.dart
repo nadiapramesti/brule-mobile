@@ -20,6 +20,11 @@ import 'gear_detail_screen.dart';
 
 const _ember = Color(0xFFE8782A);
 
+// Banner foto selalu gelap (dua mode), jadi warna teksnya tetap terang.
+const _heroInk = Color(0xFF121212);
+const _heroSub = Color(0xFFD8C5A6);
+const _heroAmber = Color(0xFFF2A266);
+
 const _stages = [
   ('Antrian', 'Pesanan masuk papan roastery, biji mentah ditimbang.', 'assets/images/step1.jpg'),
   ('Sangrai', 'Satu batch untuk satu pesanan, mengikuti kurva yang kamu pilih.', 'assets/images/step2.jpg'),
@@ -312,8 +317,8 @@ class _BannersState extends State<_Banners> {
                             begin: Alignment.centerLeft,
                             end: Alignment.centerRight,
                             colors: [
-                              Brule.bg.withValues(alpha: 0.92),
-                              Brule.bg.withValues(alpha: 0.55),
+                              _heroInk.withValues(alpha: 0.92),
+                              _heroInk.withValues(alpha: 0.55),
                             ],
                           ),
                         ),
@@ -323,10 +328,10 @@ class _BannersState extends State<_Banners> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (s.$6) const _RoastPill() else Text('BRÛLÉ LAB', style: Brule.mono(11, color: Brule.amber)),
+                            if (s.$6) const _RoastPill() else Text('BRÛLÉ LAB', style: Brule.mono(11, color: _heroAmber)),
                             const SizedBox(height: 12),
                             Text(s.$1,
-                                style: Brule.condensed(28, weight: FontWeight.w700)
+                                style: Brule.condensed(28, weight: FontWeight.w700, color: Brule.paper)
                                     .copyWith(height: 1.08)),
                             const SizedBox(height: 6),
                             Expanded(
@@ -338,7 +343,7 @@ class _BannersState extends State<_Banners> {
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                          color: Brule.kraft.withValues(alpha: 0.85),
+                                          color: _heroSub.withValues(alpha: 0.9),
                                           fontSize: 12.5,
                                           height: 1.4)),
                                 ),
@@ -685,9 +690,9 @@ class _RoastPillState extends State<_RoastPill> {
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 7, 16, 7),
       decoration: BoxDecoration(
-        color: Brule.bg.withValues(alpha: 0.5),
+        color: _heroInk.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Brule.cream.withValues(alpha: 0.15)),
+        border: Border.all(color: Brule.paper.withValues(alpha: 0.15)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -698,11 +703,11 @@ class _RoastPillState extends State<_RoastPill> {
             decoration: const BoxDecoration(color: _ember, shape: BoxShape.circle),
           ),
           const SizedBox(width: 10),
-          Text('SEDANG DISANGRAI', style: Brule.mono(11, color: Brule.kraft.withValues(alpha: 0.85))),
+          Text('SEDANG DISANGRAI', style: Brule.mono(11, color: _heroSub.withValues(alpha: 0.9))),
           const SizedBox(width: 10),
-          Text('${temp.toStringAsFixed(1)}°C', style: Brule.mono(11, color: Brule.cream)),
+          Text('${temp.toStringAsFixed(1)}°C', style: Brule.mono(11, color: Brule.paper)),
           const SizedBox(width: 10),
-          Text(clock, style: Brule.mono(11, color: Brule.kraft.withValues(alpha: 0.6))),
+          Text(clock, style: Brule.mono(11, color: _heroSub.withValues(alpha: 0.65))),
         ],
       ),
     );
