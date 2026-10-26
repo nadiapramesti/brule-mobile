@@ -170,14 +170,14 @@ class _AdminStockTabState extends State<AdminStockTab> {
                           ),
                           if (widget.manage) ...[
                             const SizedBox(height: 10),
-                            SegmentActions(
+                            MenuButton(
+                              label: 'ATUR STOK',
                               actions: [
-                                SegmentAction('MASUK', Icons.add,
-                                    () => _after(showCoffeeStockSheet(context, c), 'Stok ${c['name']} diperbarui'),
-                                    primary: true),
-                                SegmentAction('KELUAR', Icons.remove,
+                                MenuAction('Stok masuk', 'Tambah biji dari pembelian atau panen', Icons.add_circle_outline,
+                                    () => _after(showCoffeeStockSheet(context, c), 'Stok ${c['name']} diperbarui')),
+                                MenuAction('Stok keluar', 'Catat biji rusak, sampel, atau terbuang', Icons.remove_circle_outline,
                                     () => _after(showCoffeeStockSheet(context, c, mode: 'waste'), 'Stok ${c['name']} diperbarui')),
-                                SegmentAction('HITUNG', Icons.fact_check_outlined,
+                                MenuAction('Hitung ulang', 'Samakan stok dengan hasil timbang', Icons.fact_check_outlined,
                                     () => _after(showCoffeeStockSheet(context, c, mode: 'count'), 'Stok ${c['name']} dikoreksi')),
                               ],
                             ),

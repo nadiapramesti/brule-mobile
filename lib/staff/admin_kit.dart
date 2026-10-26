@@ -435,60 +435,87 @@ class GroupTitle extends StatelessWidget {
       );
 }
 
-/// Satu tombol ringkas berisi beberapa pilihan (mis. MASUK | KELUAR | HITUNG).
-/// Jauh lebih hemat tempat daripada tiga tombol besar berdampingan.
-class SegmentAction {
-  final String label;
+/// Satu tombol yang membuka daftar pilihan dari bawah (mis. ATUR STOK -> masuk, keluar, hitung).
+class MenuAction {
+  final String title;
+  final String hint;
   final IconData icon;
-  final VoidCallback? onTap;
-  final bool primary;
-  const SegmentAction(this.label, this.icon, this.onTap, {this.primary = false});
+  final VoidCallback onTap;
+  const MenuAction(this.title, this.hint, this.icon, this.onTap);
 }
 
-class SegmentActions extends StatelessWidget {
-  final List<SegmentAction> actions;
-  const SegmentActions({super.key, required this.actions});
+class MenuButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final List<MenuAction> actions;
+  const MenuButton({super.key, required this.label, required this.actions, this.icon = Icons.tune});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Brule.blueText.withValues(alpha: 0.45)),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(9),
-        child: Row(
-          children: [
-            for (final (i, a) in actions.indexed) ...[
-              if (i > 0) Container(width: 1, color: Brule.blueText.withValues(alpha: 0.3)),
-              Expanded(
-                child: Material(
-                  color: a.primary ? Brule.blue : Colors.transparent,
-                  child: InkWell(
-                    onTap: a.onTap,
-                    child: Center(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(a.icon, size: 16, color: a.primary ? Brule.cream : Brule.blueText),
-                          const SizedBox(width: 6),
-                          Text(
-                            a.label,
-                            style: Brule.condensed(14, spacing: 0.8, color: a.primary ? Brule.cream : Brule.blueText),
-                          ),
-                        ],
+  Future<void> _open(BuildContext context) async {
+    final pick = await showModalBottomSheet<MenuAction>(
+      context: context,
+      backgroundColor: const Color(0xFF161616),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(label, style: Brule.condensed(20)),
+              const SizedBox(height: 10),
+              for (final a in actions)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Material(
+                    color: Brule.field,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: () => Navigator.of(ctx).pop(a),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        child: Row(
+                          children: [
+                            Icon(a.icon, color: Brule.blueText),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(a.title, style: Brule.condensed(17)),
+                                  Text(a.hint, style: Brule.mono(9.5)),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.chevron_right, color: Brule.kraft),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
             ],
-          ],
+          ),
         ),
+      ),
+    );
+    pick?.onTap();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton.icon(
+      style: FilledButton.styleFrom(minimumSize: const Size(0, 40), padding: const EdgeInsets.symmetric(horizontal: 12)),
+      onPressed: () => _open(context),
+      icon: Icon(icon, size: 18),
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [Text(label), const SizedBox(width: 4), const Icon(Icons.keyboard_arrow_down, size: 18)],
       ),
     );
   }
 }
-
