@@ -4,6 +4,7 @@ import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
 import 'admin_kit.dart';
+import 'product_form_screen.dart';
 
 /// Kopi atau produk: lihat harga/stok dan tampilkan atau sembunyikan dari toko.
 /// Tambah dan ubah detail (foto, cerita, traceability) tetap lewat panel web.
@@ -19,6 +20,15 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
   String _q = '';
   int _v = 0;
 
+  Map<String, String> _cats = {};
+
+  Future<void> _edit(int? id) async {
+    final saved = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => ProductFormScreen(id: id, categories: _cats)),
+    );
+    if (saved == true && mounted) setState(() => _v++);
+  }
+
   String get _base => widget.coffees ? '/admin/coffees' : '/admin/products';
 
   @override
@@ -30,6 +40,9 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
         load: () => Api.get(_base, _q.isEmpty ? null : {'q': _q}),
         builder: (context, d, reload) {
           final list = ((d['data'] ?? []) as List).cast<Map<String, dynamic>>();
+          if (d['categories'] is Map) {
+            _cats = {for (final e in (d['categories'] as Map).entries) '${e.key}': '${e.value}'};
+          }
           return RefreshIndicator(
             color: Brule.amber,
             onRefresh: reload,
@@ -37,12 +50,25 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
               children: [
+                if (!widget.coffees) ...[
+                  FilledButton.icon(
+                    onPressed: () => _edit(null),
+                    icon: const Icon(Icons.add, size: 20),
+                    label: const Text('TAMBAH PERLENGKAPAN'),
+                  ),
+                  const SizedBox(height: 12),
+                ],
                 SearchBox(
                   hint: widget.coffees ? 'cari nama kopi' : 'cari nama produk',
                   onChanged: (v) => setState(() => _q = v.trim()),
                 ),
                 const SizedBox(height: 4),
-                Text('Tambah dan ubah detail dilakukan lewat panel web.', style: Brule.mono(9)),
+                Text(
+                  widget.coffees
+                      ? 'Tambah dan ubah kopi (foto, cerita, traceability) lewat panel web.'
+                      : 'Tap produk untuk mengubah. Foto produk diatur lewat panel web.',
+                  style: Brule.mono(9),
+                ),
                 const SizedBox(height: 10),
                 if (list.isEmpty)
                   Padding(
@@ -68,11 +94,12 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
             'stok ${(asInt(it['stock_gram']) / 1000).toStringAsFixed(1)} kg',
           ]
         : [
-            '${it['category']}',
+            '${it['category_label'] ?? it['category']}',
             rupiah(asInt(it['price'])),
             'stok ${asInt(it['stock'])} unit',
           ];
     return Panel(
+      onTap: widget.coffees ? null : () => _edit(asInt(it['id'])),
       child: Row(
         children: [
           Expanded(
