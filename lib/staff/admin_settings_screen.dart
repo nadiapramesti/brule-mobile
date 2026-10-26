@@ -31,7 +31,7 @@ class _SettingsForm extends StatefulWidget {
 class _SettingsFormState extends State<_SettingsForm> {
   static const _text = [
     'store_name', 'tagline', 'city', 'address', 'email', 'whatsapp', 'instagram',
-    'shipping_flat', 'free_from', 'low_stock', 'gift_wrap_price', 'card_price', 'cod_max',
+    'shipping_flat', 'free_from', 'low_stock', 'best_before_days', 'gift_wrap_price', 'card_price', 'cod_max',
   ];
   late final Map<String, TextEditingController> _c = {
     for (final k in _text) k: TextEditingController(text: '${widget.initial[k] ?? ''}'),
@@ -49,7 +49,7 @@ class _SettingsFormState extends State<_SettingsForm> {
     super.dispose();
   }
 
-  static const _numeric = {'shipping_flat', 'free_from', 'low_stock', 'gift_wrap_price', 'card_price', 'cod_max'};
+  static const _numeric = {'shipping_flat', 'free_from', 'low_stock', 'best_before_days', 'gift_wrap_price', 'card_price', 'cod_max'};
 
   Future<void> _save() async {
     setState(() {
@@ -127,6 +127,8 @@ class _SettingsFormState extends State<_SettingsForm> {
         _f('shipping_flat', 'ONGKIR FLAT (Rp)', 'contoh: 15000', number: true),
         _f('free_from', 'GRATIS ONGKIR DI ATAS (Rp)', 'contoh: 500000', number: true),
         _f('low_stock', 'BATAS STOK MENIPIS (gram)', 'contoh: 5000', number: true),
+        const Label('KESEGARAN KOPI'),
+        _f('best_before_days', 'MASA SEGAR SETELAH SANGRAI (hari)', 'contoh: 30', number: true),
         const Label('ADD-ON'),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,

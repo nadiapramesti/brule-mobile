@@ -133,6 +133,7 @@ class Order {
   final bool canPay;
   final bool canCancel;
   final String? trackingNumber;
+  final String? bestBefore;
   final int subtotal;
   final int shipping;
   final int addon;
@@ -161,6 +162,7 @@ class Order {
         canPay = j['can_pay'] == true,
         canCancel = j['can_cancel'] == true,
         trackingNumber = j['tracking_number'] as String?,
+        bestBefore = j['best_before'] as String?,
         subtotal = _int(j['subtotal']),
         shipping = _int(j['shipping_cost']),
         addon = _int(j['addon_cost']),

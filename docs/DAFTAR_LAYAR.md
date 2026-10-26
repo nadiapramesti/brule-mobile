@@ -81,3 +81,6 @@ Tips: aktifkan mode jam tetap/baterai penuh sebelum screenshot, dan pakai data u
 ## Daftar bergrup per hari (gaya Riwayat stok)
 Judul kelompok punya titik aksen, garis, dan ringkasan (jumlah pesanan, total) di kanan; baris pesanan punya strip warna status di kiri.
 Notifikasi, Semua Pesanan (admin), Pesanan (pelanggan), Ulasan, dan Riwayat stok memakai judul kelompok HARI INI / KEMARIN / tanggal (`GroupTitle`, `dayGroup` di util.dart). Pelanggan memakai dua kotak pilihan FILTER + URUTKAN (`PickField`) menggantikan dua baris chip. Notifikasi tidak lagi memunculkan banner; lonceng memakai lencana + getar.
+
+## Best before kopi (sama seperti web)
+Detail pesanan (pelanggan dan staf) menampilkan "Terbaik dinikmati sebelum <tanggal>" di bawah tahap Sangrai setelah pesanan mulai disangrai. Detail staf juga punya baris TGL SANGRAI dan TERBAIK SEBELUM, dan label paket (PDF) mencetak keduanya. Lama masa segar (default 30 hari) diatur admin di Pengaturan > Kesegaran kopi. Pesanan tanpa kopi (hanya perlengkapan) tidak punya tanggal ini.

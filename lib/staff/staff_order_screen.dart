@@ -163,6 +163,7 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                         times: [for (final e in (o['steps'] as List)) (e as Map)['at'] as String?],
                         step: o['step'] == null ? null : asInt(o['step']),
                         tracking: o['tracking_number'] as String?,
+                        bestBefore: o['best_before'] == null ? null : fullDate(o['best_before']),
                       ),
                     const Label('PELANGGAN'),
                     _box([
@@ -175,6 +176,12 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                       _row('PENERIMA', '${(o['recipient'] ?? {})['name'] ?? ''}', bold: true),
                       _row('TELEPON', '${(o['recipient'] ?? {})['phone'] ?? ''}'),
                       _row('ALAMAT', '${(o['recipient'] ?? {})['address'] ?? ''}'),
+                      if (o['has_coffee'] == true) ...[
+                        _row('TGL SANGRAI', o['roasted_at'] == null ? 'belum disangrai' : fullDate(o['roasted_at'])),
+                        _row('TERBAIK SEBELUM',
+                            o['best_before'] == null ? '+${asInt(o['best_before_days'])} hari dari sangrai' : fullDate(o['best_before']),
+                            bold: o['best_before'] != null),
+                      ],
                       if (o['tracking_number'] != null)
                         _row('RESI', '${o['tracking_number']}', bold: true),
                     ]),

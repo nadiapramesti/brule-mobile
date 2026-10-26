@@ -62,3 +62,13 @@ String clockOf(Object? iso) {
   if (d == null) return '';
   return '${d.hour.toString().padLeft(2, '0')}.${d.minute.toString().padLeft(2, '0')}';
 }
+
+const _monthLong = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+/// "2026-11-09" atau ISO -> "9 Nov 2026". Kosong bila tidak bisa dibaca.
+String fullDate(Object? iso) {
+  final d = DateTime.tryParse('$iso');
+  if (d == null) return '';
+  final l = iso is String && iso.length > 10 ? d.toLocal() : d;
+  return '${l.day} ${_monthLong[l.month - 1]} ${l.year}';
+}

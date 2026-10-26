@@ -133,6 +133,7 @@ class OrderDetailScreen extends StatelessWidget {
                       times: o.stepTimes,
                       step: o.step,
                       tracking: o.trackingNumber,
+                      bestBefore: o.bestBefore == null ? null : fullDate(o.bestBefore),
                     ),
                   ],
                   const Label('ITEM'),

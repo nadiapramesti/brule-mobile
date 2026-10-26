@@ -12,6 +12,8 @@ class OrderTimeline extends StatelessWidget {
   final List<String?> times;
   final int? step;
   final String? tracking;
+  /// Tanggal "terbaik dinikmati sebelum" (sudah diformat), tampil di bawah tahap sangrai.
+  final String? bestBefore;
   const OrderTimeline({
     super.key,
     required this.keys,
@@ -19,6 +21,7 @@ class OrderTimeline extends StatelessWidget {
     required this.times,
     required this.step,
     this.tracking,
+    this.bestBefore,
   });
 
   @override
@@ -40,6 +43,7 @@ class OrderTimeline extends StatelessWidget {
               child: _Row(
               label: labels[i],
               time: i < times.length ? times[i] : null,
+              best: keys.length > i && keys[i] == 'roasting' && step != null && i <= step! ? bestBefore : null,
               resi: keys.length > i && keys[i] == 'shipped' && step != null && i <= step! ? tracking : null,
               done: step != null && i <= step!,
               now: step == i,
@@ -58,6 +62,7 @@ class _Row extends StatelessWidget {
   final String label;
   final String? time;
   final String? resi;
+  final String? best;
   final bool done;
   final bool now;
   final bool lineDone;
@@ -67,6 +72,7 @@ class _Row extends StatelessWidget {
     required this.label,
     required this.time,
     required this.resi,
+    this.best,
     required this.done,
     required this.now,
     required this.lineDone,
@@ -116,6 +122,10 @@ class _Row extends StatelessWidget {
                   if (t.isNotEmpty) ...[
                     const SizedBox(height: 2),
                     Text(t, style: Brule.mono(10.5)),
+                  ],
+                  if (best != null && best!.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text('Terbaik dinikmati sebelum $best', style: Brule.mono(10.5, color: Brule.amber)),
                   ],
                   if (resi != null && resi!.isNotEmpty) ...[
                     const SizedBox(height: 2),
