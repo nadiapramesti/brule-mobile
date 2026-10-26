@@ -24,8 +24,7 @@ class BruleApp extends StatelessWidget {
     return ListenableBuilder(
       listenable: Listenable.merge([AppPrefs.light, AppPrefs.lang]),
       builder: (context, _) => MaterialApp(
-        // ganti tema/bahasa = bangun ulang seluruh app dari nol (warna dan teks dibaca langsung)
-        key: ValueKey('${AppPrefs.light.value}-${AppPrefs.lang.value}'),
+        themeAnimationDuration: Duration.zero,
         title: 'BRÛLÉ',
         navigatorKey: Notices.navKey,
         scaffoldMessengerKey: Notices.messengerKey,

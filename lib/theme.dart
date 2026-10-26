@@ -11,12 +11,12 @@ class Brule {
   static Color get field => light ? const Color(0xFFFFFDF9) : const Color(0xFF1A1A1A);
   static Color get sheet => light ? const Color(0xFFFBF8F1) : const Color(0xFF161616);
   static Color get raised => light ? const Color(0xFFEFE8DA) : const Color(0xFF262626);
-  static Color get cream => light ? const Color(0xFF1C1813) : const Color(0xFFFFFBF2);
-  static Color get kraft => light ? const Color(0xFF5B4930) : const Color(0xFFD8C5A6);
+  static Color get cream => light ? const Color(0xFF14110C) : const Color(0xFFFFFBF2);
+  static Color get kraft => light ? const Color(0xFF4A3B26) : const Color(0xFFE6D7BD);
   static Color get blue => const Color(0xFF234E94);
-  static Color get blueText => light ? const Color(0xFF1E4A94) : const Color(0xFF9DBBEF);
-  static Color get amber => light ? const Color(0xFFA85210) : const Color(0xFFF2A266);
-  static Color get red => light ? const Color(0xFFB0342C) : const Color(0xFFE26D6D);
+  static Color get blueText => light ? const Color(0xFF163A78) : const Color(0xFFAFC9F5);
+  static Color get amber => light ? const Color(0xFF8F4309) : const Color(0xFFF7B07A);
+  static Color get red => light ? const Color(0xFF9C2A23) : const Color(0xFFEE8080);
 
   /// Teks di atas isian biru atau gambar gelap: selalu terang.
   static const paper = Color(0xFFFFFBF2);

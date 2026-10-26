@@ -94,7 +94,7 @@ class _ChromatogramPainter extends CustomPainter {
       ..color = Brule.kraft.withValues(alpha: 0.3)
       ..strokeWidth = 1;
     c.drawLine(Offset(0, baseY), Offset(w, baseY), axis);
-    final tick = Brule.mono(8, color: Brule.kraft.withValues(alpha: 0.6));
+    final tick = Brule.mono(8, color: Brule.kraft.withValues(alpha: 0.9));
     for (var m = 0; m <= 12; m += 2) {
       final x = m / 13 * w;
       c.drawLine(Offset(x, baseY), Offset(x, baseY + 4), axis);

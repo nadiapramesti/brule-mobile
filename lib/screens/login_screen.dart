@@ -174,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 4),
                         Text(
                           'Pantau pesanan dan belanja kopi sangrai segar.',
-                          style: TextStyle(color: Brule.kraft.withValues(alpha: 0.85)),
+                          style: TextStyle(color: Brule.kraft.withValues(alpha: 0.9)),
                         ),
                         if (widget.reason != null) ...[
                           const SizedBox(height: 12),

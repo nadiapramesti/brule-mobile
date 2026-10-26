@@ -116,7 +116,7 @@ class _Row extends StatelessWidget {
                     label,
                     style: TextStyle(
                       fontSize: 15,
-                      color: done ? Brule.cream : Brule.kraft.withValues(alpha: 0.5),
+                      color: done ? Brule.cream : Brule.kraft.withValues(alpha: 0.9),
                       fontWeight: now ? FontWeight.w600 : FontWeight.w400,
                     ),
                   ),

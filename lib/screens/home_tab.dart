@@ -241,7 +241,7 @@ class _FakeSearch extends StatelessWidget {
                 child: Text('cari kopi atau alat, contoh: Aeropress',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Brule.kraft.withValues(alpha: 0.55))),
+                    style: TextStyle(color: Brule.kraft.withValues(alpha: 0.9))),
               ),
             ],
           ),
@@ -789,7 +789,7 @@ class _Stages extends StatelessWidget {
                                 maxLines: 3,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                    color: Brule.kraft.withValues(alpha: 0.8),
+                                    color: Brule.kraft.withValues(alpha: 0.9),
                                     fontSize: 12,
                                     height: 1.4)),
                           ],

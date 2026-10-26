@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' hide Text;
 import '../i18n.dart';
-import '../prefs.dart';
+import '../settings_screen.dart';
 import '../api.dart';
 import '../cart.dart';
 import '../theme.dart';
@@ -190,10 +190,12 @@ class _AccountTabState extends State<AccountTab> {
               subtitle: 'Ganti password akunmu',
               onTap: () => _open(const PasswordScreen(), 'Password diubah'),
             ),
-            const Label('TAMPILAN DAN BAHASA'),
-            const ThemeSwitch(),
-            const SizedBox(height: 8),
-            const LangSwitch(),
+            _Tile(
+              icon: Icons.settings_outlined,
+              title: 'Pengaturan',
+              subtitle: 'Tema dan bahasa',
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SettingsScreen())),
+            ),
             const SizedBox(height: 16),
             OutlinedButton.icon(
               style: OutlinedButton.styleFrom(

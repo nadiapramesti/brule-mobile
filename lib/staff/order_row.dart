@@ -123,7 +123,7 @@ class OrderRow extends StatelessWidget {
                       Text('${o['summary'] ?? ''}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: Brule.kraft.withValues(alpha: 0.85), fontSize: 12.5)),
+                          style: TextStyle(color: Brule.kraft.withValues(alpha: 0.9), fontSize: 12.5)),
                     ],
                   ),
                 ),

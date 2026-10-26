@@ -28,14 +28,24 @@ class AppPrefs {
   static Future<void> setLang(String v) async {
     if (lang.value == v) return;
     lang.value = v;
+    _refresh();
     final p = await SharedPreferences.getInstance();
     await p.setString('lang', v);
+  }
+
+  /// Warna dan teks dibaca langsung lewat Brule.* dan tr(), jadi seluruh layar dibangun ulang
+  /// seperti hot reload: layar yang sedang terbuka, scroll, dan isian form tetap terjaga.
+  static void _refresh() {
+    final b = WidgetsBinding.instance;
+    b.addPostFrameCallback((_) => b.reassembleApplication());
+    b.scheduleFrame();
   }
 
   static Future<void> setLight(bool v) async {
     if (Brule.light == v) return;
     Brule.light = v;
     light.value = v;
+    _refresh();
     final p = await SharedPreferences.getInstance();
     await p.setString('theme', v ? 'light' : 'dark');
   }

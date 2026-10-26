@@ -13,7 +13,7 @@ import 'admin_kit.dart';
 import 'admin_logs_screen.dart';
 import 'admin_report_screen.dart';
 import 'admin_reviews_screen.dart';
-import 'admin_settings_screen.dart';
+import '../settings_screen.dart';
 import 'admin_users_screen.dart';
 import 'admin_vouchers_screen.dart';
 
@@ -35,7 +35,7 @@ class AdminMenuTab extends StatelessWidget {
       (Icons.coffee_outlined, 'Kopi', 'Tampilkan atau sembunyikan dari toko', const AdminCatalogScreen(coffees: true)),
       (Icons.handyman_outlined, 'Produk', 'Alat seduh dan perlengkapan', const AdminCatalogScreen(coffees: false)),
       (Icons.history, 'Log aktivitas', 'Riwayat perubahan oleh admin dan roaster', const AdminLogsScreen()),
-      (Icons.settings_outlined, 'Pengaturan toko', 'Kontak, ongkir, add-on, COD, batas stok', const AdminSettingsScreen()),
+      (Icons.settings_outlined, 'Pengaturan', 'Tema, bahasa, dan data toko', const SettingsScreen(admin: true)),
     ];
 
     return SafeArea(

@@ -101,7 +101,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Text('Buat akun BRÛLÉ', style: Brule.condensed(28)),
                   const SizedBox(height: 6),
                   Text('Sekali daftar, langsung bisa belanja dan memantau pesanan.',
-                      style: TextStyle(color: Brule.kraft.withValues(alpha: 0.85))),
+                      style: TextStyle(color: Brule.kraft.withValues(alpha: 0.9))),
                 ],
               ),
             ),

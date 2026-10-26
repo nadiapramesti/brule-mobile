@@ -1,22 +1,33 @@
 import 'package:flutter/material.dart' hide Text;
 import '../i18n.dart';
 import '../api.dart';
-import '../prefs.dart';
 import '../theme.dart';
 import '../widgets.dart';
 import 'admin_kit.dart';
 
-/// Pengaturan toko: sama dengan halaman Pengaturan di web.
+enum SettingsSection { identity, contact, shipping, fresh, addons, cod }
+
+const _sectionTitles = {
+  SettingsSection.identity: 'Identitas toko',
+  SettingsSection.contact: 'Kontak',
+  SettingsSection.shipping: 'Ongkir dan stok',
+  SettingsSection.fresh: 'Kesegaran kopi',
+  SettingsSection.addons: 'Add-on',
+  SettingsSection.cod: 'Bayar di tempat (COD)',
+};
+
+/// Satu kelompok pengaturan toko (sama dengan halaman Pengaturan di web).
 class AdminSettingsScreen extends StatelessWidget {
-  const AdminSettingsScreen({super.key});
+  final SettingsSection section;
+  const AdminSettingsScreen({super.key, required this.section});
 
   @override
   Widget build(BuildContext context) {
     return AdminPage(
-      title: 'Pengaturan toko',
+      title: _sectionTitles[section]!,
       child: Loader<Map<String, dynamic>>(
         load: () => Api.get('/admin/settings'),
-        builder: (context, d, reload) => _SettingsForm(initial: d),
+        builder: (context, d, reload) => _SettingsForm(initial: d, section: section),
       ),
     );
   }
@@ -24,7 +35,8 @@ class AdminSettingsScreen extends StatelessWidget {
 
 class _SettingsForm extends StatefulWidget {
   final Map<String, dynamic> initial;
-  const _SettingsForm({required this.initial});
+  final SettingsSection section;
+  const _SettingsForm({required this.initial, required this.section});
 
   @override
   State<_SettingsForm> createState() => _SettingsFormState();
@@ -114,47 +126,55 @@ class _SettingsFormState extends State<_SettingsForm> {
   }
 
   List<Widget> _fields() {
+    final note = Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Text('Footer, checkout, dan invoice di web langsung memakai nilai baru.', style: Brule.mono(10)),
+    );
     return [
-        if (_error != null) ...[const SizedBox(height: 8), ErrorBox(_error!)],
-        const Label('TAMPILAN DAN BAHASA'),
-        const ThemeSwitch(),
-        const SizedBox(height: 8),
-        const LangSwitch(),
-        const SizedBox(height: 6),
-        const Label('IDENTITAS TOKO'),
-        _f('store_name', 'NAMA TOKO', 'contoh: BRÛLÉ', maxLength: 40),
-        _f('tagline', 'TAGLINE', 'contoh: Specialty Coffee Lab', maxLength: 60),
-        _f('city', 'KOTA', 'contoh: Bandung', maxLength: 40),
-        _f('address', 'ALAMAT', 'contoh: Roastery BRÛLÉ, Bandung, Jawa Barat', maxLength: 160, lines: 2),
-        const Label('KONTAK'),
-        _f('email', 'EMAIL', 'contoh: halo@brule.id'),
-        _f('whatsapp', 'WHATSAPP', 'contoh: 081234567890', number: true),
-        _f('instagram', 'INSTAGRAM (TANPA @)', 'contoh: brule.coffeelab'),
-        const Label('ONGKIR DAN STOK'),
-        _f('shipping_flat', 'ONGKIR FLAT (Rp)', 'contoh: 15000', number: true),
-        _f('free_from', 'GRATIS ONGKIR DI ATAS (Rp)', 'contoh: 500000', number: true),
-        _f('low_stock', 'BATAS STOK MENIPIS (gram)', 'contoh: 5000', number: true),
-        const Label('KESEGARAN KOPI'),
-        _f('best_before_days', 'MASA SEGAR SETELAH SANGRAI (hari)', 'contoh: 30', number: true),
-        const Label('ADD-ON'),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: const Text('Add-on aktif (bungkus kado, kartu ucapan)'),
-          value: _addons,
-          onChanged: (v) => setState(() => _addons = v),
-        ),
-        _f('gift_wrap_price', 'HARGA BUNGKUS KADO (Rp)', 'contoh: 15000', number: true),
-        _f('card_price', 'HARGA KARTU UCAPAN (Rp)', 'contoh: 5000', number: true),
-        const Label('BAYAR DI TEMPAT (COD)'),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: const Text('COD aktif'),
-          value: _cod,
-          onChanged: (v) => setState(() => _cod = v),
-        ),
-        _f('cod_max', 'BATAS NILAI COD (Rp, 0 = tanpa batas)', 'contoh: 500000', number: true),
-        const SizedBox(height: 4),
-        Text('Footer, checkout, dan invoice di web langsung memakai nilai baru.', style: Brule.mono(9)),
+      if (_error != null) ...[const SizedBox(height: 8), ErrorBox(_error!)],
+      ...switch (widget.section) {
+        SettingsSection.identity => [
+            _f('store_name', 'NAMA TOKO', 'contoh: BRÛLÉ', maxLength: 40),
+            _f('tagline', 'TAGLINE', 'contoh: Specialty Coffee Lab', maxLength: 60),
+            _f('city', 'KOTA', 'contoh: Bandung', maxLength: 40),
+            _f('address', 'ALAMAT', 'contoh: Roastery BRÛLÉ, Bandung, Jawa Barat', maxLength: 160, lines: 2),
+          ],
+        SettingsSection.contact => [
+            _f('email', 'EMAIL', 'contoh: halo@brule.id'),
+            _f('whatsapp', 'WHATSAPP', 'contoh: 081234567890', number: true),
+            _f('instagram', 'INSTAGRAM (TANPA @)', 'contoh: brule.coffeelab'),
+          ],
+        SettingsSection.shipping => [
+            _f('shipping_flat', 'ONGKIR FLAT (Rp)', 'contoh: 15000', number: true),
+            _f('free_from', 'GRATIS ONGKIR DI ATAS (Rp)', 'contoh: 500000', number: true),
+            _f('low_stock', 'BATAS STOK MENIPIS (gram)', 'contoh: 5000', number: true),
+          ],
+        SettingsSection.fresh => [
+            _f('best_before_days', 'MASA SEGAR SETELAH SANGRAI (hari)', 'contoh: 30', number: true),
+          ],
+        SettingsSection.addons => [
+            const SizedBox(height: 8),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Add-on aktif (bungkus kado, kartu ucapan)'),
+              value: _addons,
+              onChanged: (v) => setState(() => _addons = v),
+            ),
+            _f('gift_wrap_price', 'HARGA BUNGKUS KADO (Rp)', 'contoh: 15000', number: true),
+            _f('card_price', 'HARGA KARTU UCAPAN (Rp)', 'contoh: 5000', number: true),
+          ],
+        SettingsSection.cod => [
+            const SizedBox(height: 8),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('COD aktif'),
+              value: _cod,
+              onChanged: (v) => setState(() => _cod = v),
+            ),
+            _f('cod_max', 'BATAS NILAI COD (Rp, 0 = tanpa batas)', 'contoh: 500000', number: true),
+          ],
+      },
+      note,
     ];
   }
 }
