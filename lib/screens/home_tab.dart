@@ -88,8 +88,6 @@ class _HomeTabState extends State<HomeTab> {
                       children: [
                         const BrandLogo(height: 34),
                         const Spacer(),
-                        const ThemeIconButton(),
-                        const SizedBox(width: 8),
                         ValueListenableBuilder<int>(
                           valueListenable: Api.session,
                           builder: (context, _, _) => Api.loggedIn
