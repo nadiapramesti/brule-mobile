@@ -95,17 +95,16 @@ class _SettingsFormState extends State<_SettingsForm> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: FilledButton(
-            onPressed: _busy ? null : _save,
-            child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN PENGATURAN'),
-          ),
-        ),
         Expanded(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
             children: _fields(),
+          ),
+        ),
+        BottomBar(
+          child: FilledButton(
+            onPressed: _busy ? null : _save,
+            child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN PENGATURAN'),
           ),
         ),
       ],

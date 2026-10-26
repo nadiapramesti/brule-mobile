@@ -217,14 +217,6 @@ class _ReviewSheetState extends State<_ReviewSheet> {
                 ),
               ],
             ),
-            FilledButton(
-              onPressed: _busy ? null : _save,
-              child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN ULASAN'),
-            ),
-            if (_error != null) ...[
-              const SizedBox(height: 8),
-              ErrorBox(_error!),
-            ],
             const Label('NILAI'),
             Row(
               children: [
@@ -248,6 +240,15 @@ class _ReviewSheetState extends State<_ReviewSheet> {
               decoration: const InputDecoration(
                 hintText: 'contoh: Aroma jeruknya terasa jelas, asamnya manis.',
               ),
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 8),
+              ErrorBox(_error!),
+            ],
+            const SizedBox(height: 14),
+            FilledButton(
+              onPressed: _busy ? null : _save,
+              child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN ULASAN'),
             ),
           ],
         ),

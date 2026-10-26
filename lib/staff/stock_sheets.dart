@@ -105,12 +105,6 @@ class _CoffeeStockState extends State<_CoffeeStock> {
               IconButton(tooltip: 'Tutup', icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
             ],
           ),
-          FilledButton(
-            onPressed: _busy || bad ? null : _save,
-            child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN STOK'),
-          ),
-          if (_error != null) ...[const SizedBox(height: 8), ErrorBox(_error!)],
-          const SizedBox(height: 8),
           Flexible(
             child: SingleChildScrollView(
               child: Column(
@@ -169,6 +163,12 @@ class _CoffeeStockState extends State<_CoffeeStock> {
                 ],
               ),
             ),
+          ),
+          if (_error != null) ...[const SizedBox(height: 8), ErrorBox(_error!)],
+          const SizedBox(height: 12),
+          FilledButton(
+            onPressed: _busy || bad ? null : _save,
+            child: Text(_busy ? 'MENYIMPAN...' : 'SIMPAN STOK'),
           ),
         ],
       ),
