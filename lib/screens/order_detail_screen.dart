@@ -12,9 +12,13 @@ import 'payment_screen.dart';
 
 class OrderDetailScreen extends StatelessWidget {
   final String code;
-  const OrderDetailScreen({super.key, required this.code});
 
-  Future<Order> _load() async => Order.fromJson(await Api.get('/orders/$code'));
+  /// Lacak pesanan lewat kode tanpa login: hanya tahapan dan isi pesanan, tanpa data penerima dan tanpa aksi.
+  final bool publicView;
+  const OrderDetailScreen({super.key, required this.code, this.publicView = false});
+
+  Future<Order> _load() async =>
+      Order.fromJson(await Api.get(publicView ? '/track/$code' : '/orders/$code'));
 
   void _toast(BuildContext context, String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
@@ -40,6 +44,30 @@ class OrderDetailScreen extends StatelessWidget {
       await Api.post('/orders/$code/sync');
       AppEvents.ordersChanged.value++;
       await reload();
+    } on ApiException catch (e) {
+      if (context.mounted) _toast(context, e.message);
+    }
+  }
+
+  Future<void> _reorder(BuildContext context) async {
+    try {
+      final r = await Api.post('/orders/$code/reorder');
+      final lines = ((r['lines'] ?? []) as List).cast<Map<String, dynamic>>();
+      if (lines.isEmpty) {
+        if (context.mounted) _toast(context, 'Racikan di pesanan ini sudah tidak tersedia.');
+        return;
+      }
+      for (final j in lines) {
+        Cart.I.add(CartLine.fromJson(j));
+      }
+      final skipped = (r['skipped'] as num?)?.toInt() ?? 0;
+      if (!context.mounted) return;
+      final messenger = ScaffoldMessenger.of(context);
+      Navigator.of(context).popUntil((route) => route.isFirst);
+      AppEvents.goTab.value = 2;
+      messenger.showSnackBar(SnackBar(
+        content: Text(skipped > 0 ? '${lines.length} item masuk keranjang, $skipped tidak tersedia lagi' : '${lines.length} item masuk keranjang'),
+      ));
     } on ApiException catch (e) {
       if (context.mounted) _toast(context, e.message);
     }
@@ -171,14 +199,16 @@ class OrderDetailScreen extends StatelessWidget {
                         minus: true),
                   const SizedBox(height: 4),
                   _money('TOTAL', o.total, bold: true),
-                  const Label('PENERIMA'),
-                  Text('${o.recipient['name'] ?? ''}'),
-                  const SizedBox(height: 2),
-                  Text('${o.recipient['phone'] ?? ''}', style: Brule.mono(12)),
-                  const SizedBox(height: 6),
-                  Text('${o.recipient['address'] ?? ''}',
-                      style: TextStyle(color: Brule.kraft.withValues(alpha: 0.95), height: 1.4)),
-                  if (o.giftWrap && o.cardMessage != null && o.cardMessage!.isNotEmpty) ...[
+                  if (!publicView) ...[
+                    const Label('PENERIMA'),
+                    Text('${o.recipient['name'] ?? ''}'),
+                    const SizedBox(height: 2),
+                    Text('${o.recipient['phone'] ?? ''}', style: Brule.mono(12)),
+                    const SizedBox(height: 6),
+                    Text('${o.recipient['address'] ?? ''}',
+                        style: TextStyle(color: Brule.kraft.withValues(alpha: 0.95), height: 1.4)),
+                  ],
+                  if (!publicView && o.giftWrap && o.cardMessage != null && o.cardMessage!.isNotEmpty) ...[
                     const Label('KARTU UCAPAN'),
                     Text(o.cardMessage!),
                   ],
@@ -197,7 +227,7 @@ class OrderDetailScreen extends StatelessWidget {
               ),
             ),
           );
-          if (!canReceipt) return list;
+          if (publicView) return list;
           return Column(
             children: [
               Expanded(child: list),
@@ -210,10 +240,20 @@ class OrderDetailScreen extends StatelessWidget {
                 child: SafeArea(
                   top: false,
                   child: Narrow(
-                    child: OutlinedButton.icon(
-                      onPressed: () => downloadAndShare(context, '/orders/$code/receipt', {}),
-                      icon: const Icon(Icons.receipt_long_outlined, size: 18),
-                      label: const Text('UNDUH STRUK (PDF)'),
+                    child: ButtonRow(
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () => _reorder(context),
+                          icon: const Icon(Icons.replay, size: 18),
+                          label: const Text('BELI LAGI'),
+                        ),
+                        if (canReceipt)
+                          OutlinedButton.icon(
+                            onPressed: () => downloadAndShare(context, '/orders/$code/receipt', {}),
+                            icon: const Icon(Icons.receipt_long_outlined, size: 18),
+                            label: const Text('UNDUH STRUK'),
+                          ),
+                      ],
                     ),
                   ),
                 ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide Text;
 import '../i18n.dart';
 import '../settings_screen.dart';
 import 'help_screen.dart';
+import 'track_screen.dart';
 import '../api.dart';
 import '../cart.dart';
 import '../theme.dart';
@@ -91,6 +92,12 @@ class _AccountTabState extends State<AccountTab> {
               child: const Text('MASUK'),
             ),
             const SizedBox(height: 20),
+            _Tile(
+              icon: Icons.local_shipping_outlined,
+              title: 'Lacak pesanan',
+              subtitle: 'Cukup pakai kode pesanan',
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const TrackScreen())),
+            ),
             _Tile(
               icon: Icons.help_outline,
               title: 'Bantuan (FAQ)',

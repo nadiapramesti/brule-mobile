@@ -5,6 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Penanda sederhana: naik tiap kali pesanan dibuat/diubah, supaya tab Pesanan memuat ulang.
 class AppEvents {
   static final ordersChanged = ValueNotifier<int>(0);
+
+  /// Minta HomeScreen pindah tab (0 beranda, 1 katalog, 2 keranjang, 3 pesanan, 4 akun).
+  static final goTab = ValueNotifier<int?>(null);
 }
 
 class CartLine {

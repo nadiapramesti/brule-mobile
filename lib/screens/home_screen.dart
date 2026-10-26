@@ -19,6 +19,25 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _index = 0;
 
+  void _jump() {
+    final t = AppEvents.goTab.value;
+    if (t == null) return;
+    AppEvents.goTab.value = null;
+    if (mounted) setState(() => _index = t);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    AppEvents.goTab.addListener(_jump);
+  }
+
+  @override
+  void dispose() {
+    AppEvents.goTab.removeListener(_jump);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
