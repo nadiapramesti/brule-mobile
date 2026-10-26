@@ -74,7 +74,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
         'Akun staf ini dihapus permanen dan tidak bisa masuk lagi.',
         ok: 'HAPUS', danger: true);
     if (!ok || !mounted) return;
-    final done = await runAction(context, () => Api.delete('/admin/users/${_u!['id']}'), done: 'Akun dihapus');
+    final done = await runAction(context, () => Api.delete('/admin/users/${_u['id']}'), done: 'Akun dihapus');
     if (done && mounted) Navigator.of(context).pop(true);
   }
 
