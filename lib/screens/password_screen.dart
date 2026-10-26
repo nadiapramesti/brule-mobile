@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../api.dart';
 import '../widgets.dart';
 
@@ -54,7 +55,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
   }
 
   InputDecoration _dec(String hint) => InputDecoration(
-        hintText: hint,
+        hintText: tr(hint),
         suffixIcon: IconButton(
           tooltip: _hide ? 'Tampilkan' : 'Sembunyikan',
           icon: Icon(_hide ? Icons.visibility_outlined : Icons.visibility_off_outlined),

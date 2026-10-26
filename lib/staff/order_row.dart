@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
@@ -172,7 +173,7 @@ Future<String?> askTracking(BuildContext context, String code) {
             autofocus: true,
             textCapitalization: TextCapitalization.characters,
             decoration: InputDecoration(
-              hintText: 'contoh: JNE1234567890',
+              hintText: tr('contoh: JNE1234567890'),
               errorText: error,
             ),
           ),

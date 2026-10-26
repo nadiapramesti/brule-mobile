@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../api.dart';
 import '../prefs.dart';
 import '../theme.dart';
@@ -86,7 +87,7 @@ class _SettingsFormState extends State<_SettingsForm> {
           keyboardType: number ? TextInputType.number : TextInputType.text,
           maxLength: maxLength,
           maxLines: lines,
-          decoration: InputDecoration(hintText: hint, counterText: ''),
+          decoration: InputDecoration(hintText: tr(hint), counterText: ''),
         ),
       ],
     );
@@ -115,8 +116,10 @@ class _SettingsFormState extends State<_SettingsForm> {
   List<Widget> _fields() {
     return [
         if (_error != null) ...[const SizedBox(height: 8), ErrorBox(_error!)],
-        const Label('TAMPILAN APLIKASI'),
+        const Label('TAMPILAN DAN BAHASA'),
         const ThemeSwitch(),
+        const SizedBox(height: 8),
+        const LangSwitch(),
         const SizedBox(height: 6),
         const Label('IDENTITAS TOKO'),
         _f('store_name', 'NAMA TOKO', 'contoh: BRÛLÉ', maxLength: 40),

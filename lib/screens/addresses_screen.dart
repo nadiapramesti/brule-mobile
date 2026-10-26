@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../api.dart';
 import '../models.dart';
 import '../theme.dart';
@@ -183,7 +184,7 @@ class _AddressCard extends StatelessWidget {
               const Spacer(),
               if (!pick)
                 IconButton(
-                  tooltip: 'Hapus',
+                  tooltip: tr('Hapus'),
                   visualDensity: VisualDensity.compact,
                   onPressed: onDelete,
                   icon: const Icon(Icons.delete_outline),
@@ -316,21 +317,21 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
               controller: _label,
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(hintText: 'contoh: Rumah, Kantor'),
+              decoration: InputDecoration(hintText: tr('contoh: Rumah, Kantor')),
             ),
             const Label('NAMA PENERIMA'),
             TextField(
               controller: _recipient,
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(hintText: 'contoh: Nadia Pramesti'),
+              decoration: InputDecoration(hintText: tr('contoh: Nadia Pramesti')),
             ),
             const Label('NOMOR WHATSAPP'),
             TextField(
               controller: _phone,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(hintText: 'contoh: 081234567890'),
+              decoration: InputDecoration(hintText: tr('contoh: 081234567890')),
             ),
             const Label('ALAMAT LENGKAP'),
             TextField(
@@ -338,8 +339,8 @@ class _AddressFormScreenState extends State<AddressFormScreen> {
               minLines: 3,
               maxLines: 5,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                hintText: 'contoh: Jl. Melati No. 5, Karawang, 41361',
+              decoration: InputDecoration(
+                hintText: tr('contoh: Jl. Melati No. 5, Karawang, 41361'),
               ),
             ),
             if (_error != null) ...[

@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../api.dart';
 import '../theme.dart';
 import '../util.dart';
@@ -42,7 +43,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           controller: c,
           maxLength: 300,
           maxLines: 3,
-          decoration: const InputDecoration(hintText: 'alasan (opsional), contoh: pesanan fiktif berulang'),
+          decoration: InputDecoration(hintText: tr('alasan (opsional), contoh: pesanan fiktif berulang')),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('BATAL')),

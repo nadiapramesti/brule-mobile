@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../api.dart';
 import '../motion.dart';
 import '../theme.dart';
@@ -90,7 +91,7 @@ class _UserFormScreenState extends State<UserFormScreen> {
           keyboardType: type,
           obscureText: obscure,
           autocorrect: false,
-          decoration: InputDecoration(hintText: hint, suffixIcon: suffix),
+          decoration: InputDecoration(hintText: tr(hint), suffixIcon: suffix),
         ),
       ],
     );

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../prefs.dart';
 import '../add_sheet.dart';
 import '../api.dart';
@@ -106,7 +107,7 @@ class _HomeTabState extends State<HomeTab> {
                         ListenableBuilder(
                           listenable: Cart.I,
                           builder: (context, _) => IconButton.filledTonal(
-                            tooltip: 'Keranjang',
+                            tooltip: tr('Keranjang'),
                             onPressed: () => widget.onGo(2),
                             icon: Badge(
                               label: Text('${Cart.I.count}'),
@@ -582,7 +583,7 @@ class _MiniCard extends StatelessWidget {
                             ),
                           ),
                           IconButton.filled(
-                            tooltip: 'Tambah ke keranjang',
+                            tooltip: tr('Tambah ke keranjang'),
                             onPressed: soldOut ? null : onAdd,
                             icon: const Icon(Icons.add, size: 20),
                             style: IconButton.styleFrom(

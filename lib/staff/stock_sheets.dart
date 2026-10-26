@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../api.dart';
 import '../theme.dart';
 import '../util.dart';
@@ -102,7 +103,7 @@ class _CoffeeStockState extends State<_CoffeeStock> {
                   ],
                 ),
               ),
-              IconButton(tooltip: 'Tutup', icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
+              IconButton(tooltip: tr('Tutup'), icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
             ],
           ),
           Flexible(
@@ -118,7 +119,7 @@ class _CoffeeStockState extends State<_CoffeeStock> {
                     keyboardType: TextInputType.number,
                     onChanged: (_) => setState(() {}),
                     decoration: InputDecoration(
-                      hintText: _mode == 'count' ? 'contoh: 12500' : 'contoh: 5000',
+                      hintText: tr(_mode) == 'count' ? 'contoh: 12500' : 'contoh: 5000',
                       counterText: '',
                     ),
                   ),
@@ -139,7 +140,7 @@ class _CoffeeStockState extends State<_CoffeeStock> {
                     controller: _reason,
                     maxLength: 120,
                     decoration: InputDecoration(
-                      hintText: switch (_mode) {
+                      hintText: tr(switch) (_mode) {
                         'restock' => 'contoh: Beli dari petani, invoice 0231',
                         'waste' => 'contoh: Kemasan sobek, biji lembap',
                         _ => 'contoh: Hasil stok opname akhir bulan',
@@ -238,7 +239,7 @@ class _ProductStockState extends State<_ProductStock> {
           Row(
             children: [
               Expanded(child: Text('${widget.product['name']}', style: Brule.condensed(22))),
-              IconButton(tooltip: 'Tutup', icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
+              IconButton(tooltip: tr('Tutup'), icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
             ],
           ),
           Text('Stok sekarang: $now unit', style: Brule.mono(10, color: Brule.cream)),
@@ -247,7 +248,7 @@ class _ProductStockState extends State<_ProductStock> {
             controller: _amount,
             keyboardType: TextInputType.number,
             onChanged: (_) => setState(() {}),
-            decoration: const InputDecoration(hintText: 'contoh: 12', counterText: ''),
+            decoration: InputDecoration(hintText: tr('contoh: 12'), counterText: ''),
           ),
           const SizedBox(height: 8),
           ChipRow(

@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../prefs.dart';
 import '../api.dart';
 import '../cart.dart';
@@ -189,8 +190,10 @@ class _AccountTabState extends State<AccountTab> {
               subtitle: 'Ganti password akunmu',
               onTap: () => _open(const PasswordScreen(), 'Password diubah'),
             ),
-            const Label('TAMPILAN'),
+            const Label('TAMPILAN DAN BAHASA'),
             const ThemeSwitch(),
+            const SizedBox(height: 8),
+            const LangSwitch(),
             const SizedBox(height: 16),
             OutlinedButton.icon(
               style: OutlinedButton.styleFrom(

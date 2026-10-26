@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'i18n.dart';
 import 'auth_gate.dart';
 import 'cart.dart';
 import 'models.dart';
@@ -66,7 +67,7 @@ class _SheetFrame extends StatelessWidget {
               children: [
                 Expanded(child: Text(title, style: Brule.condensed(22))),
                 IconButton(
-                  tooltip: 'Tutup',
+                  tooltip: tr('Tutup'),
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.of(context).pop(),
                 ),

@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../api.dart';
 import '../motion.dart';
 import '../theme.dart';
@@ -220,7 +221,7 @@ class _AdminStockTabState extends State<AdminStockTab> {
                                   ),
                                   if (widget.manage)
                                     IconButton.filledTonal(
-                                      tooltip: 'Tambah stok',
+                                      tooltip: tr('Tambah stok'),
                                       onPressed: () =>
                                           _after(showProductStockSheet(context, p), 'Stok ${p['name']} ditambah'),
                                       icon: const Icon(Icons.add, size: 18),

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import 'package:image_picker/image_picker.dart';
 import '../api.dart';
 import '../motion.dart';
@@ -226,7 +227,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           minLines: lines,
           maxLines: lines,
           textCapitalization: number ? TextCapitalization.none : TextCapitalization.sentences,
-          decoration: InputDecoration(hintText: hint, counterText: ''),
+          decoration: InputDecoration(hintText: tr(hint), counterText: ''),
         ),
       ],
     );
@@ -280,16 +281,16 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                             TextField(
                               controller: _optLabel,
                               maxLength: 30,
-                              decoration: const InputDecoration(
-                                  labelText: 'Nama pilihan', hintText: 'contoh: Warna', counterText: ''),
+                              decoration: InputDecoration(
+                                  labelText: tr('Nama pilihan'), hintText: tr('contoh: Warna'), counterText: ''),
                             ),
                             const SizedBox(height: 12),
                             TextField(
                               controller: _options,
                               maxLength: 200,
-                              decoration: const InputDecoration(
-                                  labelText: 'Isi pilihan, pisahkan dengan koma',
-                                  hintText: 'contoh: Hitam, Putih, Krem',
+                              decoration: InputDecoration(
+                                  labelText: tr('Isi pilihan, pisahkan dengan koma'),
+                                  hintText: tr('contoh: Hitam, Putih, Krem'),
                                   counterText: ''),
                             ),
                           ],

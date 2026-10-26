@@ -1,3 +1,5 @@
+import 'prefs.dart';
+
 String rupiah(num v) {
   final s = v.round().toString();
   final b = StringBuffer();
@@ -35,8 +37,12 @@ String dayMonth(String? iso) {
   return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}';
 }
 
-const _dayNames = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU', 'MINGGU'];
-const _monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
+const _dayId = ['SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU', 'MINGGU'];
+const _dayEn = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
+const _monthId = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
+const _monthEn = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+List<String> get _dayNames => AppPrefs.isEn ? _dayEn : _dayId;
+List<String> get _monthNames => AppPrefs.isEn ? _monthEn : _monthId;
 
 DateTime? _whenOf(Object? iso) => DateTime.tryParse('$iso')?.toLocal();
 
@@ -63,7 +69,9 @@ String clockOf(Object? iso) {
   return '${d.hour.toString().padLeft(2, '0')}.${d.minute.toString().padLeft(2, '0')}';
 }
 
-const _monthLong = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+const _monthLongId = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+const _monthLongEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+List<String> get _monthLong => AppPrefs.isEn ? _monthLongEn : _monthLongId;
 
 /// "2026-11-09" atau ISO -> "9 Nov 2026". Kosong bila tidak bisa dibaca.
 String fullDate(Object? iso) {

@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'i18n.dart';
 import 'api.dart';
 import 'theme.dart';
 
@@ -124,7 +125,7 @@ Future<bool> askServerAddress(BuildContext context) async {
               keyboardType: TextInputType.url,
               autocorrect: false,
               decoration: InputDecoration(
-                hintText: 'contoh: http://192.168.1.10:8001',
+                hintText: tr('contoh: http://192.168.1.10:8001'),
                 errorText: err,
               ),
             ),
@@ -401,7 +402,7 @@ class QtyStepper extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            tooltip: 'Kurangi',
+            tooltip: tr('Kurangi'),
             onPressed: () => onChanged(qty - 1),
             icon: const Icon(Icons.remove),
           ),
@@ -411,7 +412,7 @@ class QtyStepper extends StatelessWidget {
                 textAlign: TextAlign.center, style: Brule.mono(15, color: Brule.cream)),
           ),
           IconButton(
-            tooltip: 'Tambah',
+            tooltip: tr('Tambah'),
             onPressed: qty >= 20 ? null : () => onChanged(qty + 1),
             icon: const Icon(Icons.add),
           ),
@@ -550,12 +551,12 @@ class _SearchBoxState extends State<SearchBox> {
       },
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        hintText: widget.hint,
+        hintText: tr(widget.hint),
         prefixIcon: const Icon(Icons.search),
         suffixIcon: _c.text.isEmpty
             ? null
             : IconButton(
-                tooltip: 'Hapus',
+                tooltip: tr('Hapus'),
                 icon: const Icon(Icons.close),
                 onPressed: () {
                   _c.clear();

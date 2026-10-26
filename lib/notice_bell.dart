@@ -1,5 +1,6 @@
 import 'dart:math' as math;
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'i18n.dart';
 import 'notices.dart';
 import 'theme.dart';
 
@@ -43,7 +44,7 @@ class _NoticeBellState extends State<NoticeBell> with SingleTickerProviderStateM
       builder: (context, n, _) {
         final label = n > 99 ? '99+' : '$n';
         return Tooltip(
-          message: 'Notifikasi',
+          message: tr('Notifikasi'),
           child: Material(
             color: Brule.field,
             shape: CircleBorder(side: BorderSide(color: Brule.hair(0.16))),

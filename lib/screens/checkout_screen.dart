@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../api.dart';
 import '../cart.dart';
 import '../models.dart';
@@ -304,7 +305,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               controller: _voucher,
               textCapitalization: TextCapitalization.characters,
               onChanged: (_) => setState(() {}),
-              decoration: const InputDecoration(hintText: 'contoh: HEMAT10'),
+              decoration: InputDecoration(hintText: tr('contoh: HEMAT10')),
             ),
             const SizedBox(height: 8),
             SwitchListTile(
@@ -322,8 +323,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 maxLength: 160,
                 minLines: 2,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  hintText: 'contoh: Selamat ulang tahun! Semoga harimu harum kopi.',
+                decoration: InputDecoration(
+                  hintText: tr('contoh: Selamat ulang tahun! Semoga harimu harum kopi.'),
                 ),
               ),
             const Label('RINGKASAN PESANAN'),

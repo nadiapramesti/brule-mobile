@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../api.dart';
 import '../theme.dart';
 import '../util.dart';
@@ -243,7 +244,7 @@ class _VoucherFormState extends State<_VoucherForm> {
           keyboardType: number ? TextInputType.number : TextInputType.text,
           maxLength: maxLength,
           textCapitalization: cap,
-          decoration: InputDecoration(hintText: hint, counterText: ''),
+          decoration: InputDecoration(hintText: tr(hint), counterText: ''),
         ),
       ],
     );
@@ -259,11 +260,11 @@ class _VoucherFormState extends State<_VoucherForm> {
           readOnly: true,
           onTap: () => _pickDate(c),
           decoration: InputDecoration(
-            hintText: 'contoh: 2026-12-31',
+            hintText: tr('contoh: 2026-12-31'),
             suffixIcon: c.text.isEmpty
                 ? const Icon(Icons.calendar_today, size: 18)
                 : IconButton(
-                    tooltip: 'Hapus tanggal',
+                    tooltip: tr('Hapus tanggal'),
                     icon: const Icon(Icons.close, size: 18),
                     onPressed: () => setState(c.clear),
                   ),
@@ -284,7 +285,7 @@ class _VoucherFormState extends State<_VoucherForm> {
           Row(
             children: [
               Expanded(child: Text(_v == null ? 'Voucher baru' : 'Ubah voucher', style: Brule.condensed(22))),
-              IconButton(tooltip: 'Tutup', icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
+              IconButton(tooltip: tr('Tutup'), icon: const Icon(Icons.close), onPressed: () => Navigator.of(context).pop()),
             ],
           ),
           Flexible(

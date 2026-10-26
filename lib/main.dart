@@ -21,11 +21,11 @@ class BruleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: AppPrefs.light,
-      builder: (context, isLight, _) => MaterialApp(
-        // ganti tema = bangun ulang seluruh app dari nol (warna Brule dibaca langsung)
-        key: ValueKey(isLight),
+    return ListenableBuilder(
+      listenable: Listenable.merge([AppPrefs.light, AppPrefs.lang]),
+      builder: (context, _) => MaterialApp(
+        // ganti tema/bahasa = bangun ulang seluruh app dari nol (warna dan teks dibaca langsung)
+        key: ValueKey('${AppPrefs.light.value}-${AppPrefs.lang.value}'),
         title: 'BRÛLÉ',
         navigatorKey: Notices.navKey,
         scaffoldMessengerKey: Notices.messengerKey,

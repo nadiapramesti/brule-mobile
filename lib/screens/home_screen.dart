@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../cart.dart';
 import '../motion.dart';
 import 'account_tab.dart';
@@ -42,19 +43,19 @@ class _HomeScreenState extends State<HomeScreen> {
             selectedIndex: _index,
             onDestinationSelected: (i) => setState(() => _index = i),
             destinations: [
-              const NavigationDestination(icon: Icon(Icons.home_outlined), label: 'BERANDA'),
-              const NavigationDestination(icon: Icon(Icons.coffee_outlined), label: 'KATALOG'),
+              NavigationDestination(icon: Icon(Icons.home_outlined), label: tr('BERANDA')),
+              NavigationDestination(icon: Icon(Icons.coffee_outlined), label: tr('KATALOG')),
               NavigationDestination(
                 icon: Badge(
                   label: Text('$n'),
                   isLabelVisible: n > 0,
                   child: const Icon(Icons.shopping_basket_outlined),
                 ),
-                label: 'KERANJANG',
+                label: tr('KERANJANG'),
               ),
-              const NavigationDestination(
-                  icon: Icon(Icons.receipt_long_outlined), label: 'PESANAN'),
-              const NavigationDestination(icon: Icon(Icons.person_outline), label: 'AKUN'),
+              NavigationDestination(
+                  icon: Icon(Icons.receipt_long_outlined), label: tr('PESANAN')),
+              NavigationDestination(icon: Icon(Icons.person_outline), label: tr('AKUN')),
             ],
           );
         },

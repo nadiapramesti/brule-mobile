@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../api.dart';
 import '../motion.dart';
 import '../theme.dart';
@@ -74,7 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   InputDecoration _dec(String hint, {bool eye = false}) => InputDecoration(
-        hintText: hint,
+        hintText: tr(hint),
         suffixIcon: eye
             ? IconButton(
                 tooltip: _hide ? 'Tampilkan password' : 'Sembunyikan password',

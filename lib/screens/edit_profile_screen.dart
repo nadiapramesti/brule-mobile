@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../api.dart';
 import '../widgets.dart';
 
@@ -66,20 +67,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               controller: _name,
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(hintText: 'contoh: Nadia Pramesti'),
+              decoration: InputDecoration(hintText: tr('contoh: Nadia Pramesti')),
             ),
             const Label('EMAIL'),
             TextField(
               controller: _email,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(hintText: 'contoh: nadia@email.com'),
+              decoration: InputDecoration(hintText: tr('contoh: nadia@email.com')),
             ),
             const Label('NOMOR WHATSAPP (OPSIONAL)'),
             TextField(
               controller: _phone,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(hintText: 'contoh: 081234567890'),
+              decoration: InputDecoration(hintText: tr('contoh: 081234567890')),
             ),
             if (_error != null) ...[
               const SizedBox(height: 16),

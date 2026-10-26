@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n.dart';
 import '../brand_logo.dart';
 import '../notice_bell.dart';
 import '../motion.dart';
@@ -59,14 +60,14 @@ class _StaffShellState extends State<StaffShell> {
     ];
     final dest = <NavigationDestination>[
       if (admin)
-        const NavigationDestination(icon: Icon(Icons.dashboard_outlined), label: 'DASHBOARD'),
+        NavigationDestination(icon: Icon(Icons.dashboard_outlined), label: tr('DASHBOARD')),
       if (admin)
-        const NavigationDestination(icon: Icon(Icons.receipt_long_outlined), label: 'PESANAN'),
-      const NavigationDestination(icon: Icon(Icons.local_fire_department_outlined), label: 'ANTRIAN'),
-      const NavigationDestination(icon: Icon(Icons.inventory_2_outlined), label: 'STOK'),
+        NavigationDestination(icon: Icon(Icons.receipt_long_outlined), label: tr('PESANAN')),
+      NavigationDestination(icon: Icon(Icons.local_fire_department_outlined), label: tr('ANTRIAN')),
+      NavigationDestination(icon: Icon(Icons.inventory_2_outlined), label: tr('STOK')),
       admin
-          ? const NavigationDestination(icon: Icon(Icons.grid_view_outlined), label: 'MENU')
-          : const NavigationDestination(icon: Icon(Icons.person_outline), label: 'AKUN'),
+          ? NavigationDestination(icon: Icon(Icons.grid_view_outlined), label: tr('MENU'))
+          : NavigationDestination(icon: Icon(Icons.person_outline), label: tr('AKUN')),
     ];
 
     // Bar logo di atas semua tab; SafeArea di sini membuat tab di bawahnya tidak menambah jarak ulang.

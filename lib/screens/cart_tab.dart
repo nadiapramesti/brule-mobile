@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../auth_gate.dart';
 import '../cart.dart';
 import '../theme.dart';
@@ -143,7 +144,7 @@ class _Line extends StatelessWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Hapus',
+                tooltip: tr('Hapus'),
                 onPressed: () => Cart.I.remove(line),
                 icon: const Icon(Icons.delete_outline),
               ),

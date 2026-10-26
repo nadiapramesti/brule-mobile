@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'i18n.dart';
 import 'theme.dart';
 
 /// Logo BRÛLÉ coffee lab (putih transparan, untuk latar gelap).
@@ -18,7 +19,7 @@ class BrandLogo extends StatelessWidget {
       color: Brule.light ? Brule.cream : null,
       colorBlendMode: Brule.light ? BlendMode.srcIn : null,
       filterQuality: FilterQuality.medium,
-      semanticLabel: 'BRÛLÉ coffee lab',
+      semanticLabel: tr('BRÛLÉ coffee lab'),
     );
   }
 }

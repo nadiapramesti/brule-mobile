@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import 'i18n.dart';
 import 'api.dart';
 import 'auth_gate.dart';
 import 'theme.dart';
@@ -211,7 +212,7 @@ class _ReviewSheetState extends State<_ReviewSheet> {
               children: [
                 Expanded(child: Text('Ulasanmu', style: Brule.condensed(22))),
                 IconButton(
-                  tooltip: 'Tutup',
+                  tooltip: tr('Tutup'),
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
@@ -237,8 +238,8 @@ class _ReviewSheetState extends State<_ReviewSheet> {
               minLines: 3,
               maxLines: 5,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                hintText: 'contoh: Aroma jeruknya terasa jelas, asamnya manis.',
+              decoration: InputDecoration(
+                hintText: tr('contoh: Aroma jeruknya terasa jelas, asamnya manis.'),
               ),
             ),
             if (_error != null) ...[

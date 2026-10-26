@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -204,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           autofillHints: const [AutofillHints.email],
                           textInputAction: TextInputAction.next,
                           onSubmitted: (_) => _passFocus.requestFocus(),
-                          decoration: const InputDecoration(hintText: 'contoh: nadia@email.com'),
+                          decoration: InputDecoration(hintText: tr('contoh: nadia@email.com')),
                         ),
                       ],
                     ),
@@ -223,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           textInputAction: TextInputAction.done,
                           onSubmitted: (_) => _busy ? null : _submit(),
                           decoration: InputDecoration(
-                            hintText: 'password akun BRÛLÉ kamu',
+                            hintText: tr('password akun BRÛLÉ kamu'),
                             suffixIcon: IconButton(
                               tooltip: _hide ? 'Tampilkan password' : 'Sembunyikan password',
                               icon: AnimatedSwitcher(

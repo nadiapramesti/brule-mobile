@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Text;
+import '../i18n.dart';
 import '../api.dart';
 import '../models.dart';
 import '../order_timeline.dart';
@@ -70,7 +71,7 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
             TextField(
               controller: c,
               maxLength: 120,
-              decoration: const InputDecoration(hintText: 'alasan, contoh: stok biji habis'),
+              decoration: InputDecoration(hintText: tr('alasan, contoh: stok biji habis')),
             ),
           ],
         ),
