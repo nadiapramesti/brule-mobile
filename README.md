@@ -97,6 +97,35 @@ sudah cukup. Login Google/Facebook hanya berfungsi dengan cara ini (butuh `local
 
 Alamat server juga bisa diberikan saat build: `flutter run --dart-define=API_BASE=http://IP-LAPTOP:8001`.
 
+## APK rilis (untuk dibagikan atau dikumpulkan)
+
+Ikon aplikasi dan splash BRÛLÉ sudah terpasang. Build satu kali:
+
+```
+flutter build apk --release
+```
+
+Hasilnya di `build/app/outputs/flutter-apk/app-release.apk`, bisa dikirim ke HP lain dan diinstal langsung.
+Alamat server tersimpan di HP, jadi pada HP lain isi dulu lewat **UBAH ALAMAT SERVER** (atau build dengan
+`--dart-define=API_BASE=http://IP-ATAU-DOMAIN:8001`).
+
+**Tanda tangan sendiri (opsional, wajib untuk Play Store):**
+
+```
+keytool -genkey -v -keystore brule-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias brule
+```
+
+Lalu buat `android/key.properties` (sudah di `.gitignore`, jangan di-commit):
+
+```
+storeFile=../../brule-release.jks
+keyAlias=brule
+storePassword=...
+keyPassword=...
+```
+
+Tanpa berkas itu, build rilis memakai kunci debug dan tetap bisa diinstal.
+
 ## Kalau ada masalah
 
 | Gejala | Penyebab dan solusi |
