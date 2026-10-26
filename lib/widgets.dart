@@ -159,7 +159,7 @@ class Tag extends StatelessWidget {
   final String text;
   final Color? tint;
   final bool filled;
-  Tag(this.text, {super.key, Color? color, this.filled = false}) : tint = color;
+  const Tag(this.text, {super.key, Color? color, this.filled = false}) : tint = color;
 
   @override
   Widget build(BuildContext context) {

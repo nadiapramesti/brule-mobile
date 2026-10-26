@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'models.dart';
 import 'paint_text.dart';
-import 'theme.dart';
 
 const _levels = ['light', 'medium_light', 'medium', 'medium_dark', 'dark'];
 const _levelLabels = ['LIGHT', 'MEDIUM LIGHT', 'MEDIUM', 'MEDIUM DARK', 'DARK'];

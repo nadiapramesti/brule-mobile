@@ -7,7 +7,7 @@ import 'admin_kit.dart';
 
 const _kShow = {'all': 'Semua', 'live': 'Berlaku', 'ended': 'Tidak berlaku'};
 
-const _kStates = {
+Map<String, (String, Color)> get _kStates => {
   'active': ('BERLAKU', Brule.blueText),
   'inactive': ('MATI', Brule.kraft),
   'scheduled': ('BELUM MULAI', Brule.amber),
