@@ -3,6 +3,29 @@
 Aplikasi Flutter (Android) untuk BRÛLÉ Specialty Coffee Lab: satu aplikasi dengan tiga peran
 (pelanggan, roaster, admin). Backend: Laravel Sanctum API (repo `brule-coffee-lab`, branch `feature/mobile-api`).
 
+## Demo online
+
+Server API sudah jalan di cloud (Render, paket gratis), jadi aplikasi bisa dicoba tanpa laptop menyala:
+
+```
+https://brule-coffee-lab.onrender.com
+```
+
+Bangun APK yang langsung terhubung ke server itu:
+
+```
+flutter build apk --release --dart-define=API_BASE=https://brule-coffee-lab.onrender.com
+```
+
+Atau pada aplikasi yang sudah terpasang: **UBAH ALAMAT SERVER**, isi alamat di atas (tanpa `/api`).
+
+Catatan paket gratis:
+
+- Server tidur setelah 15 menit tidak diakses. Permintaan pertama bisa butuh 30-60 detik, buka aplikasi satu menit sebelum demo.
+- Data kembali ke data contoh seeder setiap server restart atau deploy ulang. Foto yang diunggah dan pesanan baru ikut hilang.
+- Login Google/Facebook belum aktif di server online (redirect URL belum didaftarkan). Login email berfungsi normal.
+- Akun demo di bawah berlaku sama di server online.
+
 ## Akun demo
 
 Semua password: `password`. Akun dibuat oleh seeder (`php artisan db:seed`).
