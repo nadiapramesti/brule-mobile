@@ -191,8 +191,72 @@ flutter test
 
 Isinya tes unit untuk terjemahan (`tr()`, pola `{}`, konsistensi kamus) dan helper rupiah/tanggal di `test/`.
 
+## Proses pengembangan
+
+### 1. Metode
+
+Dikerjakan **sendirian** dengan pendekatan **iteratif-inkremental ala Agile solo**, bukan Scrum penuh:
+tidak ada sprint formal, product owner, atau daily stand-up. Pekerjaan dipecah menjadi potongan kecil
+yang langsung bisa dicoba (satu fitur, satu layar), dicoba di HP asli, diperbaiki, lalu lanjut ke
+potongan berikutnya. Web (Laravel) dibangun lebih dulu, lalu API dan aplikasi mobile menyusul.
+Kerangka waktu: web mulai 18 Oktober 2026, aplikasi mulai 25 Oktober, demo online 30 Oktober.
+
+Praktik pendukung:
+
+- **PRD ringkas** di [`docs/PRD.md`](docs/PRD.md) (latar belakang, user story, lingkup, aturan bisnis), dirapikan setelah fitur inti berjalan, jadi berfungsi sebagai acuan dan dokumentasi, bukan kontrak di awal.
+- **User story** per peran (pelanggan, roaster, admin) yang dipakai sebagai daftar fitur.
+- **Pengujian:** tes fitur Pest di API, unit test di aplikasi, `flutter analyze`, dan uji manual di HP asli setiap iterasi.
+- **Git:** commit kecil dengan pesan berawalan `feat` / `fix` / `docs`; API dikembangkan di branch `feature/mobile-api` terpisah dari web di `main`.
+- **Pair programming dengan AI (Claude):** AI membantu menulis kode; keputusan produk, alur, tampilan, dan pengujian di perangkat dipegang pengembang.
+
+### 2. Tahapan pembuatan
+
+| Tahap | Yang dikerjakan | Hasil di repo |
+|---|---|---|
+| Ide dan masalah | Pemesanan kopi sangrai-sesuai-pesanan lewat chat sulit dilacak: stok biji tidak rapi, status pesanan tidak jelas | PRD bagian Latar belakang |
+| Riset | Riset ringan alur toko kopi spesialti online (level sangrai, ukuran, metode giling). Belum ada survei pengguna formal | Aturan bisnis di PRD |
+| PRD | Tujuan, pengguna, user story, aturan bisnis | `docs/PRD.md` |
+| Lingkup MVP | Pilih yang inti (katalog, pesan, bayar, antrian, stok, laporan); tunda push notification dan iOS | PRD bagian Lingkup |
+| Perancangan | ERD basis data, daftar endpoint API, daftar layar | `docs/erd.png`, `docs/ENDPOINT_API.md`, `docs/DAFTAR_LAYAR.md` |
+| Desain UI/UX | Tema gelap/terang bernuansa kraft dan emas, tombol aksi di bawah, daftar per hari, animasi splash | `lib/theme.dart`, `lib/splash_gate.dart` |
+| Implementasi | Web Laravel + Livewire, API Sanctum, aplikasi Flutter tiga peran, dua bahasa | `lib/`, repo `brule-coffee-lab` |
+| Pengujian | Tes Pest di API, unit test di aplikasi, analisis statis, uji manual di HP | `test/`, `tests/` di repo API |
+| Rilis | Debug/release APK, Docker image, deploy ke Render | `Dockerfile`, `render.yaml`, bagian Demo online |
+| Pemeliharaan | Perbaikan dari uji di HP, terjemahan pesan server, dokumentasi diperbarui tiap perubahan | riwayat commit |
+
+### 3. Kelemahan yang diketahui
+
+Sudah dicek ke kode, bukan perkiraan:
+
+- **Token login disimpan di `SharedPreferences`** (teks biasa di penyimpanan aplikasi), belum memakai Android Keystore / `flutter_secure_storage`.
+- **Hanya Android.** Tidak ada proyek iOS.
+- **Cakupan tes aplikasi tipis:** hanya 9 unit test (terjemahan dan helper rupiah/tanggal). Belum ada widget test atau integration test untuk layar.
+- **Belum ada CI** (tidak ada GitHub Actions) di kedua repo; tes dijalankan manual.
+- **Notifikasi dipoll tiap 45 detik** selama aplikasi terbuka, bukan push, jadi tidak muncul saat aplikasi ditutup.
+- **Tanpa cache dan mode offline:** semua layar butuh koneksi ke server.
+- **Tanpa paket state management:** state memakai `setState` (sekitar 200 pemanggilan) dan beberapa layar besar (mis. `home_tab.dart` ±800 baris), jadi sulit dites dan dirawat kalau fitur bertambah.
+- **Daftar kopi `/api/coffees` dikirim sekaligus tanpa paginasi.** Aman untuk puluhan kopi, tidak untuk ribuan.
+- **`usesCleartextTraffic` aktif** (supaya bisa memakai server lokal `http://`), dan build rilis tanpa berkas `key.properties` ditandatangani dengan kunci debug, jadi belum layak untuk Play Store.
+- **Server demo bersifat sementara:** Render gratis tidur setelah 15 menit, SQLite dan foto unggahan hilang saat restart. Notifikasi pembayaran Midtrans (mode sandbox) dan login Google/Facebook belum dikonfigurasi untuk alamat online.
+- **Terjemahan English memakai kamus manual:** teks baru yang lupa ditambahkan ke `lib/i18n_en.dart` atau `lang/en.json` tetap tampil Indonesia.
+- **Belum diuji pengguna sungguhan.** Ukuran keberhasilan di PRD masih teknis.
+
+### 4. Pengembangan lebih lanjut
+
+Urutan prioritas yang disarankan:
+
+1. Simpan token di penyimpanan aman (`flutter_secure_storage`) dan matikan cleartext untuk build rilis.
+2. Tambah widget/integration test untuk alur utama (login, checkout, antrian) dan CI GitHub Actions yang menjalankan `flutter analyze`, `flutter test`, dan Pest.
+3. Pindah demo ke penyimpanan permanen: database terkelola (MySQL/PostgreSQL) dan object storage untuk foto, lalu atur notifikasi Midtrans dan redirect login sosial ke alamat publik.
+4. Notifikasi dorong lewat Firebase Cloud Messaging menggantikan polling.
+5. Paginasi dan cache di katalog, serta mode offline sederhana untuk katalog yang sudah dibuka.
+6. Rapikan state (mis. Riverpod/Bloc) dan pecah layar besar.
+7. Tanda tangan rilis resmi dan publikasi ke Play Store; pertimbangkan iOS.
+8. Integrasi ongkir dan pelacakan kurir otomatis, serta uji coba dengan roastery nyata untuk mengukur ukuran keberhasilan di PRD.
+
 ## Dokumentasi
 
+- `docs/PRD.md`: ringkasan kebutuhan produk (latar belakang, user story, lingkup, aturan bisnis)
 - `docs/ENDPOINT_API.md`: daftar endpoint API
 - `docs/DAFTAR_LAYAR.md`: daftar layar dan perilakunya
 
