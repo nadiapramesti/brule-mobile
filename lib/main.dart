@@ -8,22 +8,41 @@ import 'root_gate.dart';
 import 'splash_gate.dart';
 import 'theme.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await AppPrefs.load();
-  await Api.loadToken();
-  await Cart.I.load();
-  Notices.init();
+  // Frame pertama digambar secepat mungkin (warna sama dengan splash Android), baru muat data lokal.
   runApp(const BruleApp());
-  // Pemeriksaan token jalan di belakang intro (tidak lagi menahan layar polos di awal).
-  unawaited(Api.restore().catchError((_) => false).whenComplete(() => Api.ready.value = true));
 }
 
-class BruleApp extends StatelessWidget {
+class BruleApp extends StatefulWidget {
   const BruleApp({super.key});
 
   @override
+  State<BruleApp> createState() => _BruleAppState();
+}
+
+class _BruleAppState extends State<BruleApp> {
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _boot();
+  }
+
+  Future<void> _boot() async {
+    await AppPrefs.load();
+    await Api.loadToken();
+    await Cart.I.load();
+    Notices.init();
+    if (mounted) setState(() => _ready = true);
+    // Pemeriksaan token jalan di belakang intro (tidak menahan layar polos di awal).
+    unawaited(Api.restore().catchError((_) => false).whenComplete(() => Api.ready.value = true));
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (!_ready) return const ColoredBox(color: Color(0xFF121212));
     return ListenableBuilder(
       listenable: Listenable.merge([AppPrefs.light, AppPrefs.lang]),
       builder: (context, _) => MaterialApp(
