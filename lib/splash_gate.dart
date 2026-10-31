@@ -45,7 +45,13 @@ double _curve(double x) {
 /// Tampil sekali tiap aplikasi dibuka dari nol, di atas layar utama yang sudah mulai dimuat.
 class SplashGate extends StatefulWidget {
   final Widget child;
-  const SplashGate({super.key, required this.child});
+
+  /// true = selalu diputar (dipakai setelah login), false = sekali per aplikasi dibuka.
+  final bool always;
+
+  /// Pengali kecepatan: 1 = 5,6 detik, 1.5 = sekitar 3,7 detik.
+  final double speed;
+  const SplashGate({super.key, required this.child, this.always = false, this.speed = 1});
 
   @override
   State<SplashGate> createState() => _SplashGateState();
@@ -54,10 +60,16 @@ class SplashGate extends StatefulWidget {
 class _SplashGateState extends State<SplashGate> with SingleTickerProviderStateMixin {
   static bool _played = false;
   late final AnimationController _c =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 5600));
-  bool _done = _played;
+      AnimationController(vsync: this, duration: Duration(milliseconds: (5600 / widget.speed).round()));
+  late bool _done;
   bool _started = false;
   bool _reduce = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _done = !widget.always && _played;
+  }
 
   @override
   void didChangeDependencies() {
@@ -70,7 +82,7 @@ class _SplashGateState extends State<SplashGate> with SingleTickerProviderStateM
       _c.duration = const Duration(milliseconds: 350);
     }
     _c.forward().whenComplete(() {
-      _played = true;
+      if (!widget.always) _played = true;
       if (mounted) setState(() => _done = true);
     });
   }
