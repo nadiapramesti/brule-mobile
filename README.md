@@ -129,7 +129,7 @@ Alamat server juga bisa diberikan saat build: `flutter run --dart-define=API_BAS
 
 ## APK rilis (untuk dibagikan atau dikumpulkan)
 
-Ikon aplikasi dan splash BRÛLÉ sudah terpasang. Build satu kali:
+Ikon aplikasi dan intro BRÛLÉ (kurva sangrai emas, ±5,5 detik, tampil sekali tiap aplikasi dibuka) sudah terpasang. Build satu kali:
 
 ```
 flutter build apk --release
@@ -218,7 +218,7 @@ Praktik pendukung:
 | PRD | Tujuan, pengguna, user story, aturan bisnis | `docs/PRD.md` |
 | Lingkup MVP | Pilih yang inti (katalog, pesan, bayar, antrian, stok, laporan); tunda push notification dan iOS | PRD bagian Lingkup |
 | Perancangan | ERD basis data, daftar endpoint API, daftar layar | `docs/erd.png`, `docs/ENDPOINT_API.md`, `docs/DAFTAR_LAYAR.md` |
-| Desain UI/UX | Tema gelap/terang bernuansa kraft dan emas, tombol aksi di bawah, daftar per hari, animasi splash | `lib/theme.dart`, `lib/splash_gate.dart` |
+| Desain UI/UX | Tema gelap/terang bernuansa kraft dan emas, tombol aksi di bawah, daftar per hari, intro sinematik kurva sangrai | `lib/theme.dart`, `lib/splash_gate.dart` |
 | Implementasi | Web Laravel + Livewire, API Sanctum, aplikasi Flutter tiga peran, dua bahasa | `lib/`, repo `brule-coffee-lab` |
 | Pengujian | Tes Pest di API, unit test di aplikasi, analisis statis, uji manual di HP | `test/`, `tests/` di repo API |
 | Rilis | Debug/release APK, Docker image, deploy ke Render | `Dockerfile`, `render.yaml`, bagian Demo online |

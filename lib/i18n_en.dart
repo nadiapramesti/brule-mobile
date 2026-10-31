@@ -1,5 +1,9 @@
 // Kamus ID -> EN (kunci = teks Indonesia persis seperti di layar). Boleh diedit langsung; lihat README bagian Bahasa.
 const Map<String, String> kEn = {
+  'MEMANASKAN DRUM SANGRAI': 'HEATING THE ROASTING DRUM',
+  'MEMBACA KURVA SANGRAI': 'READING THE ROAST CURVE',
+  'MENGGILING BIJI': 'GRINDING THE BEANS',
+  'MENYIAPKAN DASHBOARD': 'PREPARING THE DASHBOARD',
   '30 HARI': '30 DAYS',
   '30 hari': '30 days',
   '5 TAHAP, PANTAU DI TAB PESANAN': '5 STAGES, TRACK THEM IN THE ORDERS TAB',
