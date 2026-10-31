@@ -25,6 +25,10 @@ class Api {
   static final session = ValueNotifier<int>(0);
   static Map<String, dynamic>? user;
 
+  /// true setelah pemeriksaan token saat aplikasi dibuka selesai (berhasil atau gagal).
+  /// Intro menunggu ini supaya dashboard yang tampil sudah sesuai peran.
+  static final ready = ValueNotifier<bool>(false);
+
   static bool get loggedIn => _token != null;
 
   static Map<String, String> get _headers => {
@@ -53,10 +57,11 @@ class Api {
   }
 
   static Future<Map<String, dynamic>> _send(
-      Future<http.Response> Function() call) async {
+      Future<http.Response> Function() call,
+      {Duration timeout = const Duration(seconds: 10)}) async {
     http.Response res;
     try {
-      res = await call().timeout(const Duration(seconds: 10));
+      res = await call().timeout(timeout);
     } on Exception {
       throw ApiException(
           'Tidak bisa terhubung ke server. Pastikan API menyala dan kabel USB tersambung.');
@@ -220,8 +225,11 @@ class Api {
   static Future<bool> restore() async {
     if (_token == null) return false;
     try {
+      // Server gratis yang sedang tidur butuh waktu bangun, jadi timeout dibuat panjang.
       user = await _send(
-          () => http.get(Uri.parse('$base/api/me'), headers: _headers));
+          () => http.get(Uri.parse('$base/api/me'), headers: _headers),
+          timeout: const Duration(seconds: 45));
+      session.value++; // layar utama memilih ulang tampilan sesuai peran
       return true;
     } on ApiException catch (e) {
       if (e.status == 401) await _clear();

@@ -1,5 +1,6 @@
 // Kamus ID -> EN (kunci = teks Indonesia persis seperti di layar). Boleh diedit langsung; lihat README bagian Bahasa.
 const Map<String, String> kEn = {
+  'SERVER SEDANG BANGUN, MOHON TUNGGU': 'SERVER IS WAKING UP, PLEASE WAIT',
   'MEMANASKAN DRUM SANGRAI': 'HEATING THE ROASTING DRUM',
   'MEMBACA KURVA SANGRAI': 'READING THE ROAST CURVE',
   'MENGGILING BIJI': 'GRINDING THE BEANS',

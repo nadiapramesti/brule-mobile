@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'api.dart';
 import 'cart.dart';
@@ -12,9 +13,10 @@ Future<void> main() async {
   await AppPrefs.load();
   await Api.loadToken();
   await Cart.I.load();
-  await Api.restore();
   Notices.init();
   runApp(const BruleApp());
+  // Pemeriksaan token jalan di belakang intro (tidak lagi menahan layar polos di awal).
+  unawaited(Api.restore().catchError((_) => false).whenComplete(() => Api.ready.value = true));
 }
 
 class BruleApp extends StatelessWidget {

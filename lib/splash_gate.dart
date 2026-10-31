@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'api.dart';
 import 'i18n.dart' show tr;
 
 const _gold = Color(0xFFD9B26F);
@@ -57,13 +59,18 @@ class SplashGate extends StatefulWidget {
   State<SplashGate> createState() => _SplashGateState();
 }
 
-class _SplashGateState extends State<SplashGate> with SingleTickerProviderStateMixin {
+class _SplashGateState extends State<SplashGate> with TickerProviderStateMixin {
   static bool _played = false;
+  static const _hold = 4.8 / _total; // titik tahan pada garis waktu intro
   late final AnimationController _c =
       AnimationController(vsync: this, duration: Duration(milliseconds: (5600 / widget.speed).round()));
+  late final AnimationController _pulse =
+      AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
+  final _wait = Stopwatch();
   late bool _done;
   bool _started = false;
   bool _reduce = false;
+  bool _waiting = false;
 
   @override
   void initState() {
@@ -81,15 +88,47 @@ class _SplashGateState extends State<SplashGate> with SingleTickerProviderStateM
       _reduce = true;
       _c.duration = const Duration(milliseconds: 350);
     }
-    _c.forward().whenComplete(() {
-      if (!widget.always) _played = true;
-      if (mounted) setState(() => _done = true);
-    });
+    _run();
+  }
+
+  /// Putar sampai titik tahan (bilah ±94%), tunggu server selesai memeriksa sesi bila belum,
+  /// lalu lanjutkan ke fase memudar menuju dashboard.
+  Future<void> _run() async {
+    if (!_reduce) {
+      await _c.animateTo(_hold, curve: Curves.linear);
+      if (!mounted) return;
+    }
+    if (!Api.ready.value) {
+      setState(() => _waiting = true);
+      _wait.start();
+      _pulse.repeat(reverse: true);
+      await _whenReady();
+      _pulse.stop();
+      _wait.stop();
+      if (!mounted) return;
+      setState(() => _waiting = false);
+    }
+    await _c.forward();
+    if (!widget.always) _played = true;
+    if (mounted) setState(() => _done = true);
+  }
+
+  Future<void> _whenReady() {
+    final c = Completer<void>();
+    void l() {
+      if (Api.ready.value && !c.isCompleted) c.complete();
+    }
+
+    Api.ready.addListener(l);
+    return c.future
+        .timeout(const Duration(seconds: 60), onTimeout: () {})
+        .whenComplete(() => Api.ready.removeListener(l));
   }
 
   @override
   void dispose() {
     _c.dispose();
+    _pulse.dispose();
     super.dispose();
   }
 
@@ -119,7 +158,7 @@ class _SplashGateState extends State<SplashGate> with SingleTickerProviderStateM
             color: _ink,
             child: Stack(
               children: [
-                Positioned.fill(child: CustomPaint(painter: _BrewPainter(t))),
+                Positioned.fill(child: CustomPaint(painter: _BrewPainter(t, waited: _waiting ? _wait.elapsedMilliseconds / 1000 : -1, pulse: _pulse.value))),
                 Align(
                   alignment: const Alignment(0, -0.28),
                   child: Transform.scale(
@@ -239,7 +278,7 @@ class _SplashGateState extends State<SplashGate> with SingleTickerProviderStateM
         widget.child,
         Positioned.fill(
           child: AbsorbPointer(
-            child: AnimatedBuilder(animation: _c, builder: (_, _) => _splash()),
+            child: AnimatedBuilder(animation: Listenable.merge([_c, _pulse]), builder: (_, _) => _splash()),
           ),
         ),
       ],
@@ -251,7 +290,11 @@ class _SplashGateState extends State<SplashGate> with SingleTickerProviderStateM
 /// label aroma, status, dan bilah muat. Semua digambar dengan kode, tanpa aset tambahan.
 class _BrewPainter extends CustomPainter {
   final double t;
-  _BrewPainter(this.t);
+
+  /// Detik menunggu server (di titik tahan); negatif = tidak sedang menunggu.
+  final double waited;
+  final double pulse;
+  _BrewPainter(this.t, {this.waited = -1, this.pulse = 0});
 
   static final List<_Mote> _motes = () {
     final r = math.Random(11);
@@ -429,7 +472,7 @@ class _BrewPainter extends CustomPainter {
     }
 
     // Status bergantian dan bilah muat.
-    final prog = _iv(0.8, 4.8, Curves.easeInOutCubic);
+    final prog = 0.94 * _iv(0.8, 4.8, Curves.easeInOutCubic) + 0.06 * _iv(4.8, 5.1);
     final idx = (((t - 1.0) / 0.95).floor()).clamp(0, _phases.length - 1).toInt();
     final local = (t - 1.0 - idx * 0.95).clamp(0.0, 0.95);
     var sa = 1.0;
@@ -440,9 +483,11 @@ class _BrewPainter extends CustomPainter {
       if (idx < _phases.length - 1) sa *= ((0.95 - local) / 0.2).clamp(0.0, 1.0);
     }
     final statusEnd = 1 - _iv(4.95, 5.2);
+    final waiting = waited >= 0;
+    if (waiting) sa = 0.55 + 0.45 * pulse;
     _text(
       canvas,
-      tr(_phases[idx]),
+      tr(waiting && waited > 3 ? 'SERVER SEDANG BANGUN, MOHON TUNGGU' : _phases[idx]),
       Offset(w / 2, h * 0.865),
       TextStyle(
         fontFamily: 'IBMPlexMono',
