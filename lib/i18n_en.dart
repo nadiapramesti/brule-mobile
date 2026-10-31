@@ -1,5 +1,17 @@
 // Kamus ID -> EN (kunci = teks Indonesia persis seperti di layar). Boleh diedit langsung; lihat README bagian Bahasa.
 const Map<String, String> kEn = {
+  'BLEND KAMU': 'YOUR BLEND',
+  'Belum ada biji': 'No beans yet',
+  'Pilih biji utama untuk mulai meracik.': 'Pick a main bean to start blending.',
+  'Belum dipilih': 'Not chosen yet',
+  'Ketuk PILIH untuk melihat daftar': 'Tap PICK to see the list',
+  'Pilih biji utama dulu.': 'Pick the main bean first.',
+  'PILIH': 'PICK',
+  'GANTI': 'CHANGE',
+  'PILIH BIJI DULU': 'PICK A BEAN FIRST',
+  'Pilih biji utama': 'Pick main bean',
+  'Pilih biji kedua': 'Pick second bean',
+  'Pakai satu biji saja': 'Use a single bean only',
   'SERVER SEDANG BANGUN, MOHON TUNGGU': 'SERVER IS WAKING UP, PLEASE WAIT',
   'MEMANASKAN DRUM SANGRAI': 'HEATING THE ROASTING DRUM',
   'MEMBACA KURVA SANGRAI': 'READING THE ROAST CURVE',

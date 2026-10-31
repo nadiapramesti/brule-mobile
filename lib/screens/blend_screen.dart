@@ -125,6 +125,128 @@ class _BlendScreenState extends State<BlendScreen> {
     Navigator.of(context).pop();
   }
 
+  /// Daftar biji dalam bottom sheet (menggantikan deretan chip yang bisa digeser).
+  Future<_Pick?> _sheet(List<Coffee> items, Coffee? current, {required String title, bool allowNone = false}) {
+    return showModalBottomSheet<_Pick>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Brule.sheet,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(18))),
+      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.82),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(top: 10, bottom: 14),
+                decoration: BoxDecoration(color: Brule.hair(0.2), borderRadius: BorderRadius.circular(2)),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+              child: Text(title, style: Brule.condensed(22)),
+            ),
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                children: [
+                  if (allowNone)
+                    _BeanRow(
+                      title: 'TANPA BLEND',
+                      sub: 'Pakai satu biji saja',
+                      selected: current == null,
+                      onTap: () => Navigator.of(ctx).pop(const _Pick(null)),
+                    ),
+                  for (final c in items)
+                    _BeanRow(
+                      title: c.name,
+                      sub: c.process ?? '',
+                      price: '${rupiah(c.fromPrice)} / 100 g',
+                      selected: current?.id == c.id,
+                      onTap: () => Navigator.of(ctx).pop(_Pick(c)),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _chooseA(List<Coffee> coffees) async {
+    final r = await _sheet(coffees, _a, title: 'Pilih biji utama');
+    if (r?.c != null) _pickA(r!.c!);
+  }
+
+  Future<void> _chooseB(List<Coffee> partners) async {
+    final r = await _sheet(partners, _b, title: 'Pilih biji kedua', allowNone: true);
+    if (r != null) setState(() => _b = r.c);
+  }
+
+  /// Ringkasan blend yang selalu tampil di atas: nama, batang porsi, dan gram tiap biji.
+  Widget _summary() {
+    final a = _a;
+    final b = _b;
+    final blend = a != null && b != null;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Brule.field,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Brule.hair(0.12)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('BLEND KAMU', style: Brule.mono(9.5, color: Brule.amber)),
+          const SizedBox(height: 8),
+          Text(
+            a == null ? 'Belum ada biji' : (blend ? '${a.shortName} + ${b!.shortName}' : a.name),
+            style: Brule.condensed(24),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            a == null ? 'Pilih biji utama untuk mulai meracik.' : '${_profile(a)?.levelLabel ?? ''} · $_grams g',
+            style: Brule.mono(10),
+          ),
+          const SizedBox(height: 14),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: SizedBox(
+              height: 10,
+              child: a == null
+                  ? ColoredBox(color: Brule.hair(0.08))
+                  : Row(
+                      children: [
+                        Expanded(flex: blend ? _ratio : 100, child: ColoredBox(color: Brule.amber)),
+                        if (blend) const SizedBox(width: 2),
+                        if (blend)
+                          Expanded(flex: 100 - _ratio, child: ColoredBox(color: Brule.kraft.withValues(alpha: 0.55))),
+                      ],
+                    ),
+            ),
+          ),
+          if (a != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(blend ? '$_ga g' : '$_grams g', style: Brule.mono(9.5, color: Brule.amber)),
+                if (blend) Text('${_grams - _ga} g', style: Brule.mono(9.5)),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -143,6 +265,8 @@ class _BlendScreenState extends State<BlendScreen> {
           final total = _price() * _qty;
           final mix = _mix();
           final blend = _b != null;
+          var n = 0;
+          String step(String t) => '${(++n).toString().padLeft(2, '0')} · $t';
 
           return Column(
             children: [
@@ -155,16 +279,21 @@ class _BlendScreenState extends State<BlendScreen> {
                         'Campur dua kopi dengan tingkat sangrai yang sama. Harga mengikuti porsi masing-masing biji.',
                         style: TextStyle(color: Brule.kraft.withValues(alpha: 0.9), height: 1.45),
                       ),
-                      const Label('BIJI UTAMA'),
-                      ChipPicker<Coffee>(
-                        items: coffees,
-                        value: _a,
-                        label: (c) => c.shortName,
-                        onChanged: (c) => _pickA(c),
+                      const SizedBox(height: 16),
+                      _summary(),
+                      Label(step('BIJI UTAMA')),
+                      _Slot(
+                        badge: 'A',
+                        title: _a?.name ?? 'Belum dipilih',
+                        sub: _a == null ? 'Ketuk PILIH untuk melihat daftar' : _a!.process,
+                        filled: _a != null,
+                        onTap: () => _chooseA(coffees),
                       ),
-                      if (_a != null) ...[
-                        const Label('TINGKAT SANGRAI'),
-                        ChipPicker<RoastProfile>(
+                      Label(step('TINGKAT SANGRAI')),
+                      if (_a == null)
+                        Text('Pilih biji utama dulu.', style: Brule.mono(10))
+                      else
+                        _Choices<RoastProfile>(
                           items: _levels(),
                           value: _profile(_a),
                           label: (p) => p.levelLabel,
@@ -173,48 +302,43 @@ class _BlendScreenState extends State<BlendScreen> {
                             if (_b != null && _profile(_b) == null) _b = null;
                           }),
                         ),
-                        const Label('BIJI KEDUA (OPSIONAL)'),
-                        if (partners.isEmpty)
-                          Text('Tidak ada kopi lain dengan sangrai ini.', style: Brule.mono(10))
-                        else
-                          ChipRow(
-                            children: [
-                              ChoiceChip(
-                                label: const Text('TANPA BLEND'),
-                                selected: _b == null,
-                                onSelected: (_) => setState(() => _b = null),
-                              ),
-                              for (final c in partners)
-                                ChoiceChip(
-                                  label: Text(c.shortName),
-                                  selected: _b?.id == c.id,
-                                  onSelected: (_) => setState(() => _b = c),
-                                ),
-                            ],
-                          ),
-                        if (blend) ...[
-                          const Label('PORSI'),
-                          ChipPicker<int>(
-                            items: _kRatios,
-                            value: _ratio,
-                            label: (r) => '$r / ${100 - r}',
-                            onChanged: (r) => setState(() => _ratio = r),
-                          ),
-                        ],
-                        const Label('BERAT'),
-                        ChipPicker<int>(
-                          items: kGrams,
-                          value: _grams,
-                          label: (g) => '$g g',
-                          onChanged: (g) => setState(() => _grams = g),
+                      Label(step('BIJI KEDUA (OPSIONAL)')),
+                      if (_a == null)
+                        Text('Pilih biji utama dulu.', style: Brule.mono(10))
+                      else if (partners.isEmpty)
+                        Text('Tidak ada kopi lain dengan sangrai ini.', style: Brule.mono(10))
+                      else
+                        _Slot(
+                          badge: 'B',
+                          title: _b?.name ?? 'TANPA BLEND',
+                          sub: _b == null ? 'Pakai satu biji saja' : _b!.process,
+                          filled: _b != null,
+                          onTap: () => _chooseB(partners),
                         ),
-                        const Label('GILINGAN'),
-                        ChipPicker<String>(
-                          items: kGrinds.keys.toList(),
-                          value: _grind,
-                          label: (k) => kGrinds[k]!,
-                          onChanged: (k) => setState(() => _grind = k),
+                      if (blend) ...[
+                        Label(step('PORSI')),
+                        _Choices<int>(
+                          items: _kRatios,
+                          value: _ratio,
+                          label: (r) => '$r / ${100 - r}',
+                          onChanged: (r) => setState(() => _ratio = r),
                         ),
+                      ],
+                      Label(step('BERAT')),
+                      _Choices<int>(
+                        items: kGrams,
+                        value: _grams,
+                        label: (g) => '$g g',
+                        onChanged: (g) => setState(() => _grams = g),
+                      ),
+                      Label(step('GILINGAN')),
+                      _Choices<String>(
+                        items: kGrinds.keys.toList(),
+                        value: _grind,
+                        label: (k) => kGrinds[k]!,
+                        onChanged: (k) => setState(() => _grind = k),
+                      ),
+                      if (_a != null) ...[
                         const Label('PRATINJAU RASA'),
                         Container(
                           padding: const EdgeInsets.all(16),
@@ -226,21 +350,10 @@ class _BlendScreenState extends State<BlendScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                blend
-                                    ? '${_a!.shortName} $_ratio / ${_b!.shortName} ${100 - _ratio}'
-                                    : _a!.name,
-                                style: Brule.condensed(20),
-                              ),
-                              if (blend) ...[
-                                const SizedBox(height: 4),
-                                Text('$_ga g + ${_grams - _ga} g', style: Brule.mono(10)),
-                              ],
-                              const SizedBox(height: 10),
                               Wrap(
                                 spacing: 6,
                                 runSpacing: 6,
-                                children: [for (final n in _notes()) Tag(n)],
+                                children: [for (final note in _notes()) Tag(note)],
                               ),
                               const SizedBox(height: 14),
                               for (final e in _kFlavorLabels.entries)
@@ -253,35 +366,185 @@ class _BlendScreenState extends State<BlendScreen> {
                   ),
                 ),
               ),
-              if (_a != null)
-                SafeArea(
-                  top: false,
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-                    decoration: BoxDecoration(
-                      color: Brule.sheet,
-                      border: Border(top: BorderSide(color: Brule.hair(0.1))),
-                    ),
-                    child: Row(
-                      children: [
-                        QtyStepper(
-                          qty: _qty,
-                          onChanged: (q) => setState(() => _qty = q.clamp(1, 20).toInt()),
+              SafeArea(
+                top: false,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                  decoration: BoxDecoration(
+                    color: Brule.sheet,
+                    border: Border(top: BorderSide(color: Brule.hair(0.1))),
+                  ),
+                  child: Row(
+                    children: [
+                      QtyStepper(
+                        qty: _qty,
+                        onChanged: (q) => setState(() => _qty = q.clamp(1, 20).toInt()),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: FilledButton(
+                          onPressed: _a == null ? null : _add,
+                          child: Text(_a == null ? 'PILIH BIJI DULU' : 'TAMBAH · ${rupiah(total)}'),
                         ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: FilledButton(
-                            onPressed: _add,
-                            child: Text('TAMBAH · ${rupiah(total)}'),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
+              ),
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+/// Hasil pilihan dari bottom sheet (c == null artinya "tanpa blend").
+class _Pick {
+  final Coffee? c;
+  const _Pick(this.c);
+}
+
+/// Pilihan jenis tombol yang membungkus ke baris berikutnya, tidak perlu digeser.
+class _Choices<T> extends StatelessWidget {
+  final List<T> items;
+  final T? value;
+  final String Function(T) label;
+  final ValueChanged<T> onChanged;
+  const _Choices({required this.items, required this.value, required this.label, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (final i in items)
+          ChoiceChip(
+            label: Text(label(i)),
+            selected: i == value,
+            onSelected: (_) => onChanged(i),
+          ),
+      ],
+    );
+  }
+}
+
+/// Kartu pilihan biji: lencana huruf, nama, dan tombol PILIH/GANTI yang jelas terlihat sebagai tombol.
+class _Slot extends StatelessWidget {
+  final String badge;
+  final String title;
+  final String? sub;
+  final bool filled;
+  final VoidCallback onTap;
+  const _Slot({required this.badge, required this.title, this.sub, required this.filled, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Brule.amber;
+    return Material(
+      color: Brule.field,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: filled ? accent.withValues(alpha: 0.6) : Brule.hair(0.16)),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: filled ? accent.withValues(alpha: 0.12) : null,
+                  border: Border.all(color: filled ? accent : Brule.hair(0.25)),
+                ),
+                child: Text(badge, style: Brule.mono(13, color: filled ? accent : null)),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: Brule.condensed(18), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    if (sub != null && sub!.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(sub!, style: Brule.mono(9.5), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: accent),
+                ),
+                child: Text(filled ? 'GANTI' : 'PILIH', style: Brule.mono(10, color: accent)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BeanRow extends StatelessWidget {
+  final String title;
+  final String sub;
+  final String? price;
+  final bool selected;
+  final VoidCallback onTap;
+  const _BeanRow({required this.title, required this.sub, this.price, required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = Brule.amber;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: selected ? accent.withValues(alpha: 0.10) : Brule.field,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: selected ? accent : Brule.hair(0.12), width: selected ? 1.4 : 1),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: Brule.condensed(18)),
+                      if (sub.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(sub, style: Brule.mono(9.5)),
+                      ],
+                    ],
+                  ),
+                ),
+                if (price != null) ...[
+                  const SizedBox(width: 10),
+                  Text(price!, style: Brule.mono(10)),
+                ],
+                const SizedBox(width: 10),
+                Icon(selected ? Icons.check_circle : Icons.circle_outlined,
+                    size: 20, color: selected ? accent : Brule.hair(0.3)),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
