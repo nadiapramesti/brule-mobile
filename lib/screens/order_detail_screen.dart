@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide Text;
 import '../i18n.dart';
 import '../api.dart';
 import '../cart.dart';
+import '../external_link.dart';
 import '../models.dart';
 import '../order_timeline.dart';
 import '../theme.dart';
@@ -78,7 +79,7 @@ class OrderDetailScreen extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Batalkan pesanan?'),
-        content: const Text('Stok dan voucher akan dikembalikan. Aksi ini tidak bisa diulang.'),
+        content: const Text('Pesanan yang sudah disangrai tidak bisa dibatalkan.'),
         actions: [
           TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('TIDAK')),
           FilledButton(
@@ -96,6 +97,8 @@ class OrderDetailScreen extends StatelessWidget {
       await reload();
     } on ApiException catch (e) {
       if (context.mounted) _toast(context, e.message);
+      // Server menolak (pesanan sudah disangrai): muat ulang supaya tombol batal hilang.
+      await reload();
     }
   }
 
@@ -148,6 +151,14 @@ class OrderDetailScreen extends StatelessWidget {
                     OutlinedButton(
                       onPressed: () => _sync(context, reload),
                       child: const Text('CEK STATUS PEMBAYARAN'),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  if (!publicView && o.invoiceUrl != null) ...[
+                    OutlinedButton.icon(
+                      onPressed: () => openExternal(context, Uri.parse(o.invoiceUrl!)),
+                      icon: const Icon(Icons.download_outlined, size: 18),
+                      label: const Text('UNDUH INVOICE'),
                     ),
                     const SizedBox(height: 16),
                   ],

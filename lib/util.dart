@@ -80,3 +80,25 @@ String fullDate(Object? iso) {
   final l = iso is String && iso.length > 10 ? d.toLocal() : d;
   return '${l.day} ${_monthLong[l.month - 1]} ${l.year}';
 }
+
+/// Nomor untuk tautan wa.me: hanya angka, awalan 0 diganti 62 ("0812..." jadi "62812...").
+/// Null bila kosong atau terlalu pendek untuk nomor sungguhan.
+String? waNumber(String? phone) {
+  var d = (phone ?? '').replaceAll(RegExp(r'[^0-9]'), '');
+  if (d.startsWith('0')) {
+    d = '62${d.substring(1)}';
+  } else if (d.startsWith('8')) {
+    d = '62$d';
+  }
+  return d.length >= 10 ? d : null;
+}
+
+/// Isi pesan WhatsApp pengiriman invoice. Memakai nama depan penerima.
+String invoiceWaText(String? recipientName, String code, String url) {
+  final first = (recipientName ?? '').trim().split(RegExp(r'\s+')).first;
+  final who = first.isEmpty ? 'Kak' : first;
+  return 'Halo $who, terima kasih sudah memesan di BRÛLÉ. Invoice pesanan $code: $url';
+}
+
+Uri waUri(String number, String text) =>
+    Uri.parse('https://wa.me/$number?text=${Uri.encodeComponent(text)}');

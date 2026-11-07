@@ -32,4 +32,32 @@ void main() {
     expect(dateTime(null), '');
     expect(dayMonth(''), '');
   });
+
+  test('waNumber: hanya angka, awalan 0 jadi 62, nomor pendek ditolak', () {
+    expect(waNumber('0812-3456-7890'), '6281234567890');
+    expect(waNumber('+62 812 3456 7890'), '6281234567890');
+    expect(waNumber('81234567890'), '6281234567890');
+    expect(waNumber('6281234567890'), '6281234567890');
+    expect(waNumber(''), null);
+    expect(waNumber(null), null);
+    expect(waNumber('0812'), null);
+  });
+
+  test('pesan WA invoice memakai nama depan, dan "Kak" bila nama kosong', () {
+    const url = 'https://brule.test/invoice/BRL-1?signature=abc';
+    expect(
+      invoiceWaText('Nadia Pramesti', 'BRL-1', url),
+      'Halo Nadia, terima kasih sudah memesan di BRÛLÉ. Invoice pesanan BRL-1: $url',
+    );
+    expect(invoiceWaText('  ', 'BRL-1', url), startsWith('Halo Kak,'));
+    expect(invoiceWaText(null, 'BRL-1', url), startsWith('Halo Kak,'));
+  });
+
+  test('waUri: tujuan wa.me dan isi pesan ter-encode lalu bisa dibaca balik', () {
+    final text = invoiceWaText('Nadia', 'BRL-1', 'https://brule.test/invoice/BRL-1?signature=abc&x=1');
+    final u = waUri('6281234567890', text);
+    expect(u.host, 'wa.me');
+    expect(u.path, '/6281234567890');
+    expect(u.queryParameters['text'], text);
+  });
 }

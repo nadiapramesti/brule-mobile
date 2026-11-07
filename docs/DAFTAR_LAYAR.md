@@ -14,7 +14,7 @@ Aplikasi Android (Flutter). Katalog bisa dijelajahi tanpa login; belanja dan che
 | 8 | Checkout | `checkout_screen.dart` | Kartu alamat tersimpan, pembayaran, voucher, kado, ringkasan, Buat Pesanan | Ya |
 | 9 | Pembayaran Midtrans | `payment_screen.dart` | WebView Snap sandbox | Ya |
 | 10 | Daftar Pesanan | `orders_tab.dart` | Riwayat pesanan beserta status | Ya |
-| 11 | Detail Pesanan | `order_detail_screen.dart` | Tahap proses (antrian sampai kirim), item, rincian biaya, bayar/batalkan | Ya |
+| 11 | Detail Pesanan | `order_detail_screen.dart` | Tahap proses (antrian sampai kirim), item, rincian biaya, bayar, Unduh Invoice (browser luar, bila `invoice_url` ada), Batalkan (hanya saat menunggu bayar atau antri) | Ya |
 | 12 | Akun | `account_tab.dart` | Kartu profil, menu, keluar; tampilan tamu bila belum masuk | Sebagian |
 | 13 | Edit Profil | `edit_profile_screen.dart` | Ubah nama, email, nomor WhatsApp | Ya |
 | 14 | Ubah Password | `password_screen.dart` | Password lama dan baru | Ya |
@@ -25,7 +25,7 @@ Aplikasi Android (Flutter). Katalog bisa dijelajahi tanpa login; belanja dan che
 | 19 | Racik Blend | `blend_screen.dart` | Pilih dua kopi, tingkat sangrai, porsi 70/60/50, pratinjau rasa dan harga, tambah ke keranjang | Tambah ke keranjang |
 | 20 | Ulasan Pembeli | `reviews_section.dart` | Rata-rata bintang, daftar ulasan, sheet tulis atau ubah ulasan (di Detail Kopi) | Menulis ulasan |
 | 21 | Antrian Roaster | `staff/queue_tab.dart` | Antrian produksi, rencana sangrai, cari dan filter terlambat, pilih banyak lalu lanjutkan sekaligus | Ya (roaster/admin) |
-| 22 | Detail Pesanan Staf | `staff/staff_order_screen.dart` | Item, alamat, aksi maju tahap, kirim dengan resi, selesai, batalkan | Ya (roaster/admin) |
+| 22 | Detail Pesanan Staf | `staff/staff_order_screen.dart` | Item, alamat, aksi maju tahap, kirim dengan resi, selesai, batalkan; admin juga punya Cetak/Unduh Invoice dan Kirim Invoice via WA | Ya (roaster/admin) |
 | 23 | Dashboard Admin | `staff/admin_dashboard_tab.dart` | KPI, grafik pendapatan harian, status, kopi terlaris, stok menipis | Ya (admin) |
 | 24 | Pesanan Admin | `staff/admin_orders_tab.dart` | Semua pesanan, filter tab, pencarian, paginasi | Ya (admin) |
 | 25 | Stok Admin | `staff/admin_stock_tab.dart` | Stok kopi dan perlengkapan, penanda stok menipis | Ya (admin) |
@@ -69,6 +69,8 @@ Tips: aktifkan mode jam tetap/baterai penuh sebelum screenshot, dan pakai data u
 - **Linimasa pesanan**: tahap vertikal bertanda waktu, sama seperti di web (pelanggan dan staf)
 - **Login**: kotak "Ingat saya", tombol Google dan Facebook
 - **Struk dan label**: tombol Unduh Struk (pelanggan, bawah layar), Unduh Label Paket (staf, hanya di detail pesanan setelah nomor resi diisi)
+- **Invoice**: tombol Unduh Invoice di detail pesanan pelanggan, dan Cetak/Unduh Invoice serta Kirim Invoice via WA di detail pesanan admin. Semuanya memakai `invoice_url` (link bertanda tangan dari server, hanya ada untuk pesanan lunas atau COD yang tidak batal) dan dibuka di browser/WhatsApp lewat `url_launcher`, bukan WebView. Pesan WA: "Halo {nama depan}, terima kasih sudah memesan di BRÛLÉ. Invoice pesanan {kode}: {invoice_url}" ke `wa.me/{nomor penerima, awalan 0 jadi 62}`.
+- **Batal pesanan**: tombol Batalkan hanya muncul saat `can_cancel` (status `pending_payment` atau `queued`) dan memakai dialog konfirmasi. Dari `roasting` sampai selesai tombolnya hilang dan server menolak (422), karena stok biji yang sudah disangrai tidak bisa kembali.
 
 - **Motion**: transisi halaman (fade + geser), daftar muncul bertahap, perpindahan tab memudar, bel bergoyang saat ada notifikasi baru, grafik dan bar stok tumbuh saat dibuka
 - **Pilihan (chip)**: selalu satu baris; bila melebihi layar bisa digeser dan muncul tombol panah > di tepi

@@ -35,6 +35,11 @@
         <meta-data android:name="flutterEmbedding" android:value="2"/>
     </application>
     <queries>
+        <!-- url_launcher: buka tautan https (invoice, wa.me) di browser/WhatsApp -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
         <intent>
             <action android:name="android.support.customtabs.action.CustomTabsService"/>
         </intent>

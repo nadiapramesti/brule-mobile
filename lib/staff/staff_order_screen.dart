@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Text;
 import '../i18n.dart';
 import '../api.dart';
+import '../external_link.dart';
 import '../models.dart';
 import '../order_timeline.dart';
 import '../theme.dart';
@@ -97,6 +98,18 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
           reason.isEmpty ? {} : {'reason': reason}),
       'Pesanan dibatalkan',
     );
+  }
+
+  /// Kirim link invoice ke penerima lewat WhatsApp (wa.me, awalan 0 diganti 62).
+  Future<void> _sendInvoiceWa(Map<String, dynamic> o) async {
+    final r = (o['recipient'] as Map?) ?? const {};
+    final number = waNumber('${r['phone'] ?? ''}');
+    final url = '${o['invoice_url'] ?? ''}';
+    if (number == null || url.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Nomor WhatsApp penerima tidak valid.')));
+      return;
+    }
+    await openExternal(context, waUri(number, invoiceWaText('${r['name'] ?? ''}', widget.code, url)));
   }
 
   Widget _row(String k, String v, {bool bold = false}) => Padding(
@@ -241,6 +254,20 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                       const Label('KARTU UCAPAN'),
                       _box([Text('${o['card_message']}')]),
                     ],
+                    if (o['invoice_url'] != null && Api.user?['role'] == 'admin') ...[
+                      const Label('INVOICE'),
+                      OutlinedButton.icon(
+                        onPressed: () => openExternal(context, Uri.parse('${o['invoice_url']}')),
+                        icon: const Icon(Icons.print_outlined, size: 18),
+                        label: const Text('CETAK / UNDUH INVOICE'),
+                      ),
+                      const SizedBox(height: 10),
+                      OutlinedButton.icon(
+                        onPressed: () => _sendInvoiceWa(o),
+                        icon: const Icon(Icons.send_outlined, size: 18),
+                        label: const Text('KIRIM INVOICE VIA WA'),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -327,12 +354,6 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
               : () => downloadAndShare(context, '/staff/labels', {'codes': widget.code}),
           icon: const Icon(Icons.print_outlined, size: 18),
           label: const Text('UNDUH LABEL PAKET'),
-        ),
-      if (o['status'] != 'cancelled' && ('${o['tracking_number'] ?? ''}').isNotEmpty)
-        OutlinedButton.icon(
-          onPressed: _busy ? null : () => downloadAndShare(context, '/orders/${widget.code}/receipt', {}),
-          icon: const Icon(Icons.receipt_long_outlined, size: 18),
-          label: const Text('UNDUH INVOICE'),
         ),
     ];
     if (buttons.isEmpty) return null;

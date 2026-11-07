@@ -70,7 +70,11 @@ Body tambah/ubah: `label`, `recipient`, `phone` (format `08xx`/`+62`), `address`
 ```
 `payment`: `online` atau `cod`. `grams`: 100, 200, 250, 500, 1000. `grind`: `whole_bean`, `v60`, `espresso`, `french_press`, `tubruk`, `aeropress`. Item blend memakai `blend_profile_id` (profil sangrai biji kedua) dan `ratio` (porsi biji pertama: 70, 60, atau 50). Syarat: dua kopi berbeda, aktif, dan tingkat sangrai sama. Gram dibagi `round(grams x ratio / 100)`, harga = harga biji pertama untuk porsinya + harga biji kedua untuk sisanya. Respons `201`: objek pesanan.
 
-**Objek pesanan**: `code`, `status`, `status_label`, `progress`, `step`, `steps[]` (`key`, `label`), `payment_method`, `is_paid`, `can_pay`, `can_cancel`, `tracking_number`, `subtotal`, `shipping_cost`, `addon_cost`, `discount`, `voucher_code`, `total`, `gift_wrap`, `card_message`, `recipient{name, phone, address}`, `created_at`, `items[]`.
+**Objek pesanan**: `code`, `status`, `status_label`, `progress`, `step`, `steps[]` (`key`, `label`), `payment_method`, `is_paid`, `can_pay`, `can_cancel`, `invoice_url`, `tracking_number`, `subtotal`, `shipping_cost`, `addon_cost`, `discount`, `voucher_code`, `total`, `gift_wrap`, `card_message`, `recipient{name, phone, address}`, `created_at`, `items[]`.
+
+**`can_cancel`** true hanya saat status `pending_payment` atau `queued`. Dari `roasting` sampai `completed` false, dan `POST /orders/{code}/cancel` dijawab 422 (stok biji yang sudah disangrai tidak bisa dikembalikan).
+
+**`invoice_url`** link invoice bertanda tangan (`/invoice/{kode}?signature=...`, bisa dibuka tanpa login). Terisi hanya bila pesanan boleh dicetak (lunas atau COD, bukan batal), selain itu `null`. Selalu `null` di `GET /track/{code}` karena kode pesanan saja tidak boleh membuka invoice. Aplikasi membukanya di browser luar, bukan WebView.
 
 **Status**: `pending_payment`, `queued`, `roasting`, `grinding`, `packing`, `shipped`, `completed`, `cancelled`. Pesanan yang hanya berisi perlengkapan melewati tahap `roasting` dan `grinding`.
 

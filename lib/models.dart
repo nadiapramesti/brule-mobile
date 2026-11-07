@@ -132,6 +132,9 @@ class Order {
   final bool isPaid;
   final bool canPay;
   final bool canCancel;
+
+  /// Link invoice bertanda tangan dari server; null bila pesanan belum lunas/COD atau dibatalkan.
+  final String? invoiceUrl;
   final String? trackingNumber;
   final String? bestBefore;
   final int subtotal;
@@ -161,6 +164,7 @@ class Order {
         isPaid = j['is_paid'] == true,
         canPay = j['can_pay'] == true,
         canCancel = j['can_cancel'] == true,
+        invoiceUrl = j['invoice_url'] as String?,
         trackingNumber = j['tracking_number'] as String?,
         bestBefore = j['best_before'] as String?,
         subtotal = _int(j['subtotal']),

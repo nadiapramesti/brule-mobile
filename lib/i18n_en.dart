@@ -1,5 +1,11 @@
 // Kamus ID -> EN (kunci = teks Indonesia persis seperti di layar). Boleh diedit langsung; lihat README bagian Bahasa.
 const Map<String, String> kEn = {
+  'CETAK / UNDUH INVOICE': 'PRINT / DOWNLOAD INVOICE',
+  'KIRIM INVOICE VIA WA': 'SEND INVOICE VIA WHATSAPP',
+  'Tidak bisa membuka tautan.': 'Couldn\'t open the link.',
+  'Nomor WhatsApp penerima tidak valid.': 'The recipient\'s WhatsApp number is invalid.',
+  'Pesanan yang sudah disangrai tidak bisa dibatalkan.': 'Orders that have already been roasted can\'t be cancelled.',
+  'INVOICE': 'INVOICE',
   'BLEND KAMU': 'YOUR BLEND',
   'Belum ada biji': 'No beans yet',
   'Pilih biji utama untuk mulai meracik.': 'Pick a main bean to start blending.',
