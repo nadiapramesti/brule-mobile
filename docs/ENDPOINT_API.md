@@ -28,6 +28,9 @@ Bahasa respons mengikuti header `Accept-Language: id|en` (notifikasi, pesan gala
 | GET | `/coffees/{slug}` | Detail kopi: cerita, asal biji (traceability), profil sangrai dan harga per 100 g |
 | GET | `/gear` | Daftar perlengkapan, query opsional `q` |
 | GET | `/gear/{slug}` | Detail perlengkapan: kategori, harga, stok, pilihan varian dan gambarnya |
+| POST | `/recommend` | Kuis "Temukan kopimu". Body `drink` (`hitam`/`susu`), `taste` (`buah`/`bunga`/`cokelat`/`kacang`), `acid` (`suka`/`sedikit`/`tidak`). Respons `data[]` maksimal 3: `slug`, `name`, `image`, `profile_id`, `level`, `level_label`, `price_per_100g`, `tasting_notes[]`, `why`. Logika sama dengan `Recommend::rank()` di web. Nilai di luar pilihan dijawab 422 |
+| GET | `/cart/shipping?subtotal=` | Ongkir dan sisa belanja untuk gratis ongkir dari subtotal keranjang: `shipping`, `free_shipping_from`, `free_shipping_gap` (0 bila sudah gratis atau promo dimatikan, yaitu batas 0) |
+| GET | `/store` | Info toko publik: `name` dan `whatsapp` (format 62..., dari Pengaturan `contact_whatsapp`) untuk tombol chat |
 
 Respons daftar berbentuk `{ "data": [ ... ] }`.
 
@@ -70,13 +73,24 @@ Body tambah/ubah: `label`, `recipient`, `phone` (format `08xx`/`+62`), `address`
 ```
 `payment`: `online` atau `cod`. `grams`: 100, 200, 250, 500, 1000. `grind`: `whole_bean`, `v60`, `espresso`, `french_press`, `tubruk`, `aeropress`. Item blend memakai `blend_profile_id` (profil sangrai biji kedua) dan `ratio` (porsi biji pertama: 70, 60, atau 50). Syarat: dua kopi berbeda, aktif, dan tingkat sangrai sama. Gram dibagi `round(grams x ratio / 100)`, harga = harga biji pertama untuk porsinya + harga biji kedua untuk sisanya. Respons `201`: objek pesanan.
 
-**Objek pesanan**: `code`, `status`, `status_label`, `progress`, `step`, `steps[]` (`key`, `label`), `payment_method`, `is_paid`, `can_pay`, `can_cancel`, `invoice_url`, `tracking_number`, `subtotal`, `shipping_cost`, `addon_cost`, `discount`, `voucher_code`, `total`, `gift_wrap`, `card_message`, `recipient{name, phone, address}`, `created_at`, `items[]`.
+**Objek pesanan**: `code`, `status`, `status_label`, `progress`, `step`, `steps[]` (`key`, `label`), `payment_method`, `is_paid`, `can_pay`, `can_cancel`, `can_request_cancel`, `cancel_requested_at`, `cancel_request_reason`, `invoice_url`, `tracking_number`, `subtotal`, `shipping_cost`, `addon_cost`, `discount`, `voucher_code`, `total`, `gift_wrap`, `card_message`, `recipient{name, phone, address}`, `created_at`, `items[]`.
 
 **`can_cancel`** true hanya saat status `pending_payment` atau `queued`. Dari `roasting` sampai `completed` false, dan `POST /orders/{code}/cancel` dijawab 422 (stok biji yang sudah disangrai tidak bisa dikembalikan).
+
+**`can_request_cancel`** true hanya saat status `roasting`, `grinding`, atau `packing` dan belum pernah diajukan (`Order::canRequestCancel()`). Pelanggan memanggil `POST /orders/{code}/cancel-request` dengan body `reason` (opsional, maksimal 160 karakter); hanya pemilik pesanan, selain itu 404. Ditolak 422 bila tidak boleh diajukan. Setelah diajukan `cancel_requested_at` dan `cancel_request_reason` terisi dan admin mendapat notifikasi. Di `GET /track/{code}` (tanpa login) `can_request_cancel` selalu false dan alasan selalu `null`.
+
+**Jawab permintaan batal (admin)**: `POST /staff/orders/{code}/cancel-request/approve` membatalkan pesanan tanpa mengembalikan biji yang sudah disangrai (stok perlengkapan non-kopi tetap kembali), dan `/reject` menghapus permintaan sehingga pesanan lanjut. Hanya admin (roaster dan pelanggan 403); tanpa permintaan aktif dijawab 422. Detail staff memuat `can_resolve_cancel` dan `track_url` (`/lacak/{kode}`, dipakai tombol "Kirim resi via WA").
 
 **`invoice_url`** link invoice bertanda tangan (`/invoice/{kode}?signature=...`, bisa dibuka tanpa login). Terisi hanya bila pesanan boleh dicetak (lunas atau COD, bukan batal), selain itu `null`. Selalu `null` di `GET /track/{code}` karena kode pesanan saja tidak boleh membuka invoice. Aplikasi membukanya di browser luar, bukan WebView.
 
 **Status**: `pending_payment`, `queued`, `roasting`, `grinding`, `packing`, `shipped`, `completed`, `cancelled`. Pesanan yang hanya berisi perlengkapan melewati tahap `roasting` dan `grinding`.
+
+### Favorit (Bearer)
+
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| GET | `/favorites` | `data[]` berisi id kopi favorit milik pengguna |
+| POST | `/favorites/{coffee}` | Toggle favorit. `{coffee}` boleh slug atau id; hanya kopi aktif (selain itu 404). Respons `favorited` (true/false) dan `data[]` terbaru |
 
 ## 5. Alur Pembayaran Online (Midtrans Sandbox)
 
@@ -110,6 +124,8 @@ Ulasan hanya boleh ditulis pelanggan yang punya pesanan **selesai** berisi kopi 
 | GET | `/admin/stock` | admin | Stok kopi (gram) dan perlengkapan (unit) |
 | POST | `/admin/orders/{code}/complete` | admin | Tandai pesanan selesai |
 | POST | `/admin/orders/{code}/cancel` | admin | Batalkan pesanan dan kembalikan stok, body `reason` |
+| POST | `/staff/orders/{code}/cancel-request/approve` | admin | Setujui permintaan batal dari pelanggan (biji yang sudah disangrai tidak kembali ke stok) |
+| POST | `/staff/orders/{code}/cancel-request/reject` | admin | Tolak permintaan batal, pesanan lanjut |
 
 Pelanggan yang memanggil endpoint staff menerima `403`.
 
@@ -168,7 +184,7 @@ Pelanggan yang memanggil endpoint staff menerima `403`.
 
 ## 9. Ringkasan
 
-Total 66 endpoint: 6 autentikasi dan akun, 4 katalog, 5 buku alamat, 6 pesanan dan pembayaran, 2 ulasan, 11 roaster dan admin inti, 24 menu admin lainnya. Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).
+Total 74 endpoint: 6 autentikasi dan akun, 7 katalog dan info toko, 5 buku alamat, 7 pesanan dan pembayaran, 2 favorit, 2 ulasan, 13 roaster dan admin inti, 24 menu admin lainnya. Autentikasi memakai token personal Sanctum (tabel `personal_access_tokens`).
 
 ## Bantuan dan bahasa
 

@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart' hide Text;
 import '../i18n.dart';
+import '../api.dart';
 import '../auth_gate.dart';
 import '../cart.dart';
+import '../models.dart';
 import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
@@ -50,10 +53,104 @@ class CartTab extends StatelessWidget {
                   ),
                 ),
               ),
+              if (lines.isNotEmpty) _ShippingHint(subtotal: Cart.I.subtotal),
               if (lines.isNotEmpty) const _Summary(),
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+/// "Belanja Rp X lagi untuk gratis ongkir" dengan batang kemajuan. Angkanya dari server
+/// (GET /cart/shipping), jadi ikut batas gratis ongkir yang diatur admin.
+class _ShippingHint extends StatefulWidget {
+  final int subtotal;
+  const _ShippingHint({required this.subtotal});
+
+  @override
+  State<_ShippingHint> createState() => _ShippingHintState();
+}
+
+class _ShippingHintState extends State<_ShippingHint> {
+  ShippingQuote? _quote;
+  Timer? _debounce;
+  int _seq = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetch(immediately: true);
+  }
+
+  @override
+  void didUpdateWidget(covariant _ShippingHint old) {
+    super.didUpdateWidget(old);
+    if (old.subtotal != widget.subtotal) _fetch();
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  void _fetch({bool immediately = false}) {
+    _debounce?.cancel();
+    _debounce = Timer(immediately ? Duration.zero : const Duration(milliseconds: 300), () async {
+      final seq = ++_seq;
+      try {
+        final r = await Api.get('/cart/shipping', {'subtotal': '${widget.subtotal}'});
+        if (mounted && seq == _seq) setState(() => _quote = ShippingQuote.fromJson(r));
+      } on ApiException {
+        // Petunjuk saja; tanpa data server, kartunya disembunyikan.
+        if (mounted && seq == _seq) setState(() => _quote = null);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final q = _quote;
+    if (q == null || !q.hasPromo) return const SizedBox.shrink();
+    final free = q.gap == 0;
+    final progress = (widget.subtotal / q.freeFrom).clamp(0.0, 1.0).toDouble();
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+      decoration: BoxDecoration(
+        color: Brule.amber.withValues(alpha: 0.08),
+        border: Border(top: BorderSide(color: Brule.hair(0.12))),
+      ),
+      child: Narrow(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(free ? Icons.check_circle_outline : Icons.local_shipping_outlined,
+                    size: 18, color: Brule.amber),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    free ? 'Ongkir gratis untuk pesanan ini' : 'Belanja ${rupiah(q.gap)} lagi untuk gratis ongkir',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 6,
+                color: Brule.amber,
+                backgroundColor: Brule.hair(0.12),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

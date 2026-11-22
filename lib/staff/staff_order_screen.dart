@@ -112,6 +112,52 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
     await openExternal(context, waUri(number, invoiceWaText('${r['name'] ?? ''}', widget.code, url)));
   }
 
+  /// Kirim nomor resi dan link lacak ke penerima lewat WhatsApp (wa.me, awalan 0 diganti 62).
+  Future<void> _sendResiWa(Map<String, dynamic> o) async {
+    final r = (o['recipient'] as Map?) ?? const {};
+    final number = waNumber('${r['phone'] ?? ''}');
+    final resi = '${o['tracking_number'] ?? ''}';
+    final track = '${o['track_url'] ?? ''}'.isNotEmpty ? '${o['track_url']}' : '${Api.base}/lacak/${widget.code}';
+    if (number == null || resi.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Nomor WhatsApp penerima tidak valid.')));
+      return;
+    }
+    await openExternal(context, waUri(number, resiWaText('${r['name'] ?? ''}', widget.code, resi, track)));
+  }
+
+  /// Admin menjawab permintaan batal dari pelanggan (pesanan yang sudah disangrai).
+  Future<void> _resolveCancel(bool approve) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Brule.field,
+        title: Text(approve ? 'Setujui pembatalan ${widget.code}?' : 'Tolak permintaan batal?', style: Brule.condensed(20)),
+        content: Text(approve
+            ? 'Pesanan jadi Dibatalkan dan pelanggan diberi tahu. Biji yang sudah disangrai tidak dikembalikan ke stok.'
+            : 'Pesanan tetap dilanjutkan dan pelanggan diberi tahu.'),
+        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        actions: [
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(minimumSize: const Size(96, 44)),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('KEMBALI'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+                minimumSize: const Size(96, 44), backgroundColor: approve ? Brule.red : null),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(approve ? 'SETUJUI BATAL' : 'TOLAK'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await _act(
+      () => Api.post('/staff/orders/${widget.code}/cancel-request/${approve ? 'approve' : 'reject'}'),
+      approve ? 'Pembatalan disetujui' : 'Permintaan batal ditolak',
+    );
+  }
+
   Widget _row(String k, String v, {bool bold = false}) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
@@ -165,6 +211,10 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                       ],
                     ),
                     const SizedBox(height: 14),
+                    if (o['cancel_requested_at'] != null && o['status'] != 'cancelled') ...[
+                      _cancelRequest(o),
+                      const SizedBox(height: 14),
+                    ],
                     if (o['status'] == 'cancelled')
                       const ErrorBox('Pesanan ini dibatalkan.')
                     else
@@ -254,6 +304,16 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
                       const Label('KARTU UCAPAN'),
                       _box([Text('${o['card_message']}')]),
                     ],
+                    if (Api.user?['role'] == 'admin' &&
+                        o['status'] != 'cancelled' &&
+                        '${o['tracking_number'] ?? ''}'.isNotEmpty) ...[
+                      const Label('RESI'),
+                      OutlinedButton.icon(
+                        onPressed: () => _sendResiWa(o),
+                        icon: const Icon(Icons.local_shipping_outlined, size: 18),
+                        label: const Text('KIRIM RESI VIA WA'),
+                      ),
+                    ],
                     if (o['invoice_url'] != null && Api.user?['role'] == 'admin') ...[
                       const Label('INVOICE'),
                       OutlinedButton.icon(
@@ -273,6 +333,51 @@ class _StaffOrderScreenState extends State<StaffOrderScreen> {
               ),
             ),
       bottomNavigationBar: o == null ? null : _bar(o),
+    );
+  }
+
+  /// Kotak permintaan batal: alasan pelanggan, dan tombol setuju/tolak untuk admin.
+  Widget _cancelRequest(Map<String, dynamic> o) {
+    final reason = '${o['cancel_request_reason'] ?? ''}';
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Brule.amber.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Brule.amber.withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.hourglass_top, size: 18, color: Brule.amber),
+              const SizedBox(width: 8),
+              const Expanded(child: Text('PELANGGAN MINTA PESANAN DIBATALKAN')),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(reason.isEmpty ? 'Tanpa alasan.' : '"$reason"', style: Brule.mono(11, color: Brule.amber)),
+          const SizedBox(height: 4),
+          Text('Diajukan ${fullDate(o['cancel_requested_at'])}', style: Brule.mono(10)),
+          if (o['can_resolve_cancel'] == true) ...[
+            const SizedBox(height: 12),
+            ButtonRow(children: [
+              FilledButton.icon(
+                style: FilledButton.styleFrom(backgroundColor: Brule.red),
+                onPressed: _busy ? null : () => _resolveCancel(true),
+                icon: const Icon(Icons.check, size: 18),
+                label: const Text('SETUJUI BATAL'),
+              ),
+              OutlinedButton.icon(
+                onPressed: _busy ? null : () => _resolveCancel(false),
+                icon: const Icon(Icons.close, size: 18),
+                label: const Text('TOLAK'),
+              ),
+            ]),
+          ],
+        ],
+      ),
     );
   }
 

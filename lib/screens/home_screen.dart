@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart' hide Text;
 import '../i18n.dart';
 import '../cart.dart';
+import '../external_link.dart';
 import '../motion.dart';
+import '../store_info.dart';
+import '../util.dart';
 import 'account_tab.dart';
 import 'cart_tab.dart';
 import 'home_tab.dart';
@@ -54,6 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
           const AccountTab(),
         ],
       ),
+      // Di tab keranjang tombol chat disembunyikan supaya tidak menutupi tombol CHECKOUT.
+      floatingActionButton: _index == 2 ? null : const _ChatFab(),
       bottomNavigationBar: ListenableBuilder(
         listenable: Cart.I,
         builder: (context, _) {
@@ -79,6 +84,37 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
+    );
+  }
+}
+
+/// Tombol chat WhatsApp toko yang mengambang. Nomornya dari Pengaturan toko (GET /store);
+/// tombol baru muncul setelah nomor berhasil dimuat.
+class _ChatFab extends StatefulWidget {
+  const _ChatFab();
+
+  @override
+  State<_ChatFab> createState() => _ChatFabState();
+}
+
+class _ChatFabState extends State<_ChatFab> {
+  @override
+  void initState() {
+    super.initState();
+    StoreInfo.load().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final number = StoreInfo.whatsapp;
+    if (number == null) return const SizedBox.shrink();
+    return FloatingActionButton.extended(
+      heroTag: 'wa_chat',
+      onPressed: () => openExternal(context, waUri(number, 'Halo BRÛLÉ, saya mau tanya soal kopi.')),
+      icon: const Icon(Icons.chat_outlined),
+      label: const Text('CHAT WA'),
     );
   }
 }

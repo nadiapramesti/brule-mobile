@@ -70,6 +70,41 @@ class Coffee {
       : profiles.map((p) => p.pricePer100g).reduce((a, b) => a < b ? a : b);
 }
 
+/// Satu hasil kuis "Temukan kopimu": kopi + level sangrai terbaik untuk jawaban pelanggan.
+class Recommendation {
+  final String slug;
+  final String name;
+  final String? image;
+  final String level;
+  final String levelLabel;
+  final int pricePer100g;
+  final List<String> notes;
+
+  Recommendation.fromJson(Map<String, dynamic> j)
+      : slug = '${j['slug']}',
+        name = '${j['name']}',
+        image = j['image'] as String?,
+        level = '${j['level']}',
+        levelLabel = '${j['level_label'] ?? j['level']}',
+        pricePer100g = _int(j['price_per_100g']),
+        notes = _strings(j['tasting_notes']);
+}
+
+/// Sisa belanja untuk gratis ongkir dari server (GET /cart/shipping).
+class ShippingQuote {
+  final int shipping;
+  final int freeFrom;
+  final int gap;
+
+  ShippingQuote.fromJson(Map<String, dynamic> j)
+      : shipping = _int(j['shipping']),
+        freeFrom = _int(j['free_shipping_from']),
+        gap = _int(j['free_shipping_gap']);
+
+  /// Ada promo gratis ongkir yang sedang aktif (batas 0 = dimatikan admin).
+  bool get hasPromo => freeFrom > 0;
+}
+
 class Gear {
   final int id;
   final String slug;
@@ -133,6 +168,11 @@ class Order {
   final bool canPay;
   final bool canCancel;
 
+  /// Pesanan sudah di dapur (roasting sampai packing): tidak bisa batal langsung, tapi boleh diajukan ke admin.
+  final bool canRequestCancel;
+  final String? cancelRequestedAt;
+  final String? cancelRequestReason;
+
   /// Link invoice bertanda tangan dari server; null bila pesanan belum lunas/COD atau dibatalkan.
   final String? invoiceUrl;
   final String? trackingNumber;
@@ -164,6 +204,9 @@ class Order {
         isPaid = j['is_paid'] == true,
         canPay = j['can_pay'] == true,
         canCancel = j['can_cancel'] == true,
+        canRequestCancel = j['can_request_cancel'] == true,
+        cancelRequestedAt = j['cancel_requested_at'] as String?,
+        cancelRequestReason = j['cancel_request_reason'] as String?,
         invoiceUrl = j['invoice_url'] as String?,
         trackingNumber = j['tracking_number'] as String?,
         bestBefore = j['best_before'] as String?,

@@ -102,3 +102,10 @@ String invoiceWaText(String? recipientName, String code, String url) {
 
 Uri waUri(String number, String text) =>
     Uri.parse('https://wa.me/$number?text=${Uri.encodeComponent(text)}');
+
+/// Isi pesan WhatsApp "pesanan sudah dikirim" berisi nomor resi dan link lacak tanpa login.
+String resiWaText(String? recipientName, String code, String resi, String trackUrl) {
+  final first = (recipientName ?? '').trim().split(RegExp(r'\s+')).first;
+  final who = first.isEmpty ? 'Kak' : first;
+  return 'Halo $who, pesanan $code sudah dikirim. Nomor resi: $resi. Lacak tanpa login: $trackUrl';
+}

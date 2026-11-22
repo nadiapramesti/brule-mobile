@@ -3,12 +3,15 @@ import '../i18n.dart';
 import '../motion.dart';
 import '../api.dart';
 import '../add_sheet.dart';
+import '../auth_gate.dart';
 import '../coffee_bag.dart';
+import '../favorites.dart';
 import '../models.dart';
 import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
 import 'coffee_detail_screen.dart';
+import 'recommend_screen.dart';
 
 class CatalogTab extends StatefulWidget {
   const CatalogTab({super.key});
@@ -20,6 +23,27 @@ class CatalogTab extends StatefulWidget {
 class _CatalogTabState extends State<CatalogTab> {
   String _q = '';
   String? _process;
+  bool _onlyFav = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Favorites.I.refresh();
+  }
+
+  Future<void> _toggleFav(Coffee c) async {
+    if (!await requireLogin(context, reason: 'Masuk dulu untuk menyimpan favorit.')) return;
+    try {
+      await Favorites.I.toggle(c.id, c.slug);
+    } on ApiException catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+    }
+  }
+
+  Future<void> _pickFavFilter(bool on) async {
+    if (on && !await requireLogin(context, reason: 'Masuk dulu untuk melihat favoritmu.')) return;
+    if (mounted) setState(() => _onlyFav = on);
+  }
 
   Future<List<Coffee>> _load() async {
     final res = await Api.get('/coffees', _q.isEmpty ? null : {'q': _q});
@@ -50,6 +74,16 @@ class _CatalogTabState extends State<CatalogTab> {
                   hint: 'cari kopi, contoh: Ethiopia',
                   onChanged: (v) => setState(() => _q = v),
                 ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (_) => const RecommendScreen())),
+                    icon: const Icon(Icons.auto_awesome_outlined, size: 18),
+                    label: const Text('BINGUNG PILIH? TEMUKAN KOPIMU'),
+                  ),
+                ),
               ],
             ),
           ),
@@ -62,17 +96,28 @@ class _CatalogTabState extends State<CatalogTab> {
                   ...list.map((c) => c.process).whereType<String>()
                 }.toList()
                   ..sort();
-                final shown = _process == null
-                    ? list
-                    : list.where((c) => c.process == _process).toList();
+                return ListenableBuilder(
+                  listenable: Favorites.I,
+                  builder: (context, _) {
+                final shown = list
+                    .where((c) => _process == null || c.process == _process)
+                    .where((c) => !_onlyFav || Favorites.I.has(c.id))
+                    .toList();
 
                 return Column(
                   children: [
-                    if (processes.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: ChipRow(
                           children: [
+                            FilterChip(
+                              avatar: Icon(_onlyFav ? Icons.favorite : Icons.favorite_border,
+                                  size: 16, color: _onlyFav ? Brule.red : null),
+                              label: const Text('Favorit saya'),
+                              selected: _onlyFav,
+                              showCheckmark: false,
+                              onSelected: _pickFavFilter,
+                            ),
                             for (final p in <String?>[null, ...processes])
                               ChoiceChip(
                                 label: Text(p ?? 'Semua'),
@@ -89,16 +134,23 @@ class _CatalogTabState extends State<CatalogTab> {
                         child: shown.isEmpty
                             ? ListView(
                                 physics: const AlwaysScrollableScrollPhysics(),
-                                children: const [
+                                children: [
                                   Padding(
-                                    padding: EdgeInsets.all(32),
-                                    child: Center(child: Text('Kopi tidak ditemukan.')),
+                                    padding: const EdgeInsets.all(32),
+                                    child: Center(
+                                      child: Text(
+                                        _onlyFav
+                                            ? 'Belum ada kopi favorit. Tekan ikon hati di kartu kopi.'
+                                            : 'Kopi tidak ditemukan.',
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               )
                             : GridView.builder(
                                 physics: const AlwaysScrollableScrollPhysics(),
-                                padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+                                padding: const EdgeInsets.fromLTRB(16, 4, 16, 88),
                                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                                   maxCrossAxisExtent: 240,
                                   mainAxisExtent: 322,
@@ -118,6 +170,8 @@ class _CatalogTabState extends State<CatalogTab> {
                                         : 'CUPPING ${c.cupping!.toStringAsFixed(1)}',
                                     price: 'mulai ${rupiah(c.fromPrice)} / 100g',
                                     soldOut: !c.inStock,
+                                    isFavorite: Favorites.I.has(c.id),
+                                    onFavorite: () => _toggleFav(c),
                                     onTap: () => Navigator.of(context).push(
                                       MaterialPageRoute(
                                           builder: (_) => CoffeeDetailScreen(coffee: c)),
@@ -128,6 +182,8 @@ class _CatalogTabState extends State<CatalogTab> {
                       ),
                     ),
                   ],
+                );
+                  },
                 );
               },
             ),

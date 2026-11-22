@@ -29,10 +29,11 @@ Future<void> addGearQuick(BuildContext context, Gear g) async {
 }
 
 /// Kopi selalu punya pilihan (sangrai, berat, gilingan), jadi selalu lewat menu pilihan.
-Future<void> addCoffeeSheet(BuildContext context, Coffee c) async {
+/// [level] memilih tingkat sangrai di awal (mis. dari hasil kuis rekomendasi).
+Future<void> addCoffeeSheet(BuildContext context, Coffee c, {String? level}) async {
   if (!await requireLogin(context)) return;
   if (!context.mounted) return;
-  await _open(context, _CoffeeSheet(coffee: c));
+  await _open(context, _CoffeeSheet(coffee: c, level: level));
 }
 
 Future<void> _open(BuildContext context, Widget child) {
@@ -83,7 +84,8 @@ class _SheetFrame extends StatelessWidget {
 
 class _CoffeeSheet extends StatefulWidget {
   final Coffee coffee;
-  const _CoffeeSheet({required this.coffee});
+  final String? level;
+  const _CoffeeSheet({required this.coffee, this.level});
 
   @override
   State<_CoffeeSheet> createState() => _CoffeeSheetState();
@@ -99,7 +101,9 @@ class _CoffeeSheetState extends State<_CoffeeSheet> {
   void initState() {
     super.initState();
     final ps = widget.coffee.profiles;
-    _profile = ps.firstWhere((p) => p.level == 'medium', orElse: () => ps.first);
+    final want = widget.level ?? 'medium';
+    _profile = ps.firstWhere((p) => p.level == want,
+        orElse: () => ps.firstWhere((p) => p.level == 'medium', orElse: () => ps.first));
   }
 
   void _add() {

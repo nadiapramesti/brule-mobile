@@ -9,6 +9,7 @@ import '../theme.dart';
 import '../util.dart';
 import '../widgets.dart';
 import '../staff/download.dart';
+import 'cancel_request_box.dart';
 import 'payment_screen.dart';
 
 class OrderDetailScreen extends StatelessWidget {
@@ -162,6 +163,10 @@ class OrderDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                   ],
+                  if (!publicView && o.cancelRequestedAt != null && !const {'cancelled', 'shipped', 'completed'}.contains(o.status)) ...[
+                    CancelRequestedInfo(reason: o.cancelRequestReason),
+                    const SizedBox(height: 16),
+                  ],
                   if (o.status == 'cancelled') ...[
                     const ErrorBox('Pesanan ini dibatalkan.'),
                     const SizedBox(height: 16),
@@ -233,6 +238,10 @@ class OrderDetailScreen extends StatelessWidget {
                       onPressed: () => _cancel(context, reload),
                       child: const Text('BATALKAN PESANAN'),
                     ),
+                  ],
+                  if (!publicView && o.canRequestCancel) ...[
+                    const SizedBox(height: 12),
+                    CancelRequestBox(code: code, reload: reload),
                   ],
                 ],
               ),

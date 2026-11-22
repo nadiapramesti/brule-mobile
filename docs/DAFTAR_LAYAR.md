@@ -10,11 +10,11 @@ Aplikasi Android (Flutter). Katalog bisa dijelajahi tanpa login; belanja dan che
 | 4 | Detail Kopi | `coffee_detail_screen.dart` | Pilih sangrai, berat, gilingan, jumlah; detail lot dan asal biji | Tambah ke keranjang |
 | 5 | Detail Perlengkapan | `gear_detail_screen.dart` | Gambar, pilihan varian, jumlah | Tambah ke keranjang |
 | 6 | Sheet Pilihan Tambah | `add_sheet.dart` | Menu pilihan cepat dari kartu (sangrai/berat/gilingan atau varian) | Ya |
-| 7 | Keranjang | `cart_tab.dart` | Daftar barang, ubah jumlah, hapus, bar total dan tombol Checkout di bawah | Checkout |
+| 7 | Keranjang | `cart_tab.dart` | Daftar barang, ubah jumlah, hapus, petunjuk "Belanja Rp X lagi untuk gratis ongkir" dengan batang kemajuan, bar total dan tombol Checkout di bawah | Checkout |
 | 8 | Checkout | `checkout_screen.dart` | Kartu alamat tersimpan, pembayaran, voucher, kado, ringkasan, Buat Pesanan | Ya |
 | 9 | Pembayaran Midtrans | `payment_screen.dart` | WebView Snap sandbox | Ya |
 | 10 | Daftar Pesanan | `orders_tab.dart` | Riwayat pesanan beserta status | Ya |
-| 11 | Detail Pesanan | `order_detail_screen.dart` | Tahap proses (antrian sampai kirim), item, rincian biaya, bayar, Unduh Invoice (browser luar, bila `invoice_url` ada), Batalkan (hanya saat menunggu bayar atau antri) | Ya |
+| 11 | Detail Pesanan | `order_detail_screen.dart` | Tahap proses (antrian sampai kirim), item, rincian biaya, bayar, Unduh Invoice (browser luar, bila `invoice_url` ada), Batalkan (hanya saat menunggu bayar atau antri), Ajukan Pembatalan dengan kolom alasan (saat sudah masuk dapur) | Ya |
 | 12 | Akun | `account_tab.dart` | Kartu profil, menu, keluar; tampilan tamu bila belum masuk | Sebagian |
 | 13 | Edit Profil | `edit_profile_screen.dart` | Ubah nama, email, nomor WhatsApp | Ya |
 | 14 | Ubah Password | `password_screen.dart` | Password lama dan baru | Ya |
@@ -25,7 +25,7 @@ Aplikasi Android (Flutter). Katalog bisa dijelajahi tanpa login; belanja dan che
 | 19 | Racik Blend | `blend_screen.dart` | Pilih dua kopi, tingkat sangrai, porsi 70/60/50, pratinjau rasa dan harga, tambah ke keranjang | Tambah ke keranjang |
 | 20 | Ulasan Pembeli | `reviews_section.dart` | Rata-rata bintang, daftar ulasan, sheet tulis atau ubah ulasan (di Detail Kopi) | Menulis ulasan |
 | 21 | Antrian Roaster | `staff/queue_tab.dart` | Antrian produksi, rencana sangrai, cari dan filter terlambat, pilih banyak lalu lanjutkan sekaligus | Ya (roaster/admin) |
-| 22 | Detail Pesanan Staf | `staff/staff_order_screen.dart` | Item, alamat, aksi maju tahap, kirim dengan resi, selesai, batalkan; admin juga punya Cetak/Unduh Invoice dan Kirim Invoice via WA | Ya (roaster/admin) |
+| 22 | Detail Pesanan Staf | `staff/staff_order_screen.dart` | Item, alamat, aksi maju tahap, kirim dengan resi, selesai, batalkan; admin juga punya Cetak/Unduh Invoice, Kirim Invoice via WA, Kirim Resi via WA, dan Setujui/Tolak permintaan batal | Ya (roaster/admin) |
 | 23 | Dashboard Admin | `staff/admin_dashboard_tab.dart` | KPI, grafik pendapatan harian, status, kopi terlaris, stok menipis | Ya (admin) |
 | 24 | Pesanan Admin | `staff/admin_orders_tab.dart` | Semua pesanan, filter tab, pencarian, paginasi | Ya (admin) |
 | 25 | Stok Admin | `staff/admin_stock_tab.dart` | Stok kopi dan perlengkapan, penanda stok menipis | Ya (admin) |
@@ -40,6 +40,7 @@ Aplikasi Android (Flutter). Katalog bisa dijelajahi tanpa login; belanja dan che
 | 34 | Pengaturan Toko | `staff/admin_settings_screen.dart` | Identitas, kontak, ongkir, add-on, COD, batas stok | Ya (admin) |
 | 35 | Riwayat Stok | `staff/stock_history_screen.dart` | Barang masuk dan keluar, saldo, pelaku, alasan; filter jenis dan kopi | Ya (admin) |
 | 36 | Form Stok | `staff/stock_sheets.dart` | Masuk (restock), keluar (susut), koreksi hitung, tambah unit perlengkapan | Ya (admin) |
+| 37 | Temukan Kopimu | `screens/recommend_screen.dart` | Kuis 3 pertanyaan, hasil 3 kopi + level sangrai, tombol Racik Kopi Ini membuka pilihan racikan dengan kopi dan level terpilih | Tidak (tombol racik butuh masuk) |
 
 ## Checklist screenshot untuk laporan
 
@@ -71,6 +72,13 @@ Tips: aktifkan mode jam tetap/baterai penuh sebelum screenshot, dan pakai data u
 - **Struk dan label**: tombol Unduh Struk (pelanggan, bawah layar), Unduh Label Paket (staf, hanya di detail pesanan setelah nomor resi diisi)
 - **Invoice**: tombol Unduh Invoice di detail pesanan pelanggan, dan Cetak/Unduh Invoice serta Kirim Invoice via WA di detail pesanan admin. Semuanya memakai `invoice_url` (link bertanda tangan dari server, hanya ada untuk pesanan lunas atau COD yang tidak batal) dan dibuka di browser/WhatsApp lewat `url_launcher`, bukan WebView. Pesan WA: "Halo {nama depan}, terima kasih sudah memesan di BRÛLÉ. Invoice pesanan {kode}: {invoice_url}" ke `wa.me/{nomor penerima, awalan 0 jadi 62}`.
 - **Batal pesanan**: tombol Batalkan hanya muncul saat `can_cancel` (status `pending_payment` atau `queued`) dan memakai dialog konfirmasi. Dari `roasting` sampai selesai tombolnya hilang dan server menolak (422), karena stok biji yang sudah disangrai tidak bisa kembali.
+
+- **Ajukan batal**: pesanan yang sudah di dapur (`can_request_cancel`) menampilkan kolom alasan (contoh: "salah pilih level sangrai") dan tombol Ajukan Pembatalan dengan dialog konfirmasi. Setelah terkirim muncul info "Permintaan pembatalan sudah dikirim". Admin melihat alasan di detail pesanan dan menjawab lewat tombol Setujui Batal atau Tolak.
+- **Favorit**: tombol hati bulat di pojok foto kartu kopi dan filter "Favorit saya" di Katalog (butuh masuk). Disimpan di server lewat `/favorites`.
+- **Temukan Kopimu**: tombol di atas Katalog membuka kuis 3 pertanyaan (cara minum, rasa favorit, toleransi asam). Jawaban dikirim ke `POST /recommend`; hasilnya tombol Racik Kopi Ini yang membuka pilihan racikan dengan kopi dan level sudah terpilih.
+- **Gratis ongkir**: petunjuk di Keranjang dari `GET /cart/shipping` (ikut batas yang diatur admin; tersembunyi bila promo dimatikan).
+- **Kirim resi via WA** (admin): setelah ada nomor resi, buka `wa.me/{nomor penerima, awalan 0 jadi 62}` dengan "Halo {nama depan}, pesanan {kode} sudah dikirim. Nomor resi: {resi}. Lacak tanpa login: {url /lacak/{kode}}".
+- **Chat WhatsApp**: tombol CHAT WA mengambang di toko (disembunyikan di tab Keranjang), nomor dari Pengaturan toko lewat `GET /store`, pesan awal "Halo BRÛLÉ, saya mau tanya soal kopi."
 
 - **Motion**: transisi halaman (fade + geser), daftar muncul bertahap, perpindahan tab memudar, bel bergoyang saat ada notifikasi baru, grafik dan bar stok tumbuh saat dibuka
 - **Pilihan (chip)**: selalu satu baris; bila melebihi layar bisa digeser dan muncul tombol panah > di tepi

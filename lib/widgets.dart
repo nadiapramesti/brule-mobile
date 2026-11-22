@@ -431,10 +431,16 @@ class ProductCard extends StatelessWidget {
   final VoidCallback onTap;
   final Widget? art;
   final VoidCallback? onAdd;
+
+  /// Tombol hati (favorit) di pojok foto. Tidak tampil bila [onFavorite] null.
+  final VoidCallback? onFavorite;
+  final bool isFavorite;
   const ProductCard({
     super.key,
     this.art,
     this.onAdd,
+    this.onFavorite,
+    this.isFavorite = false,
     required this.image,
     required this.title,
     required this.meta,
@@ -467,6 +473,8 @@ class ProductCard extends StatelessWidget {
                       : NetImage(url: image),
                   if (soldOut)
                     Positioned(top: 8, left: 8, child: Tag('HABIS', color: Brule.red, filled: true)),
+                  if (onFavorite != null)
+                    Positioned(top: 6, right: 6, child: HeartButton(on: isFavorite, onTap: onFavorite!)),
                 ],
               ),
             ),
@@ -509,6 +517,34 @@ class ProductCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Tombol hati bulat dengan latar dan garis tepi supaya jelas bisa ditekan.
+class HeartButton extends StatelessWidget {
+  final bool on;
+  final VoidCallback onTap;
+  const HeartButton({super.key, required this.on, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tr(on ? 'Hapus dari favorit' : 'Simpan ke favorit'),
+      child: Material(
+        color: Brule.sheet.withValues(alpha: 0.92),
+        shape: CircleBorder(side: BorderSide(color: on ? Brule.red : Brule.hair(0.3), width: 1.2)),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onTap,
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: Icon(on ? Icons.favorite : Icons.favorite_border,
+                size: 20, color: on ? Brule.red : Brule.kraft),
+          ),
         ),
       ),
     );

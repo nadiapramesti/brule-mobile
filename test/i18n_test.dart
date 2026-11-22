@@ -37,4 +37,13 @@ void main() {
       expect(k.split('{}').length, v.split('{}').length, reason: 'jumlah {} beda: $k');
     }
   });
+  test('teks fitur baru: kuis, ongkir, dan permintaan batal punya terjemahan', () {
+    AppPrefs.lang.value = 'en';
+    expect(tr('Belanja Rp 380.000 lagi untuk gratis ongkir'), 'Spend Rp 380.000 more for free shipping');
+    expect(tr('PERTANYAAN 2 / 3'), 'QUESTION 2 / 3');
+    expect(tr('Setujui pembatalan BRL-1?'), 'Approve cancellation of BRL-1?');
+    expect(tr('Permintaan pembatalan sudah dikirim'), 'Cancellation request sent');
+    expect(tr('Contoh: salah pilih level sangrai'), 'Example: picked the wrong roast level');
+    expect(tr('RACIK KOPI INI'), 'BREW THIS COFFEE');
+  });
 }

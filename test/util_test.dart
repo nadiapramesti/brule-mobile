@@ -60,4 +60,19 @@ void main() {
     expect(u.path, '/6281234567890');
     expect(u.queryParameters['text'], text);
   });
+  test('resiWaText: nama depan, kode, resi, dan link lacak', () {
+    expect(
+      resiWaText('Nadia Pramesti', 'BRL-123', 'JNE123456', 'https://toko.test/lacak/BRL-123'),
+      'Halo Nadia, pesanan BRL-123 sudah dikirim. Nomor resi: JNE123456. Lacak tanpa login: https://toko.test/lacak/BRL-123',
+    );
+    expect(resiWaText('', 'A1', 'R1', 'u'), startsWith('Halo Kak, pesanan A1'));
+    expect(resiWaText(null, 'A1', 'R1', 'u'), startsWith('Halo Kak,'));
+  });
+
+  test('resiWaText masuk ke wa.me dengan teks ter-encode dan nomor 62', () {
+    final uri = waUri(waNumber('081234567890')!, resiWaText('Nadia', 'BRL-1', 'JNE1', 'https://t.test/lacak/BRL-1'));
+    expect(uri.host, 'wa.me');
+    expect(uri.path, '/6281234567890');
+    expect(uri.queryParameters['text'], contains('Nomor resi: JNE1'));
+  });
 }
