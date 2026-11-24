@@ -31,8 +31,12 @@ flutter:
   assets:
     - assets/images/
 
-  # Font IBM Plex dibundel (lisensi SIL OFL), jadi tidak perlu internet.
+  # Font IBM Plex dan Fraunces dibundel (lisensi SIL OFL), jadi tidak perlu internet.
   fonts:
+    # Fraunces: serif variabel untuk judul dan nama kopi (sumbu wght/opsz diatur di theme.dart).
+    - family: Fraunces
+      fonts:
+        - asset: assets/fonts/Fraunces-Variable.ttf
     - family: IBMPlexSans
       fonts:
         - asset: assets/fonts/IBMPlexSans-Regular.ttf

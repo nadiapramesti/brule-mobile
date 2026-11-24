@@ -30,16 +30,34 @@ class Brule {
       color: color ?? kraft,
       letterSpacing: 1.1);
 
+  /// Judul dan nama kopi. Ukuran 17 ke atas memakai serif Fraunces (kesan roastery);
+  /// ukuran kecil, tombol, dan label tetap IBM Plex Condensed supaya mudah dibaca.
   static TextStyle condensed(double size,
-          {FontWeight weight = FontWeight.w600,
-          Color? color,
-          double spacing = 0}) =>
-      TextStyle(
+      {FontWeight weight = FontWeight.w600, Color? color, double spacing = 0}) {
+    if (size < 17) {
+      return TextStyle(
           fontFamily: 'IBMPlexSansCondensed',
           fontSize: size,
           fontWeight: weight,
           color: color ?? cream,
           letterSpacing: spacing);
+    }
+    // Fraunces lebih lebar dari Plex Condensed, jadi ukurannya dikecilkan sedikit.
+    final s = size * 0.92;
+    return TextStyle(
+        fontFamily: 'Fraunces',
+        fontSize: s,
+        fontWeight: weight,
+        fontVariations: [
+          FontVariation('wght', weight.value.toDouble()),
+          FontVariation('opsz', s.clamp(9.0, 144.0).toDouble()),
+          const FontVariation('SOFT', 0),
+          const FontVariation('WONK', 0),
+        ],
+        height: 1.15,
+        color: color ?? cream,
+        letterSpacing: spacing > 0 ? spacing * 0.5 : 0);
+  }
 }
 
 ThemeData buildTheme() {
