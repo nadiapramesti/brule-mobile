@@ -17,6 +17,12 @@ Bangun APK yang langsung terhubung ke server itu:
 flutter build apk --release --dart-define=API_BASE=https://brule-coffee-lab.onrender.com
 ```
 
+Atau unduh APK jadi (dibangun otomatis lewat GitHub Actions tiap push ke `main`, tersambung ke server demo di atas):
+
+```
+https://github.com/nadiapramesti/brule-mobile/releases/download/latest/brule.apk
+```
+
 Atau pada aplikasi yang sudah terpasang: **UBAH ALAMAT SERVER**, isi alamat di atas (tanpa `/api`).
 
 Catatan paket gratis:

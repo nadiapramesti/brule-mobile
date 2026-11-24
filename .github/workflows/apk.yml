@@ -1,0 +1,52 @@
+name: Build APK
+
+# Tiap push ke main (atau dijalankan manual dari tab Actions) membangun APK rilis
+# dan menaruhnya di Release "latest", jadi link unduhnya selalu sama:
+# https://github.com/nadiapramesti/brule-mobile/releases/download/latest/brule.apk
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apk
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter test
+
+      - name: Build APK rilis (server demo Render)
+        run: flutter build apk --release --dart-define=API_BASE=https://brule-coffee-lab.onrender.com
+
+      - name: Terbitkan ke Release "latest"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk brule.apk
+          NOTES="Build otomatis dari commit ${GITHUB_SHA::7} ($(date -u +'%Y-%m-%d %H:%M UTC')). Server demo: https://brule-coffee-lab.onrender.com"
+          if gh release view latest >/dev/null 2>&1; then
+            gh release upload latest brule.apk --clobber
+            gh release edit latest --notes "$NOTES" --target "$GITHUB_SHA"
+          else
+            gh release create latest brule.apk --title "BRÛLÉ APK terbaru" --notes "$NOTES" --target "$GITHUB_SHA"
+          fi
